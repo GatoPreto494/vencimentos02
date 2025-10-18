@@ -1,0 +1,2138 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Clientes</title>
+    <style>
+        /* Estilos gerais */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        .container {
+            width: 100%;
+            max-width: 2000px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1, h3 {
+            text-align: center;
+            color: #0066cc;
+        }
+        /* Estilos para Inputs e Botões */
+        input[type="text"],
+        input[type="tel"],
+        input[type="date"],
+        textarea {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .input-group-horizontal {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .input-group-horizontal input {
+            flex: 1;
+            min-width: 150px;
+            margin-bottom: 0;
+        }
+        .configurable-input {
+            /* Largura será definida pelo JavaScript */
+        }
+        button {
+            background-color: #0066cc;
+            color: #fff;
+            padding: 10px 20px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            position: relative;
+            /* Necessário para posicionar o badge */
+        }
+        button:hover {
+            background-color: #004d99;
+        }
+        /* Estilos específicos de botão */
+        .btn-debito-segurar {
+            background-color: #ffcc00;
+            /* Amarelo fraco */
+            color: #333;
+            /* Texto escuro para contraste */
+        }
+        .btn-debito-segurar:hover {
+            background-color: #e6b800;
+            /* Amarelo um pouco mais escuro no hover */
+        }
+        /* Novo estilo para o botão de renovar (Data Atual) */
+        .btn-renovar-data-atual {
+            background-color: #ffc107;
+            /* Amarelo Bootstrap */
+            color: #212529;
+            /* Texto escuro */
+            border: 1px solid #ffc107;
+        }
+        .btn-renovar-data-atual:hover {
+            background-color: #e0a800;
+            border-color: #d39e00;
+        }
+        /* Novo estilo para o botão de confirmação perigosa (vermelho) */
+        .modal-confirm-danger {
+            background-color: #dc3545;
+            /* Vermelho */
+            color: #fff;
+        }
+        .modal-confirm-danger:hover {
+            background-color: #c82333;
+            /* Vermelho mais escuro */
+        }
+        /* Estilos da Tabela */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            display: none;
+            /* Escondido por padrão, mostrado com JS */
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        /* Flexbox para td com botões */
+        td {
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+            /* Impede quebras de linha inesperadas nos botões */
+            gap: 5px;
+        }
+        td button, td span {
+            display: inline-block;
+            margin-right: 5px;
+            flex-shrink: 0;
+            /* Previne que os botões encolham */
+        }
+        /* Cores das linhas da tabela - Ajustado para maior especificidade */
+        tr.avisado {
+            background-color: #007bff !important;
+            /* Azul */
+            color: white;
+        }
+        tr.debito {
+            background-color: #ffa500 !important;
+            /* Laranja */
+        }
+        tr.vencendo-hoje {
+            background-color: #ffff99 !important;
+            /* Amarelo claro */
+        }
+        tr.vencido {
+            background-color: #ff6666 !important;
+            /* Vermelho claro */
+        }
+        .center {
+            text-align: center;
+        }
+        /* ESTILO PARA SOBREPOR A COR PADRÃO DO LINK E FORÇAR BRANCO */
+        /* Note o uso de a.cliente-clicado para aumentar a especificidade */
+        a.cliente-clicado,
+        a.cliente-clicado:link,
+        a.cliente-clicado:visited,
+        a.cliente-clicado:hover,
+        a.cliente-clicado:active {
+            color: white !important;
+            text-decoration: none !important; /* opcional, tira o sublinhado */
+        }
+        /* Estilos de Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .modal button {
+            background-color: #0066cc;
+            color: #fff;
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .modal button:hover {
+            background-color: #004d99;
+        }
+        /* Ícone de Configurações */
+        .settings-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            background-color: #0066cc;
+            color: white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            transition: background-color 0.3s;
+        }
+        /* O trecho duplicado foi removido daqui e ajustado acima. */
+        .settings-icon:hover {
+            background-color: #004d99;
+        }
+        #settingsArea {
+            display: none;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        #settingsArea label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        #settingsArea input[type="range"],
+        #settingsArea input[type="number"] {
+            width: calc(100% - 22px);
+            margin-bottom: 15px;
+        }
+        /* Estilo para o badge numérico */
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 3px 7px;
+            font-size: 0.7em;
+            min-width: 15px;
+            text-align: center;
+            line-height: 1;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+        }
+        /* Novo estilo para o botão central de mensagens */
+        #centralMessageButton {
+            display: block;
+            margin: 20px auto;
+            /* Centraliza o botão */
+            padding: 15px 30px;
+            font-size: 1.2em;
+            background-color: #28a745;
+            /* Verde vibrante */
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        #centralMessageButton:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+        #centralMessageButton:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        /* Novo estilo para o botão Dola (laranja com ícone) */
+        .btn-dola {
+            background-color: #ff9800; /* Laranja */
+            color: white;
+        }
+        .btn-dola:hover {
+            background-color: #e68900; /* Laranja mais escuro */
+        }
+        /* NOVO: Estilo para o botão Dola quando a mensagem já foi enviada */
+        .btn-dola-sent {
+            background-color: #28a745; /* Verde */
+            color: white;
+        }
+        .btn-dola-sent:hover {
+            background-color: #218838; /* Verde mais escuro no hover */
+        }
+        /* Estilos para a nova seção de clientes avisados */
+        #clientesAvisadosSection {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        #clientesAvisadosList {
+            list-style: none;
+            padding: 0;
+        }
+        #clientesAvisadosList li {
+            background-color: #e0f2f7;
+            /* Um azul claro para destaque */
+            border: 1px solid #b3e5fc;
+            margin-bottom: 8px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        #clientesAvisadosList li .client-info {
+            flex-grow: 1;
+        }
+        #clientesAvisadosList li button {
+            margin-left: 5px;
+            padding: 8px 12px;
+            font-size: 0.9em;
+        }
+        /* Estilos para o overlay de carregamento */
+        .loading-overlay {
+            display: none;
+            /* Escondido por padrão */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            /* Usar flexbox para centralizar */
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            /* Acima de outros elementos, incluindo modais */
+        }
+        .spinner {
+            border: 8px solid #f3f3f3;
+            /* Light grey */
+            border-top: 8px solid #0066cc;
+            /* Blue */
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="ultimaAtualizacaoInfo" style="position: fixed; top: 10px; right: 10px; font-size: 0.9em; color: #555; background-color: #f9f9f9; padding: 5px 10px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); z-index: 1001;">
+        Última Alteração: Nunca
+    </div>
+    <div class="container">
+        <h1>Controle de Clientes</h1>
+        <button id="centralMessageButton" onclick="enviarProximoClienteVencido()">
+            Enviar Mensagem para Próximo Vencido
+            <span id="badgeCentralMessage" class="notification-badge" style="display:none;"></span>
+        </button>
+        <button onclick="importarClientes()">Importar Clientes (JSON)</button>
+        <button onclick="exportarClientes()">Exportar Clientes (JSON)</button>
+        <h3>Adicionar Cliente</h3>
+        <div class="input-group-horizontal">
+            <input type="date" id="dataInput" class="configurable-input" required>
+            <input type="text" id="nomeInput" class="configurable-input" placeholder="Nome do Cliente" required>
+            <input type="tel" id="telefoneInput" class="configurable-input" placeholder="Telefone (ex: 11999999999)" required>
+        </div>
+        <div>
+            <label>
+                <input type="radio" name="produto" value="UniTv" checked> UniTv
+            </label>
+            <label>
+                <input type="radio" name="produto" value="Duplecast"> Duplecast
+            </label>
+        </div>
+        <button onclick="adicionarCliente()">Adicionar Cliente</button>
+        <h3>Filtros e Ações</h3>
+        <button onclick="filtrarHojeEVencidos()">Vencendo Hoje + Vencidos <span id="badgeHojeEVencidos" class="notification-badge" style="display:none;"></span></button>
+        <button onclick="filtrarHoje()">Clientes Vencendo Hoje <span id="badgeHoje" class="notification-badge" style="display:none;"></span></button>
+        <button onclick="filtrarAmanha()">Clientes Vencendo Amanhã <span id="badgeAmanha" class="notification-badge" style="display:none;"></span></button>
+        <button onclick="filtrarVencidos()">Clientes Vencidos <span id="badgeVencidos" class="notification-badge" style="display:none;"></span></button>
+        <button onclick="filtrarDebito()">Clientes com Débito <span id="badgeDebito" class="notification-badge" style="display:none;"></span></button>
+        <button onclick="filtrarVerDepois()">Ver Depois <span id="badgeVerDepois" class="notification-badge" style="display:none;"></span></button>
+        <button onclick="filtrarArquivados()">Arquivados <span id="badgeArquivados" class="notification-badge" style="display:none;"></span></button>
+        <button onclick="filtrarDesativados()">Clientes Desativados <span id="badgeDesativados" class="notification-badge" style="display:none;"></span></button>
+        <button onclick="mostrarContagemProdutos()">Produtos</button>
+        <button onclick="exibirTodos()">Reexibir Todos</button>
+        <button onclick="confirmarLimparTodos()">Limpar Todos</button>
+        <button onclick="confirmarDesfazer()">Desfazer Última Ação</button>
+        <button onclick="confirmarRefazer()">Refazer Última Ação</button>
+        <h3>Pesquisa de Clientes</h3>
+        <input type="text" id="searchInput" placeholder="Pesquisar por nome ou telefone" oninput="debouncePesquisa()">
+        <button onclick="limparPesquisa()">Limpar Pesquisa</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Data de Vencimento</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaClientes"></tbody>
+        </table>
+        <button onclick="compartilharWhatsApp()">Compartilhar no WhatsApp</button>
+        <hr>
+        <div id="clientesAvisadosSection">
+            <h3>Clientes Avisados (WhatsApp) <span id="badgeOcultos" class="notification-badge" style="display:none;"></span></h3>
+            <ul id="clientesAvisadosList">
+            </ul>
+        </div>
+        <hr>
+        <h3>Data Atual</h3>
+        <p id="dataAtual"></p>
+        <div class="settings-icon" onclick="toggleSettingsArea()" title="Ajustes">⚙️</div>
+        <div id="settingsArea">
+            <h3>Ajustes de Interface</h3>
+            <p>Defina o tamanho das caixas de entrada de Data, Nome e Telefone.</p>
+            <div>
+                <label for="inputWidth">Largura dos Inputs (em %): <span id="inputWidthValue"></span></label>
+                <input type="range" id="inputWidth" min="10" max="100" value="16" oninput="updateInputWidth(this.value)">
+            </div>
+            <button onclick="saveSettings()">Salvar Ajustes</button>
+            <button onclick="resetSettings()">Redefinir Padrão</button>
+        </div>
+        <div id="modalConfirmacao" class="modal">
+            <div class="modal-content">
+                <h3>Confirmar Duplicação</h3>
+                <p>Você tem certeza que deseja duplicar este cliente?</p>
+                <button onclick="confirmarDuplicacao()">Confirmar</button>
+                <button onclick="fecharModal()">Cancelar</button>
+            </div>
+        </div>
+        <div id="modalExclusao" class="modal">
+            <div class="modal-content">
+                <h3>Confirmar Exclusão</h3>
+                <p>Você tem certeza que deseja excluir este cliente?</p>
+                <button onclick="confirmarExclusao()">Confirmar</button>
+                <button onclick="fecharModal()">Cancelar</button>
+            </div>
+        </div>
+        <div id="modalRenovarComDebito" class="modal">
+            <div class="modal-content">
+                <h3>Renovar com Débito?</h3>
+                <p>Tem certeza que deseja renovar este cliente e marcá-lo como Débito?</p>
+                <button id="btnConfirmarRenovacaoDebito">Confirmar</button>
+                <button onclick="fecharModal()">Cancelar</button>
+            </div>
+        </div>
+        <div id="modalConfirmacaoGenerica" class="modal">
+            <div class="modal-content">
+                <h3 id="modalConfirmacaoGenericaTitulo">Confirmação</h3>
+                <p id="modalConfirmacaoGenericaMensagem">Tem certeza?</p>
+                <button id="btnConfirmacaoGenericaConfirmar">Confirmar</button>
+                <button onclick="fecharModal()">Cancelar</button>
+            </div>
+        </div>
+        <div id="modalEdicao" class="modal" style="display: none;"></div>
+        <div id="modalAlerta" class="modal" style="display: none;"></div>
+        <div id="modalContagemProdutos" class="modal">
+            <div class="modal-content">
+                <h3>Contagem de Produtos</h3>
+                <p>UniTv: <span id="countUniTv">0</span> clientes <button onclick="filtrarPorProduto('UniTv')">Detalhes</button></p>
+                <p>Duplecast: <span id="countDuplecast">0</span> clientes <button onclick="filtrarPorProduto('Duplecast')">Detalhes</button></p>
+                <button onclick="fecharModal()">Fechar</button>
+            </div>
+        </div>
+        <div id="modalEscolherProduto" class="modal">
+            <div class="modal-content">
+                <h3>Escolher Tipo de Produto</h3>
+                <p>Selecione o tipo de produto para o cliente:</p>
+                <button onclick="alterarProdutoClienteConfirm('UniTv')">UniTv</button>
+                <button onclick="alterarProdutoClienteConfirm('Duplecast')">Duplecast</button>
+                <button onclick="fecharModal()">Cancelar</button>
+            </div>
+        </div>
+        <div id="modalConflitoIdNome" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h3>Conflito de Cliente por ID</h3>
+                <p>O cliente importado possui o mesmo ID final de telefone (<span id="conflitoId"></span>) que um cliente existente, mas os nomes são diferentes.</p>
+                <p><b>Cliente Existente:</b> <span id="conflitoNomeExistente"></span></p>
+                <p><b>Cliente Importado:</b> <span id="conflitoNomeImportado"></span></p>
+                <p>O que deseja fazer?</p>
+                <button id="btnConflitoManterExistente">Manter o Existente</button>
+                <button id="btnConflitoUsarImportado">Atualizar Cliente Existente</button>
+                <button id="btnConflitoManterAmbos">Manter Ambos (Criar Novo Cliente)</button>
+                <button onclick="cancelarConflitoIdNome()">Cancelar Importação Deste</button>
+            </div>
+        </div>
+        <div id="modalVerDepois" class="modal">
+            <div class="modal-content">
+                <h3>Agendar Reexibição</h3>
+                <p>Escolha a data em que este cliente deve voltar a aparecer na lista principal.</p>
+                <input type="date" id="dataReexibicaoInput" style="width: 90%; padding: 10px; margin: 10px 0;">
+                <button id="btnConfirmarVerDepois">Confirmar</button>
+                <button onclick="fecharModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+    <script>
+        let clientes = []; // Inicializado como array vazio, será preenchido por loadClientes()
+        let clientesFiltrados = [];
+        let clienteIndexParaExcluir = null;
+        let clienteIndexParaDuplicar = null;
+        let clienteIndexParaRenovarDebito = null;
+        let clienteIndexParaAlterarProduto = null;
+        let modoExibicaoArquivados = false;
+        let modoExibicaoOcultos = false;
+        let modoExibicaoDesativados = false;
+        let filtroProduto = null;
+        let historicoClientes = [];
+        let redoHistory = [];
+        const MAX_HISTORY_STATES = 10;
+        let confirmActionCallback = null;
+        let clienteIdParaVerDepois = null; // NOVO: Para armazenar o ID do cliente ao agendar
+
+        // Variáveis para gerenciar o processo de importação com conflitos
+        let clientesParaProcessarImportacao = [];
+        let currentIndexImportacao = 0;
+
+        // Variáveis para o botão de mensagem central
+        let clientesVencidosParaMensagem = [];
+        
+        // Variável para armazenar o ID do cliente para "Renovar HOJE"
+        let clienteIdParaRenovarHoje = null;
+        
+        // Variável para o debounce da pesquisa
+        let debounceTimer;
+        
+        // ====================================================================================
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwoeQZB6yl-RBXQ8gn7PUOz-QsyYJfeWW8UgDgNf8WUYPCH7DczuoXLb_5PkipxD6OY/exec';
+        // ====================================================================================
+        
+        let filtroAtual = "hojeEVencidos";
+        
+        // --- Funções de Loading/Spinner ---
+        function mostrarCarregando() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        // FUNÇÃO ATUALIZADA: Marca o link clicado e ATUALIZA O OBJETO CLIENTE
+        function marcarClienteClicado(elemento) {
+            elemento.classList.add("cliente-clicado");
+            const tr = elemento.closest("tr");
+            if (tr) {
+                const indexNaTabela = Array.from(tr.parentNode.children).indexOf(tr);
+                const clienteClicado = clientesExibidos[indexNaTabela];
+                if (clienteClicado) {
+                    const indexOriginal = clientes.findIndex(c => c.id === clienteClicado.id);
+                    if (indexOriginal !== -1) {
+                        clientes[indexOriginal].clicado = true;
+                        saveClientsToLocalStorage();
+                    }
+                }
+            }
+        }
+
+        function esconderCarregando() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+        
+        function saveClientsToLocalStorage() {
+            try {
+                localStorage.setItem('clientesCache', JSON.stringify(clientes));
+            } catch (e) {
+                console.error('Erro ao salvar clientes no localStorage:', e);
+            }
+        }
+        
+        async function sendRequestToBackend(action, data = {}) {
+            try {
+                const url = `${WEB_APP_URL}?action=${action}`;
+                const options = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8',
+                    },
+                    body: JSON.stringify(data),
+                    muteHttpExceptions: true
+                };
+
+                if (action === 'get_all_clients') {
+                    options.method = 'GET';
+                    delete options.body;
+                }
+
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Erro de rede ou servidor: ${response.status} - ${errorText}`);
+                }
+                const result = await response.json();
+                if (result && result.status === 'error') {
+                    throw new Error(result.message || 'Erro desconhecido do backend.');
+                }
+                return result;
+            } catch (error) {
+                console.error('Erro na comunicação com o backend:', error);
+                throw error;
+            }
+        }
+
+        function atualizarUltimaAtualizacao(acao = "dados atualizados", clienteNome = "") {
+            const now = new Date();
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const formattedDateTime = now.toLocaleString('pt-BR', options);
+            let fullMessage = `Última Alteração: ${formattedDateTime}`;
+            if (clienteNome) {
+                const nomeLimpoParaMsg = clienteNome.replace(/\s\(UniTv\)/g, '').replace(/\s\(Duplecast\)/g, '');
+                fullMessage += ` - ${nomeLimpoParaMsg} (${acao})`;
+            } else {
+                fullMessage += ` (${acao})`;
+            }
+            localStorage.setItem('ultimaAtualizacaoCliente', fullMessage);
+            document.getElementById('ultimaAtualizacaoInfo').textContent = fullMessage;
+        }
+
+        function saveStateToHistory(clearRedo = true) {
+            const estadoAtual = JSON.parse(JSON.stringify(clientes));
+            historicoClientes.push(estadoAtual);
+            if (historicoClientes.length > MAX_HISTORY_STATES) {
+                historicoClientes.shift();
+            }
+            if (clearRedo) {
+                redoHistory = [];
+            }
+        }
+
+        function exibirConfirmacaoGenerica(titulo, mensagem, callback, isDanger = false) {
+            const modal = document.getElementById("modalConfirmacaoGenerica");
+            const btnConfirmar = document.getElementById("btnConfirmacaoGenericaConfirmar");
+            document.getElementById("modalConfirmacaoGenericaTitulo").innerText = titulo;
+            document.getElementById("modalConfirmacaoGenericaMensagem").innerHTML = mensagem;
+            confirmActionCallback = callback;
+            if (isDanger) {
+                btnConfirmar.classList.add("modal-confirm-danger");
+            } else {
+                btnConfirmar.classList.remove("modal-confirm-danger");
+            }
+            btnConfirmar.onclick = () => {
+                if (confirmActionCallback) {
+                    confirmActionCallback();
+                    confirmActionCallback = null;
+                }
+                fecharModal();
+            };
+            modal.style.display = "flex";
+            document.addEventListener("keydown", fecharComEsc);
+        }
+
+        function fecharModal() {
+            document.getElementById("modalConfirmacao").style.display = "none";
+            document.getElementById("modalExclusao").style.display = "none";
+            document.getElementById("modalRenovarComDebito").style.display = "none";
+            document.getElementById("modalConfirmacaoGenerica").style.display = "none";
+            document.getElementById("modalConflitoIdNome").style.display = "none";
+            document.getElementById("modalContagemProdutos").style.display = "none";
+            document.getElementById("modalEscolherProduto").style.display = "none";
+            document.getElementById("modalVerDepois").style.display = "none"; // NOVO
+
+            const modalEdicao = document.getElementById("modalEdicao");
+            if (modalEdicao) {
+                modalEdicao.style.display = "none";
+                modalEdicao.innerHTML = "";
+                document.removeEventListener("keydown", fecharComEsc);
+            }
+            const modalAlerta = document.getElementById("modalAlerta");
+            if (modalAlerta) {
+                modalAlerta.style.display = "none";
+                modalAlerta.innerHTML = "";
+                document.removeEventListener("keydown", fecharComEscOuEnter);
+            }
+            clienteIdParaRenovarHoje = null;
+        }
+
+        function fecharComEsc(event) {
+            if (event.key === "Escape") {
+                fecharModal();
+            }
+        }
+        function fecharComEscOuEnter(event) {
+            if (event.key === "Enter" || event.key === "Escape") {
+                fecharModal();
+            }
+        }
+        function exibirAlerta(mensagem) {
+            let modalAlerta = document.getElementById("modalAlerta");
+            modalAlerta.style.display = "flex";
+            modalAlerta.innerHTML = `<div class="modal-content"><h3>Aviso</h3><p>${mensagem}</p><button onclick="fecharModal()">OK</button></div>`;
+            document.addEventListener("keydown", fecharComEscOuEnter);
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Enter" && document.getElementById("modalExclusao").style.display === "flex") {
+                confirmarExclusao();
+            }
+        });
+
+        async function adicionarCliente() {
+            const dataInput = document.getElementById("dataInput").value.trim();
+            const nomeInput = document.getElementById("nomeInput").value.trim();
+            const telefoneInput = document.getElementById("telefoneInput").value.trim();
+            const produtoSelecionado = document.querySelector('input[name="produto"]:checked').value;
+
+            if (!dataInput || !nomeInput || !telefoneInput) {
+                return exibirAlerta("Por favor, insira a data, o nome e o telefone do cliente.");
+            }
+            const telefoneLimpo = telefoneInput.replace(/[^\d]/g, '');
+            if (telefoneLimpo.length < 5) {
+                return exibirAlerta("O telefone deve ter pelo menos 5 dígitos para gerar o ID.");
+            }
+            const clienteId = telefoneLimpo.slice(-5);
+            const clienteExistenteComMesmoId = clientes.find(c => c.id === clienteId);
+            if (clienteExistenteComMesmoId) {
+                return exibirAlerta(`Já existe um cliente com o ID final de telefone ${clienteId} (Nome: ${clienteExistenteComMesmoId.nome}). Por favor, use um telefone final diferente ou edite o cliente existente.`);
+            }
+
+            saveStateToHistory();
+            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+            const dataParts = dataInput.split("-");
+            const dataFormatadaParaArmazenar = `${dataParts[2]}/${dataParts[1]}/${dataParts[0]}`;
+            let nomeComProduto = `${nomeInput} (${produtoSelecionado})`;
+
+            const novoClienteObj = {
+                id: clienteId,
+                data: dataFormatadaParaArmazenar,
+                nome: nomeComProduto,
+                telefone: telefoneLimpo,
+                avisado: false,
+                debito: false,
+                Produto: produtoSelecionado,
+                arquivado: false,
+                oculto: false,
+                reexibirEm: null, // ATUALIZADO
+                desativado: false,
+                dola_sent: false,
+                clicado: false
+            };
+
+            clientes.push(novoClienteObj);
+            saveClientsToLocalStorage();
+            document.getElementById("nomeInput").value = "";
+            document.getElementById("telefoneInput").value = "";
+            exibirTabela();
+            exibirClientesAvisados();
+            atualizarUltimaAtualizacao("adicionado", nomeInput);
+
+            try {
+                await salvarClientes();
+            } catch (error) {
+                clientes = estadoAnteriorClientes;
+                saveClientsToLocalStorage();
+                exibirTabela();
+                exibirClientesAvisados();
+                exibirAlerta(`Erro ao adicionar cliente: ${error.message}. Ação desfeita localmente. Tente novamente.`);
+                atualizarUltimaAtualizacao("falha na adição", nomeInput);
+            }
+        }
+        
+        async function arquivar(index) {
+            const clienteParaArquivar = clientesExibidos[index];
+            const clienteOriginalIndex = clientes.findIndex(c => c.id === clienteParaArquivar.id);
+            if (clienteOriginalIndex === -1) return;
+
+            saveStateToHistory();
+            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+            clientes[clienteOriginalIndex].arquivado = true;
+            clientes[clienteOriginalIndex].oculto = false;
+            clientes[clienteOriginalIndex].reexibirEm = null; // ATUALIZADO
+            clientes[clienteOriginalIndex].desativado = false;
+            clientes[clienteOriginalIndex].clicado = false;
+            saveClientsToLocalStorage();
+            chamarFiltroAtual();
+            exibirClientesAvisados();
+            atualizarUltimaAtualizacao("arquivado", clienteParaArquivar.nome);
+            try {
+                await salvarClientes();
+            } catch (error) {
+                clientes = estadoAnteriorClientes;
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                exibirClientesAvisados();
+                exibirAlerta(`Erro ao arquivar cliente: ${error.message}. Ação desfeita localmente. Tente novamente.`);
+                atualizarUltimaAtualizacao("falha ao arquivar", clienteParaArquivar.nome);
+            }
+        }
+        
+        async function desarquivar(index) {
+            const clienteParaDesarquivar = clientesExibidos[index];
+            const clienteOriginalIndex = clientes.findIndex(c => c.id === clienteParaDesarquivar.id);
+            if (clienteOriginalIndex === -1) return;
+
+            saveStateToHistory();
+            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+            clientes[clienteOriginalIndex].arquivado = false;
+            clientes[clienteOriginalIndex].reexibirEm = null; // ATUALIZADO
+            saveClientsToLocalStorage();
+            chamarFiltroAtual();
+            exibirClientesAvisados();
+            atualizarUltimaAtualizacao("desarquivado", clienteParaDesarquivar.nome);
+            try {
+                await salvarClientes();
+            } catch (error) {
+                clientes = estadoAnteriorClientes;
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                exibirClientesAvisados();
+                exibirAlerta(`Erro ao desarquivar cliente: ${error.message}. Ação desfeita localmente. Tente novamente.`);
+                atualizarUltimaAtualizacao("falha ao desarquivar", clienteParaDesarquivar.nome);
+            }
+        }
+
+        function filtrarHojeEVencidos() {
+            filtroAtual = "hojeEVencidos";
+            exibirTabela();
+            atualizarContadores();
+        }
+
+        function filtrarArquivados() {
+            filtroAtual = "arquivados";
+            document.getElementById("searchInput").value = "";
+            exibirTabela();
+            exibirClientesAvisados();
+        }
+
+        function mostrarApenasOcultosPorFiltro() {
+            filtroAtual = "ocultos";
+            document.getElementById("searchInput").value = "";
+            exibirTabela();
+            exibirClientesAvisados();
+        }
+
+        function filtrarVerDepois() {
+            filtroAtual = "verDepois";
+            document.getElementById("searchInput").value = "";
+            exibirTabela();
+            exibirClientesAvisados();
+        }
+
+        function filtrarDesativados() {
+            filtroAtual = "desativados";
+            document.getElementById("searchInput").value = "";
+            exibirTabela();
+            exibirClientesAvisados();
+        }
+
+        function filtrarPorProduto(produto) {
+            filtroAtual = `produto:${produto}`;
+            document.getElementById("searchInput").value = "";
+            fecharModal();
+            exibirTabela();
+            exibirClientesAvisados();
+        }
+
+        let clientesExibidos = [];
+
+        function formatDateForDisplay(dateString) {
+            if (!dateString) return '';
+            const parts = dateString.split('/');
+            if (parts.length === 3) {
+                return `${parts[0]}/${parts[1]}`;
+            }
+            return dateString.substring(0, 5);
+        }
+        
+        // ATUALIZADO: Função centralizada para exibir a tabela com a nova lógica de "Ver Depois"
+        function exibirTabela() {
+            const termoPesquisa = document.getElementById("searchInput").value.trim().toLowerCase();
+            let clientesParaProcessar;
+            const hojeStr = new Date().toISOString().split('T')[0]; // Data de hoje no formato AAAA-MM-DD para comparação
+
+            // Função auxiliar para verificar se o cliente deve ser visível (não agendado para o futuro)
+            const isVisivelHoje = (cliente) => {
+                return !cliente.reexibirEm || cliente.reexibirEm <= hojeStr;
+            };
+
+            // Lógica de filtragem atualizada
+            if (termoPesquisa !== '') {
+                clientesParaProcessar = clientes.filter(cliente =>
+                    (cliente.nome.toLowerCase().includes(termoPesquisa) || cliente.telefone.includes(termoPesquisa))
+                );
+            } else if (filtroAtual === "verDepois") {
+                // O filtro "Ver Depois" agora mostra clientes agendados PARA O FUTURO
+                clientesParaProcessar = clientes.filter(cliente => cliente.reexibirEm && cliente.reexibirEm > hojeStr);
+            } else if (filtroAtual === "hojeEVencidos") {
+                const hoje = new Date();
+                const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+                const hojeFormatada = hoje.getDate().toString().padStart(2, '0') + "/" +
+                    (hoje.getMonth() + 1).toString().padStart(2, '0') + "/" +
+                    hoje.getFullYear();
+                clientesParaProcessar = clientes.filter(cliente => {
+                    const [dia, mes, ano] = cliente.data.split("/").map(num => parseInt(num));
+                    const dataCliente = new Date(ano, mes - 1, dia);
+                    const isVencendoHoje = cliente.data === hojeFormatada;
+                    const isVencido = dataCliente < hojeSemHora;
+                    return (isVencendoHoje || isVencido) && !cliente.arquivado && !cliente.oculto && !cliente.desativado && isVisivelHoje(cliente);
+                });
+            } else if (filtroAtual === "arquivados") {
+                clientesParaProcessar = clientes.filter(cliente => cliente.arquivado);
+            } else if (filtroAtual === "desativados") {
+                clientesParaProcessar = clientes.filter(cliente => cliente.desativado);
+            } else if (filtroAtual.startsWith("produto:")) {
+                const produto = filtroAtual.split(":")[1];
+                clientesParaProcessar = clientes.filter(cliente => cliente.Produto === produto && !cliente.arquivado && !cliente.oculto && !cliente.desativado && isVisivelHoje(cliente));
+            } else if (filtroAtual === "hoje") {
+                const hoje = new Date();
+                const hojeFormatada = hoje.getDate().toString().padStart(2, '0') + "/" +
+                    (hoje.getMonth() + 1).toString().padStart(2, '0') + "/" +
+                    hoje.getFullYear();
+                clientesParaProcessar = clientes.filter(cliente => cliente.data === hojeFormatada && !cliente.arquivado && !cliente.oculto && !cliente.desativado && !cliente.avisado && isVisivelHoje(cliente));
+            } else if (filtroAtual === "amanha") {
+                const amanha = new Date();
+                amanha.setDate(amanha.getDate() + 1);
+                const amanhaFormatada = amanha.getDate().toString().padStart(2, '0') + "/" +
+                    (amanha.getMonth() + 1).toString().padStart(2, '0') + "/" +
+                    amanha.getFullYear();
+                clientesParaProcessar = clientes.filter(cliente => cliente.data === amanhaFormatada && !cliente.arquivado && !cliente.oculto && !cliente.desativado && isVisivelHoje(cliente));
+            } else if (filtroAtual === "vencidos") {
+                const hoje = new Date();
+                clientesParaProcessar = clientes.filter(cliente => {
+                    const [dia, mes, ano] = cliente.data.split("/").map(num => parseInt(num));
+                    const dataCliente = new Date(ano, mes - 1, dia);
+                    const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+                    return dataCliente < hojeSemHora && !cliente.arquivado && !cliente.oculto && !cliente.desativado && !cliente.avisado && isVisivelHoje(cliente);
+                });
+            } else if (filtroAtual === "debito") {
+                clientesParaProcessar = clientes.filter(cliente => cliente.debito && !cliente.arquivado && !cliente.oculto && !cliente.desativado && isVisivelHoje(cliente));
+            } else if (filtroAtual === "todos") {
+                clientesParaProcessar = clientes.filter(cliente => !cliente.arquivado && !cliente.oculto && !cliente.desativado && isVisivelHoje(cliente));
+            } else {
+                clientesParaProcessar = clientes.filter(cliente => !cliente.arquivado && !cliente.oculto && !cliente.desativado && isVisivelHoje(cliente));
+            }
+
+            clientesExibidos = clientesParaProcessar;
+
+            if (clientesExibidos.length === 0) {
+                document.querySelector("table").style.display = "none";
+                document.getElementById("tabelaClientes").innerHTML = `<tr><td colspan="1" style="text-align: center; color: gray;">Nenhum cliente para exibir neste filtro.</td></tr>`;
+                prepararClientesVencidosParaMensagem();
+                atualizarContadores();
+                return;
+            }
+
+            document.querySelector("table").style.display = "table";
+            const tabela = document.getElementById("tabelaClientes");
+            tabela.innerHTML = "";
+
+            clientesExibidos.sort((a, b) => {
+                const [diaA, mesA, anoA] = a.data.split("/").map(num => parseInt(num));
+                const [diaB, mesB, anoB] = b.data.split("/").map(num => parseInt(num));
+                const dataA = new Date(anoA, mesA - 1, diaA);
+                const dataB = new Date(anoB, mesB - 1, diaB);
+                return dataA - dataB;
+            });
+
+            const hoje = new Date();
+            const hojeFormatadaDDMMYYYY = hoje.getDate().toString().padStart(2, '0') + "/" +
+                (hoje.getMonth() + 1).toString().padStart(2, '0') + "/" +
+                hoje.getFullYear();
+
+            clientesExibidos.forEach((cliente, index) => {
+                const tr = document.createElement("tr");
+                tr.classList.remove("avisado", "debito", "vencendo-hoje", "vencido");
+                if (cliente.avisado) tr.classList.add("avisado");
+                if (cliente.debito) tr.classList.add("debito");
+                const [diaCliente, mesCliente, anoCliente] = cliente.data.split("/").map(num => parseInt(num));
+                const dataCliente = new Date(anoCliente, mesCliente - 1, diaCliente);
+                const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+                if (cliente.data === hojeFormatadaDDMMYYYY) {
+                    tr.classList.add("vencendo-hoje");
+                } else if (dataCliente < hojeSemHora) {
+                    tr.classList.add("vencido");
+                }
+                
+                let botoesAcao = '';
+                if (filtroAtual === "arquivados") {
+                    botoesAcao = `
+                        <button title="Desarquivar Cliente" onclick="desarquivar(${index})">Desarquivar</button>
+                        <button title="Excluir Cliente" onclick="excluir(${index})">❌</button>
+                    `;
+                } else if (filtroAtual === "verDepois") {
+                    const dataAgendada = new Date(cliente.reexibirEm + 'T00:00:00').toLocaleDateString('pt-BR');
+                    botoesAcao = `
+                        <span>Reexibir em: ${dataAgendada}</span>
+                        <button title="Reexibir Agora" onclick="desmarcarVerDepois(${index})">Reexibir Agora</button>
+                        <button title="Editar Cliente" onclick="editar(${index})">Edit</button>
+                        <button title="Excluir Cliente" onclick="excluir(${index})">❌</button>
+                    `;
+                } else if (filtroAtual === "desativados") {
+                    botoesAcao = `
+                        <button title="Reativar Cliente" onclick="toggleDesativado(${index})">Reativar</button>
+                        <button title="Excluir Cliente" onclick="excluir(${index})">❌</button>
+                    `;
+                } else {
+                    const dolaButtonClass = cliente.dola_sent ? 'btn-dola-sent' : 'btn-dola';
+                    botoesAcao = `
+                        <button title="Enviar Lembrete Dola" class="${dolaButtonClass}" onclick="enviarMensagemWhatsAppDola(${index})">🤖 Dola</button>
+                        <button title="Renovar Automático" onclick="renovarAutomatico(${index})">🔁</button>
+                        <button title="Renovar com Débito (Confirmação)" class="btn-debito-segurar" onclick="pedirConfirmacaoRenovacaoDebito(${index})">DÉBITO</button>
+                        <button title="Renovar a Partir de Hoje" class="btn-renovar-data-atual" onclick="pedirConfirmacaoRenovarHoje(${index})">RENOVAR HOJE</button>
+                        <button title="Agendar Reexibição" onclick="abrirModalVerDepois(${index})">Ver Depois</button>
+                        <button title="Alterar Produto" onclick="abrirModalAlterarProduto(${index})">Produto</button>
+                        <button title="Editar Cliente" onclick="editar(${index})">Edit</button>
+                        <button title="Excluir Cliente" onclick="excluir(${index})">❌</button>
+                        <button title="Arquivar Cliente" onclick="arquivar(${index})">📂</button>
+                        <button title="Desativar Cliente" onclick="toggleDesativado(${index})">Desativar</button>
+                        <button title="Copiar Mensagem WhatsApp" onclick="copiarMensagemWhatsApp(${index})">📋 Copiar</button>
+                        <button title="Duplicar Cliente" onclick="duplicarCliente(${index})">➕ Duplicar</button>
+                    `;
+                }
+
+                const nomeExibicaoBase = cliente.nome.replace(/\s\(UniTv\)/g, '').replace(/\s\(Duplecast\)/g, '');
+                const classeDinamica = cliente.clicado ? 'cliente-clicado' : '';
+
+                tr.innerHTML = `
+                    <td>
+                        ${formatDateForDisplay(cliente.data)} 
+                        <a href="#" class="${classeDinamica}" onclick="marcarClienteClicado(this); enviarMensagemWhatsApp('${nomeExibicaoBase}', '${cliente.telefone}', ${index}); return false;">
+                            ${nomeExibicaoBase} (${cliente.Produto || 'N/I'})
+                        </a>
+                        ${botoesAcao}
+                    </td>
+                `;
+                tabela.appendChild(tr);
+            });
+            atualizarContadores();
+        }
+
+
+        function exibirClientesAvisados() {
+            const clientesAvisadosList = document.getElementById('clientesAvisadosList');
+            clientesAvisadosList.innerHTML = '';
+            const avisados = clientes.filter(cliente => cliente.avisado && cliente.oculto && !cliente.arquivado && !cliente.reexibirEm && !cliente.desativado);
+
+            if (avisados.length === 0) {
+                clientesAvisadosList.innerHTML = '<li>Nenhum cliente avisado para exibir.</li>';
+                return;
+            }
+
+            avisados.sort((a, b) => {
+                const [diaA, mesA, anoA] = a.data.split("/").map(num => parseInt(num));
+                const [diaB, mesB, anoB] = b.data.split("/").map(num => parseInt(num));
+                const dataA = new Date(anoA, mesA - 1, diaA);
+                const dataB = new Date(anoB, mesB - 1, diaB);
+                return dataA - dataB;
+            });
+
+            avisados.forEach(cliente => {
+                const li = document.createElement('li');
+                const nomeExibicaoBase = cliente.nome.replace(/\s\(UniTv\)/g, '').replace(/\s\(Duplecast\)/g, '');
+                const dolaButtonClass = cliente.dola_sent ? 'btn-dola-sent' : 'btn-dola';
+                li.innerHTML = `
+                    <div class="client-info"><strong>${nomeExibicaoBase}</strong> (${cliente.Produto || 'N/I'}) - Vencimento: ${formatDateForDisplay(cliente.data)}</div>
+                    <div class="client-actions">
+                         <button title="Desmarcar Avisado e Reexibir" onclick="toggleAvisadoFromAvisados('${cliente.id}')">Reexibir</button>
+                         <button title="Enviar Lembrete Dola" class="${dolaButtonClass}" onclick="enviarMensagemWhatsAppDolaById('${cliente.id}')">🤖 Dola</button>
+                         <button title="Copiar Mensagem WhatsApp" onclick="copiarMensagemWhatsAppById('${cliente.id}')">📋 Copiar</button>
+                         <button title="Duplicar Cliente" onclick="duplicarClienteById('${cliente.id}')">➕ Duplicar</button>
+                         <button title="Renovar Automático" onclick="renovarAutomatiscoById('${cliente.id}')">🔁</button>
+                         <button title="Renovar com Débito (Confirmação)" class="btn-debito-segurar" onclick="pedirConfirmacaoRenovacaoDebitoById('${cliente.id}')">DÉBITO</button>
+                         <button title="Renovar a Partir de Hoje" class="btn-renovar-data-atual" onclick="pedirConfirmacaoRenovarHojeById('${cliente.id}')">RENOVAR HOJE</button>
+                         <button title="Agendar Reexibição" onclick="abrirModalVerDepoisById('${cliente.id}')">Ver Depois</button>
+                         <button title="Alterar Produto" onclick="abrirModalAlterarProdutoById('${cliente.id}')">Produto</button>
+                         <button title="Editar Cliente" onclick="editarClienteById('${cliente.id}')">Edit</button>
+                         <button title="Excluir Cliente" onclick="excluirClienteById('${cliente.id}')">❌</button>
+                         <button title="Arquivar Cliente" onclick="arquivarById('${cliente.id}')">📂</button>
+                         <button title="Desativar Cliente" onclick="toggleDesativadoById('${cliente.id}')">Desativar</button>
+                    </div>
+                `;
+                clientesAvisadosList.appendChild(li);
+            });
+        }
+        
+        async function toggleAvisadoFromAvisados(clientId) {
+            const clienteOriginalIndex = clientes.findIndex(c => c.id === clientId);
+            if (clienteOriginalIndex === -1) return;
+
+            saveStateToHistory();
+            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+            clientes[clienteOriginalIndex].avisado = false;
+            clientes[clienteOriginalIndex].oculto = false;
+            clientes[clienteOriginalIndex].clicado = false;
+            saveClientsToLocalStorage();
+            chamarFiltroAtual();
+            exibirClientesAvisados();
+            atualizarUltimaAtualizacao("desmarcado avisado", clientes[clienteOriginalIndex].nome);
+            try {
+                await salvarClientes();
+            } catch (error) {
+                clientes = estadoAnteriorClientes;
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                exibirClientesAvisados();
+                exibirAlerta(`Erro ao desmarcar cliente como avisado: ${error.message}. Ação desfeita localmente. Tente novamente.`);
+                atualizarUltimaAtualizacao("falha ao desmarcar avisado", clientes[clienteOriginalIndex].nome);
+            }
+        }
+
+        function duplicarClienteById(clientId) {
+            const index = clientes.findIndex(c => c.id === clientId);
+            if (index !== -1) {
+                const originalClientesExibidos = clientesExibidos;
+                clientesExibidos = [clientes[index]];
+                duplicarCliente(0);
+                clientesExibidos = originalClientesExibidos;
+            }
+        }
+
+        function enviarMensagemWhatsAppDolaById(clientId) {
+            const index = clientes.findIndex(c => c.id === clientId);
+            if (index !== -1) {
+                const originalClientesExibidos = clientesExibidos;
+                clientesExibidos = [clientes[index]];
+                enviarMensagemWhatsAppDola(0);
+                clientesExibidos = originalClientesExibidos;
+            }
+        }
+        function renovarAutomatiscoById(clientId) {
+            const index = clientes.findIndex(c => c.id === clientId);
+            if (index !== -1) {
+                const originalClientesExibidos = clientesExibidos;
+                clientesExibidos = [clientes[index]];
+                renovarAutomatico(0);
+                clientesExibidos = originalClientesExibidos;
+            }
+        }
+        function pedirConfirmacaoRenovacaoDebitoById(clientId) {
+            const index = clientes.findIndex(c => c.id === clientId);
+            if (index !== -1) {
+                const originalClientesExibidos = clientesExibidos;
+                clientesExibidos = [clientes[index]];
+                pedirConfirmacaoRenovacaoDebito(0);
+                clientesExibidos = originalClientesExibidos;
+            }
+        }
+        function pedirConfirmacaoRenovarHojeById(clientId) {
+            clienteIdParaRenovarHoje = clientId;
+            exibirConfirmacaoGenerica("Confirmar Renovação HOJE", "Tem certeza que deseja renovar a data de vencimento deste cliente para **HOJE**?", confirmarRenovarHoje, false);
+        }
+        
+        async function renovarAutomatico(index) {
+            const cliente = clientesExibidos[index];
+            if (!cliente.Produto || cliente.Produto === "Não informado") {
+                exibirAlerta("O produto do cliente não está informado! Por favor, edite o cliente e defina o produto antes de renovar.");
+                return;
+            }
+            saveStateToHistory();
+            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+            const clienteOriginalIndex = clientes.findIndex(c => c.id === cliente.id);
+            if (clienteOriginalIndex !== -1) {
+                renovarProximoMes(clientes[clienteOriginalIndex]);
+                clientes[clienteOriginalIndex].debito = false;
+                clientes[clienteOriginalIndex].oculto = false;
+                clientes[clienteOriginalIndex].avisado = false;
+                clientes[clienteOriginalIndex].reexibirEm = null; // ATUALIZADO
+                clientes[clienteOriginalIndex].desativado = false;
+                clientes[clienteOriginalIndex].dola_sent = false;
+                clientes[clienteOriginalIndex].clicado = false;
+            }
+            saveClientsToLocalStorage();
+            chamarFiltroAtual();
+            exibirClientesAvisados();
+            atualizarUltimaAtualizacao("renovado automaticamente", cliente.nome);
+            try {
+                await salvarClientes();
+            } catch (error) {
+                clientes = estadoAnteriorClientes;
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                exibirClientesAvisados();
+                exibirAlerta(`Erro ao renovar automaticamente: ${error.message}. Ação desfeita localmente. Tente novamente.`);
+                atualizarUltimaAtualizacao("falha na renovação automática", cliente.nome);
+            }
+        }
+
+        function pedirConfirmacaoRenovarHoje(index) {
+            const cliente = clientesExibidos[index];
+            clienteIdParaRenovarHoje = cliente.id;
+            exibirConfirmacaoGenerica("Confirmar Renovação HOJE", `Tem certeza que deseja renovar a data de vencimento de **${cliente.nome.replace(/\s\(UniTv\)/g, '').replace(/\s\(Duplecast\)/g, '')}** para **HOJE**?`, confirmarRenovarHoje, false);
+        }
+
+        async function confirmarRenovarHoje() {
+            if (clienteIdParaRenovarHoje === null) return;
+            saveStateToHistory();
+            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+            const clienteOriginalIndex = clientes.findIndex(c => c.id === clienteIdParaRenovarHoje);
+            const clienteOriginalNome = clientes[clienteOriginalIndex].nome;
+            if (clienteOriginalIndex !== -1) {
+                const hoje = new Date();
+                const hojeFormatada = hoje.getDate().toString().padStart(2, '0') + "/" + (hoje.getMonth() + 1).toString().padStart(2, '0') + "/" + hoje.getFullYear();
+                clientes[clienteOriginalIndex].data = hojeFormatada;
+                clientes[clienteOriginalIndex].debito = false;
+                clientes[clienteOriginalIndex].oculto = false;
+                clientes[clienteOriginalIndex].avisado = false;
+                clientes[clienteOriginalIndex].reexibirEm = null; // ATUALIZADO
+                clientes[clienteOriginalIndex].desativado = false;
+                clientes[clienteOriginalIndex].dola_sent = false;
+                clientes[clienteOriginalIndex].clicado = false;
+            }
+            saveClientsToLocalStorage();
+            chamarFiltroAtual();
+            exibirClientesAvisados();
+            atualizarUltimaAtualizacao("renovado a partir da data atual", clienteOriginalNome);
+            exibirAlerta(`Cliente "${clienteOriginalNome.replace(/\s\(UniTv\)/g, '').replace(/\s\(Duplecast\)/g, '')}" renovado para hoje!`);
+            try {
+                await salvarClientes();
+            } catch (error) {
+                clientes = estadoAnteriorClientes;
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                exibirClientesAvisados();
+                exibirAlerta(`Erro ao renovar para hoje: ${error.message}. Ação desfeita localmente. Tente novamente.`);
+                atualizarUltimaAtualizacao("falha na renovação para hoje", clienteOriginalNome);
+            }
+            clienteIdParaRenovarHoje = null;
+        }
+
+        async function confirmarRenovacaoComDebito() {
+            if (clienteIndexParaRenovarDebito === null) return;
+            saveStateToHistory();
+            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+            const cliente = clientesExibidos[clienteIndexParaRenovarDebito];
+            const clienteOriginalIndex = clientes.findIndex(c => c.id === cliente.id);
+            const clienteNome = cliente.nome;
+            if (!cliente.Produto || cliente.Produto === "Não informado") {
+                exibirAlerta("O produto do cliente não está informado! Por favor, edite o cliente e defina o produto antes de renovar.");
+                fecharModal();
+                return;
+            }
+            if (clienteOriginalIndex !== -1) {
+                renovarProximoMes(clientes[clienteOriginalIndex]);
+                clientes[clienteOriginalIndex].debito = true;
+                clientes[clienteOriginalIndex].oculto = false;
+                clientes[clienteOriginalIndex].avisado = false;
+                clientes[clienteOriginalIndex].reexibirEm = null; // ATUALIZADO
+                clientes[clienteOriginalIndex].desativado = false;
+                clientes[clienteOriginalIndex].dola_sent = false;
+                clientes[clienteOriginalIndex].clicado = false;
+            }
+            saveClientsToLocalStorage();
+            chamarFiltroAtual();
+            exibirClientesAvisados();
+            fecharModal();
+            clienteIndexParaRenovarDebito = null;
+            exibirAlerta("Cliente renovado e marcado como DÉBITO!");
+            atualizarUltimaAtualizacao("renovado com débito", clienteNome);
+            try {
+                await salvarClientes();
+            } catch (error) {
+                clientes = estadoAnteriorClientes;
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                exibirClientesAvisados();
+                exibirAlerta(`Erro ao renovar com débito: ${error.message}. Ação desfeita localmente. Tente novamente.`);
+                atualizarUltimaAtualizacao("falha na renovação com débito", clienteNome);
+            }
+        }
+
+        function renovarProximoMes(clienteObj) {
+            const [dia, mes, ano] = clienteObj.data.split("/").map(num => parseInt(num));
+            const dataObj = new Date(ano, mes - 1, dia);
+            dataObj.setMonth(dataObj.getMonth() + 1);
+            if (dataObj.getDate() !== dia) {
+                dataObj.setDate(0);
+            }
+            clienteObj.data = `${dataObj.getDate().toString().padStart(2, '0')}/${(dataObj.getMonth() + 1).toString().padStart(2, '0')}/${dataObj.getFullYear()}`;
+        }
+        
+        function duplicarCliente(index) {
+            clienteIndexParaDuplicar = index;
+            document.getElementById("modalConfirmacao").style.display = "flex";
+        }
+
+        async function confirmarDuplicacao() {
+            if (clienteIndexParaDuplicar === null) return;
+            saveStateToHistory();
+            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+            const clienteOriginal = clientesExibidos[clienteIndexParaDuplicar];
+            let novoTelefoneBase = clienteOriginal.telefone;
+            let novoId = clienteOriginal.id;
+            let contadorDuplicacao = 1;
+            while (clientes.some(c => c.id === novoId)) {
+                novoTelefoneBase = clienteOriginal.telefone + '_' + contadorDuplicacao;
+                novoId = novoTelefoneBase.slice(-5);
+                if (novoTelefoneBase.length < 5) {
+                    novoId = "DUP" + String(contadorDuplicacao).padStart(3, '0');
+                } else {
+                    novoId = novoTelefoneBase.slice(-5);
+                }
+                contadorDuplicacao++;
+                if (contadorDuplicacao > 100) {
+                    exibirAlerta("Não foi possível gerar um ID único para a duplicação. Tente novamente.");
+                    fecharModal();
+                    return;
+                }
+            }
+            const novoCliente = {
+                id: novoId,
+                data: clienteOriginal.data,
+                nome: clienteOriginal.nome + " (Cópia)",
+                telefone: novoTelefoneBase,
+                avisado: false,
+                debito: false,
+                Produto: clienteOriginal.Produto || "Não informado",
+                arquivado: false,
+                oculto: false,
+                reexibirEm: null, // ATUALIZADO
+                desativado: false,
+                dola_sent: false,
+                clicado: false
+            };
+            clientes.push(novoCliente);
+            saveClientsToLocalStorage();
+            chamarFiltroAtual();
+            exibirClientesAvisados();
+            fecharModal();
+            clienteIndexParaDuplicar = null;
+            atualizarUltimaAtualizacao("duplicado", clienteOriginal.nome);
+            try {
+                await salvarClientes();
+            } catch (error) {
+                clientes = estadoAnteriorClientes;
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                exibirClientesAvisados();
+                exibirAlerta(`Erro ao duplicar cliente: ${error.message}. Ação desfeita localmente. Tente novamente.`);
+                atualizarUltimaAtualizacao("falha na duplicação", clienteOriginal.nome);
+            }
+        }
+        
+        function getNomeMes(mesNumero) {
+            const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            return meses[mesNumero - 1];
+        }
+
+        async function copiarMensagemWhatsApp(index) {
+            const cliente = clientesExibidos[index];
+            const nomeExibicaoBase = cliente.nome.replace(/\s\(UniTv\)/g, '').replace(/\s\(Duplecast\)/g, '');
+            const vencimento = cliente.data;
+            const hoje = new Date();
+            const [diaVenc, mesVenc, anoVenc] = vencimento.split("/").map(num => parseInt(num));
+            const dataVencimentoObj = new Date(anoVenc, mesVenc - 1, diaVenc);
+            const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+            const dataVencimentoSemHora = new Date(dataVencimentoObj.getFullYear(), dataVencimentoObj.getMonth(), dataVencimentoObj.getDate());
+            const vencido = dataVencimentoSemHora < hojeSemHora;
+            const hora = hoje.getHours();
+            let saudacao = (hora >= 6 && hora < 12) ? "Bom dia" : (hora >= 12 && hora < 18) ? "Boa tarde" : "Boa noite";
+            const nomeMes = getNomeMes(parseInt(mesVenc));
+            let mensagem;
+            if (vencido) {
+                mensagem = `${saudacao}! Lembrete de vencimento *está vencido* *${vencimento} (${nomeMes})*. Lembrando que pagando no dia do vencimento o mensal é de 30 reais,após o dia de vencimento o mensal é de 35 reais.O pagamento via PIX pode ser feito no número: *11950912509* (Waldemar Jose Luiz)`;
+            } else {
+                mensagem = `${saudacao}! Lembrete de *Vencimento*: ${cliente.data} (${nomeMes})O pagamento via PIX pode ser realizado no número: *11947406124* (Waldemar Jose Luiz)`;
+            }
+            try {
+                await navigator.clipboard.writeText(mensagem);
+                exibirAlerta("Mensagem copiada para a área de transferência!");
+            } catch (err) {
+                exibirAlerta("Erro ao copiar a mensagem. Por favor, tente novamente.");
+                console.error("Erro ao copiar mensagem: ", err);
+            }
+        }
+
+        async function copiarMensagemWhatsAppById(clientId) {
+            const index = clientes.findIndex(c => c.id === clientId);
+            if (index !== -1) {
+                const originalClientesExibidos = clientesExibidos;
+                clientesExibidos = [clientes[index]];
+                await copiarMensagemWhatsApp(0);
+                clientesExibidos = originalClientesExibidos;
+            }
+        }
+
+        async function enviarMensagemWhatsAppDola(index) {
+            const cliente = clientesExibidos[index];
+            let telefoneParaWhatsApp = cliente.telefone.replace(/\D/g, '');
+            if (!telefoneParaWhatsApp) {
+                exibirAlerta("Número de telefone inválido!");
+                return;
+            }
+            if (!telefoneParaWhatsApp.startsWith('55')) {
+                telefoneParaWhatsApp = '55' + telefoneParaWhatsApp;
+            }
+
+            const [diaVenc, mesVenc] = cliente.data.split('/');
+            const mensagemDolaLembrete = `oi me lembre todo dia ${diaVenc} de cada mês de pagar Tv para Luiz no pix 11947406124 no nome de Waldemar jose luiz.`;
+            const urlDola = `https://wa.me/16502234435?text=${encodeURIComponent(mensagemDolaLembrete)}`;
+            const nomeMes = getNomeMes(parseInt(mesVenc));
+            const mensagemCliente = `Olá! Lembrete de vencimento do seu plano de TV. 📅 Vencimento: ${cliente.data} (${nomeMes}).💳 Pix: 11947406124 (Waldemar José Luiz).\n🔔 Para ser lembrado automaticamente todo mês, clique em "Conversar" no link abaixo, ative o lembrete com o Dola e depois confirme aqui comigo se deu certo:\n${urlDola}\n❓ Qualquer dúvida, entre em contato.`;
+            const urlFinal = `https://wa.me/${telefoneParaWhatsApp}?text=${encodeURIComponent(mensagemCliente)}`;
+            window.open(urlFinal, '_blank');
+
+            saveStateToHistory();
+            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+            let clienteOriginal = clientes.find(c => c.id === cliente.id);
+            if (clienteOriginal) {
+                clienteOriginal.oculto = false;
+                clienteOriginal.dola_sent = true;
+                clienteOriginal.clicado = true;
+            }
+            saveClientsToLocalStorage();
+            chamarFiltroAtual();
+            exibirClientesAvisados();
+            atualizarUltimaAtualizacao("mensagem Dola enviada", cliente.nome);
+            prepararClientesVencidosParaMensagem();
+            try {
+                await salvarClientes();
+            } catch (error) {
+                clientes = estadoAnteriorClientes;
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                exibirClientesAvisados();
+                exibirAlerta(`Erro ao enviar mensagem WhatsApp: ${error.message}. Ação desfeita localmente. Tente novamente.`);
+                atualizarUltimaAtualizacao("falha no envio de mensagem Dola", cliente.nome);
+            }
+        }
+
+        async function enviarMensagemWhatsApp(clienteNome, clienteTelefone, index) {
+            let telefoneParaWhatsApp = clienteTelefone.replace(/\D/g, '');
+            if (!telefoneParaWhatsApp) {
+                exibirAlerta("Número de telefone inválido!");
+                return;
+            }
+            if (!telefoneParaWhatsApp.startsWith('55')) {
+                telefoneParaWhatsApp = '55' + telefoneParaWhatsApp;
+            }
+            const cliente = clientesExibidos[index];
+            const vencimento = cliente.data;
+            const hoje = new Date();
+            const [diaVenc, mesVenc, anoVenc] = vencimento.split("/").map(num => parseInt(num));
+            const dataVencimentoObj = new Date(anoVenc, mesVenc - 1, diaVenc);
+            const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+            const dataVencimentoSemHora = new Date(dataVencimentoObj.getFullYear(), dataVencimentoObj.getMonth(), dataVencimentoObj.getDate());
+            const vencido = dataVencimentoSemHora < hojeSemHora;
+            const hora = hoje.getHours();
+            let saudacao = (hora >= 6 && hora < 12) ? "Bom dia" : (hora >= 12 && hora < 18) ? "Boa tarde" : "Boa noite";
+            const nomeMes = getNomeMes(parseInt(mesVenc));
+            let mensagem;
+            if (vencido) {
+                mensagem = `${saudacao}! Lembrete de *vencimento* *${vencimento} (${nomeMes})*. Lembrando que pagando no dia do vencimento o mensal é de 30 reais,após o dia de vencimento o mensal é de 35 reais.O pagamento via PIX pode ser feito no número: *11947406124* (Waldemar Jose Luiz)`;
+            } else {
+                mensagem = `${saudacao}! Lembrete de vencimento *Vencimento*: ${cliente.data} (${nomeMes})O pagamento via PIX pode ser realizado no número: *11947406124* (Waldemar Jose Luiz)`;
+            }
+            const url = `https://wa.me/${telefoneParaWhatsApp}?text=${encodeURIComponent(mensagem)}`;
+            window.open(url, '_blank');
+            
+            saveStateToHistory();
+            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+            let clienteOriginal = clientes.find(c => c.id === cliente.id);
+            if (clienteOriginal) {
+                clienteOriginal.avisado = true;
+                clienteOriginal.oculto = false;
+                clienteOriginal.clicado = true;
+            }
+            saveClientsToLocalStorage();
+            chamarFiltroAtual();
+            exibirClientesAvisados();
+            atualizarUltimaAtualizacao("mensagem WhatsApp enviada", cliente.nome);
+            prepararClientesVencidosParaMensagem();
+            try {
+                await salvarClientes();
+            } catch (error) {
+                clientes = estadoAnteriorClientes;
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                exibirClientesAvisados();
+                exibirAlerta(`Erro ao enviar mensagem WhatsApp: ${error.message}. Ação desfeita localmente. Tente novamente.`);
+                atualizarUltimaAtualizacao("falha no envio de mensagem", cliente.nome);
+            }
+        }
+
+        function exportarClientes() {
+            const clientesParaExportar = clientes.map(c => ({
+                id: c.id, data: c.data, nome: c.nome, telefone: c.telefone,
+                avisado: c.avisado || false, debito: c.debito || false,
+                Produto: c.Produto || "Não informado", arquivado: c.arquivado || false,
+                oculto: c.oculto || false, reexibirEm: c.reexibirEm || null, // ATUALIZADO
+                desativado: c.desativado || false, dola_sent: c.dola_sent || false,
+                clicado: c.clicado || false
+            }));
+            const clientesJson = JSON.stringify(clientesParaExportar, null, 4);
+            const blob = new Blob([clientesJson], { type: "application/json" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "clientes.json";
+            link.click();
+            atualizarUltimaAtualizacao("clientes exportados");
+        }
+        
+        async function importarClientes(file = null) {
+            let fileToImport = file;
+            if (!fileToImport) {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = (e) => importarClientes(e.target.files[0]);
+                input.click();
+                return;
+            }
+
+            mostrarCarregando();
+            const reader = new FileReader();
+            reader.onload = async () => {
+                try {
+                    saveStateToHistory();
+                    const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+                    const clientesImportadosRaw = JSON.parse(reader.result);
+                    
+                    const clientesProcessados = clientesImportadosRaw.map(c => {
+                        const telefoneLimpo = c.telefone ? String(c.telefone).replace(/[^\d]/g, '') : '';
+                        const id = telefoneLimpo.length >= 5 ? telefoneLimpo.slice(-5) : null;
+                        const nomeAjustado = c.Produto && !c.nome.includes(`(${c.Produto})`) ?
+                            `${c.nome.replace(/\s\(UniTv\)|\(Duplecast\)/g, '').trim()} (${c.Produto})` : c.nome;
+                        return {
+                            id: id, data: c.data, nome: nomeAjustado, telefone: telefoneLimpo,
+                            avisado: c.avisado || false, debito: c.debito || false,
+                            Produto: c.Produto || "Não informado", arquivado: c.arquivado || false,
+                            oculto: c.oculto || false, reexibirEm: c.reexibirEm || null, // ATUALIZADO
+                            desativado: c.desativado || false, dola_sent: c.dola_sent || false,
+                            clicado: c.clicado || false
+                        };
+                    });
+                    
+                    let novosClientesAdicionados = 0, clientesAtualizados = 0, clientesIgnorados = 0;
+                    
+                    for (const clienteImportado of clientesProcessados) {
+                        if (!clienteImportado.id) {
+                            clientesIgnorados++;
+                            continue;
+                        }
+                        const indexClienteExistente = clientes.findIndex(c => c.id === clienteImportado.id);
+                        if (indexClienteExistente !== -1) {
+                            clientes[indexClienteExistente] = { ...clientes[indexClienteExistente], ...clienteImportado };
+                            clientesAtualizados++;
+                        } else {
+                            clientes.push(clienteImportado);
+                            novosClientesAdicionados++;
+                        }
+                    }
+
+                    saveClientsToLocalStorage();
+                    chamarFiltroAtual();
+                    exibirClientesAvisados();
+                    prepararClientesVencidosParaMensagem();
+                    exibirAlerta(`Importação concluída: ${novosClientesAdicionados} novos, ${clientesAtualizados} atualizados, ${clientesIgnorados} ignorados.`);
+                    atualizarUltimaAtualizacao("clientes importados/atualizados");
+
+                    await salvarClientes();
+                } catch (error) {
+                    exibirAlerta("Erro ao importar JSON. Verifique o arquivo.");
+                    console.error("Erro ao importar:", error);
+                } finally {
+                    esconderCarregando();
+                }
+            };
+            reader.readAsText(fileToImport);
+        }
+
+        function filtrarHoje() {
+            filtroAtual = "hoje";
+            document.getElementById("searchInput").value = "";
+            exibirTabela();
+            atualizarContadores();
+        }
+
+        function filtrarAmanha() {
+            filtroAtual = "amanha";
+            document.getElementById("searchInput").value = "";
+            exibirTabela();
+            atualizarContadores();
+        }
+
+        function filtrarVencidos() {
+            filtroAtual = "vencidos";
+            document.getElementById("searchInput").value = "";
+            exibirTabela();
+            atualizarContadores();
+        }
+
+        function filtrarDebito() {
+            filtroAtual = "debito";
+            document.getElementById("searchInput").value = "";
+            exibirTabela();
+            atualizarContadores();
+        }
+
+        function chamarFiltroAtual() {
+            const filtros = {
+                "hojeEVencidos": filtrarHojeEVencidos, "hoje": filtrarHoje,
+                "amanha": filtrarAmanha, "vencidos": filtrarVencidos,
+                "debito": filtrarDebito, "verDepois": filtrarVerDepois,
+                "arquivados": filtrarArquivados, "desativados": filtrarDesativados,
+                "todos": exibirTodos
+            };
+            if (filtros[filtroAtual]) {
+                filtros[filtroAtual]();
+            } else if (filtroAtual.startsWith("produto:")) {
+                filtrarPorProduto(filtroAtual.split(":")[1]);
+            } else {
+                filtrarHojeEVencidos();
+            }
+        }
+
+        function exibirTodos() {
+            filtroAtual = "todos";
+            document.getElementById("searchInput").value = "";
+            exibirTabela();
+            exibirClientesAvisados();
+            atualizarContadores();
+        }
+
+        function confirmarLimparTodos() {
+            exibirConfirmacaoGenerica("Limpar Todos os Clientes", "Tem certeza que deseja limpar **TODOS** os clientes? Essa ação não pode ser desfeita!", limparTodos, true);
+        }
+
+        function confirmarDesfazer() {
+            if (historicoClientes.length <= 1) {
+                exibirAlerta("Não há ações para desfazer.");
+                return;
+            }
+            exibirConfirmacaoGenerica("Desfazer Última Ação", "Tem certeza que deseja desfazer a última alteração?", desfazer, false);
+        }
+
+        function confirmarRefazer() {
+            if (redoHistory.length === 0) {
+                exibirAlerta("Não há ações para refazer.");
+                return;
+            }
+            exibirConfirmacaoGenerica("Refazer Última Ação", "Tem certeza que deseja refazer a última ação desfeita?", refazer, false);
+        }
+
+        async function limparTodos() {
+            saveStateToHistory();
+            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+            clientes = [];
+            saveClientsToLocalStorage();
+            chamarFiltroAtual();
+            exibirClientesAvisados();
+            atualizarUltimaAtualizacao("lista limpa", "");
+            prepararClientesVencidosParaMensagem();
+            try {
+                await salvarClientes();
+            } catch (e) {
+                clientes = estadoAnteriorClientes;
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                exibirClientesAvisados();
+                exibirAlerta(`Erro ao limpar clientes no Google Sheets: ${e.message}. Ação desfeita localmente.`);
+            }
+        }
+
+        async function desfazer() {
+            if (historicoClientes.length <= 1) return;
+            redoHistory.push(JSON.parse(JSON.stringify(clientes)));
+            historicoClientes.pop();
+            clientes = JSON.parse(JSON.stringify(historicoClientes[historicoClientes.length - 1]));
+            saveClientsToLocalStorage();
+            chamarFiltroAtual();
+            prepararClientesVencidosParaMensagem();
+            atualizarUltimaAtualizacao("ação desfeita");
+            await salvarClientes();
+        }
+
+        async function refazer() {
+            if (redoHistory.length === 0) return;
+            historicoClientes.push(JSON.parse(JSON.stringify(clientes)));
+            clientes = redoHistory.pop();
+            saveClientsToLocalStorage();
+            chamarFiltroAtual();
+            prepararClientesVencidosParaMensagem();
+            atualizarUltimaAtualizacao("ação refeita");
+            await salvarClientes();
+        }
+
+        function editar(index) {
+            let cliente = clientesExibidos[index];
+            const modalEdicao = document.getElementById("modalEdicao");
+            modalEdicao.style.display = "flex";
+            const nomeLimpo = cliente.nome.replace(/\s\(UniTv\)/g, '').replace(/\s\(Duplecast\)/g, '');
+            modalEdicao.innerHTML = `
+                <div class="modal-content">
+                    <h3>Editar Cliente</h3>
+                    <input type="text" id="novoNome" value="${nomeLimpo}" placeholder="Nome"><br><br>
+                    <input type="tel" id="novoTelefone" value="${cliente.telefone}" placeholder="Telefone"><br><br>
+                    <input type="date" id="novaData" value="${formatarParaInputDate(cliente.data)}"><br><br>
+                    <div>
+                        <label><input type="radio" name="editarProduto" value="UniTv" ${cliente.Produto === "UniTv" ? "checked" : ""}> UniTv</label>
+                        <label><input type="radio" name="editarProduto" value="Duplecast" ${cliente.Produto === "Duplecast" ? "checked" : ""}> Duplecast</label>
+                    </div><br>
+                    <button id="salvarBtn">Salvar</button>
+                    <button onclick="fecharModal()">Cancelar</button>
+                </div>
+            `;
+            document.getElementById("salvarBtn").onclick = () => salvarEdicao(cliente.id);
+            document.addEventListener("keydown", fecharComEsc);
+        }
+
+        async function salvarEdicao(clientId) {
+            const originalClienteIndex = clientes.findIndex(c => c.id === clientId);
+            if (originalClienteIndex === -1) return;
+            saveStateToHistory();
+            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+            let novoNome = document.getElementById("novoNome").value.trim();
+            let novoTelefone = document.getElementById("novoTelefone").value.trim();
+            let novaData = document.getElementById("novaData").value.trim();
+            let novoProduto = document.querySelector('input[name="editarProduto"]:checked').value;
+            if (!novoNome || !novaData) {
+                exibirAlerta("Nome e data são obrigatórios!");
+                return;
+            }
+            const telefoneLimpoEditado = novoTelefone.replace(/[^\d]/g, '');
+            if (telefoneLimpoEditado.length < 5) {
+                exibirAlerta("O telefone deve ter pelo menos 5 dígitos.");
+                return;
+            }
+            const novoId = telefoneLimpoEditado.slice(-5);
+            if (novoId !== clientId && clientes.some(c => c.id === novoId)) {
+                exibirAlerta(`O novo telefone final (${novoId}) já está em uso.`);
+                return;
+            }
+            let nomeComNovoProduto = `${novoNome.replace(/\s\(UniTv\)|\(Duplecast\)/g, '').trim()} (${novoProduto})`;
+            clientes[originalClienteIndex] = {
+                ...clientes[originalClienteIndex],
+                id: novoId, nome: nomeComNovoProduto, telefone: telefoneLimpoEditado,
+                data: novaData.split("-").reverse().join("/"), Produto: novoProduto,
+                dola_sent: false, clicado: false
+            };
+            saveClientsToLocalStorage();
+            chamarFiltroAtual();
+            exibirClientesAvisados();
+            fecharModal();
+            atualizarUltimaAtualizacao("editado", nomeComNovoProduto);
+            prepararClientesVencidosParaMensagem();
+            try {
+                await salvarClientes();
+            } catch (error) {
+                clientes = estadoAnteriorClientes;
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                exibirClientesAvisados();
+                exibirAlerta(`Erro ao salvar edição: ${error.message}. Ação desfeita localmente.`);
+            }
+        }
+
+        function formatarParaInputDate(data) {
+            let [dia, mes, ano] = data.split("/");
+            return `${ano}-${mes}-${dia}`;
+        }
+        
+        function excluir(index) {
+            const cliente = clientesExibidos[index];
+            clienteIndexParaExcluir = clientes.findIndex(c => c.id === cliente.id);
+            if (clienteIndexParaExcluir !== -1) {
+                document.getElementById("modalExclusao").style.display = "flex";
+            }
+        }
+
+        async function confirmarExclusao() {
+            if (clienteIndexParaExcluir === null) return;
+            saveStateToHistory();
+            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+            const nomeClienteExcluido = clientes[clienteIndexParaExcluir].nome;
+            clientes.splice(clienteIndexParaExcluir, 1);
+            saveClientsToLocalStorage();
+            chamarFiltroAtual();
+            exibirClientesAvisados();
+            fecharModal();
+            clienteIndexParaExcluir = null;
+            atualizarUltimaAtualizacao("excluído", nomeClienteExcluido);
+            prepararClientesVencidosParaMensagem();
+            try {
+                await salvarClientes();
+            } catch (e) {
+                clientes = estadoAnteriorClientes;
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                exibirClientesAvisados();
+                exibirAlerta(`Erro ao excluir cliente no Google Sheets: ${e.message}. Ação desfeita localmente.`);
+            }
+        }
+        
+        // NOVO: Abre o modal para escolher a data de reexibição
+        function abrirModalVerDepois(index) {
+            const cliente = clientesExibidos[index];
+            clienteIdParaVerDepois = cliente.id; // Armazena o ID
+            const amanha = new Date();
+            amanha.setDate(amanha.getDate() + 1);
+            document.getElementById('dataReexibicaoInput').value = amanha.toISOString().split('T')[0];
+            document.getElementById('modalVerDepois').style.display = 'flex';
+            document.getElementById('btnConfirmarVerDepois').onclick = confirmarVerDepois;
+        }
+
+        // NOVO: Confirma a data e agenda a reexibição do cliente
+        async function confirmarVerDepois() {
+            if (!clienteIdParaVerDepois) return;
+            const dataReexibicao = document.getElementById('dataReexibicaoInput').value;
+            if (!dataReexibicao) {
+                exibirAlerta("Por favor, selecione uma data.");
+                return;
+            }
+            const clienteOriginalIndex = clientes.findIndex(c => c.id === clienteIdParaVerDepois);
+            if (clienteOriginalIndex === -1) return;
+
+            saveStateToHistory();
+            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+            const nomeCliente = clientes[clienteOriginalIndex].nome;
+            clientes[clienteOriginalIndex].reexibirEm = dataReexibicao;
+            clientes[clienteOriginalIndex].oculto = false;
+            clientes[clienteOriginalIndex].arquivado = false;
+            clientes[clienteOriginalIndex].desativado = false;
+            clientes[clienteOriginalIndex].clicado = false;
+            saveClientsToLocalStorage();
+            chamarFiltroAtual();
+            exibirClientesAvisados();
+            fecharModal();
+            atualizarUltimaAtualizacao(`agendado para ${dataReexibicao.split('-').reverse().join('/')}`, nomeCliente);
+            prepararClientesVencidosParaMensagem();
+            try {
+                await salvarClientes();
+            } catch (error) {
+                clientes = estadoAnteriorClientes;
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                exibirClientesAvisados();
+                exibirAlerta(`Erro ao agendar cliente: ${error.message}. Ação desfeita localmente.`);
+            }
+        }
+
+        // NOVO: Remove o agendamento e reexibe o cliente imediatamente
+        async function desmarcarVerDepois(index) {
+            const cliente = clientesExibidos[index];
+            const clienteOriginalIndex = clientes.findIndex(c => c.id === cliente.id);
+            if (clienteOriginalIndex === -1) return;
+            saveStateToHistory();
+            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+            const nomeCliente = clientes[clienteOriginalIndex].nome;
+            clientes[clienteOriginalIndex].reexibirEm = null;
+            saveClientsToLocalStorage();
+            chamarFiltroAtual();
+            exibirClientesAvisados();
+            atualizarUltimaAtualizacao("reexibido (agendamento removido)", nomeCliente);
+            prepararClientesVencidosParaMensagem();
+            try {
+                await salvarClientes();
+            } catch (error) {
+                clientes = estadoAnteriorClientes;
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                exibirClientesAvisados();
+                exibirAlerta(`Erro ao desmarcar cliente: ${error.message}. Ação desfeita localmente.`);
+            }
+        }
+
+
+        async function toggleDesativado(index) {
+            const cliente = clientesExibidos[index];
+            const clienteOriginalIndex = clientes.findIndex(c => c.id === cliente.id);
+            if (clienteOriginalIndex === -1) return;
+            saveStateToHistory();
+            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+            clientes[clienteOriginalIndex].desativado = !clientes[clienteOriginalIndex].desativado;
+            if (clientes[clienteOriginalIndex].desativado) {
+                clientes[clienteOriginalIndex].avisado = false;
+                clientes[clienteOriginalIndex].debito = false;
+                clientes[clienteOriginalIndex].oculto = false;
+                clientes[clienteOriginalIndex].reexibirEm = null; // ATUALIZADO
+                clientes[clienteOriginalIndex].arquivado = false;
+                clientes[clienteOriginalIndex].clicado = false;
+            }
+            saveClientsToLocalStorage();
+            chamarFiltroAtual();
+            exibirClientesAvisados();
+            atualizarUltimaAtualizacao(`status desativado: ${clientes[clienteOriginalIndex].desativado ? 'sim' : 'não'}`, cliente.nome);
+            prepararClientesVencidosParaMensagem();
+            try {
+                await salvarClientes();
+            } catch (error) {
+                clientes = estadoAnteriorClientes;
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                exibirClientesAvisados();
+                exibirAlerta(`Erro ao alterar status desativado: ${error.message}. Ação desfeita localmente.`);
+            }
+        }
+
+        function abrirModalAlterarProduto(index) {
+            clienteIndexParaAlterarProduto = index;
+            document.getElementById('modalEscolherProduto').style.display = 'flex';
+        }
+
+        async function alterarProdutoClienteConfirm(novoProduto) {
+            if (clienteIndexParaAlterarProduto === null) return;
+            saveStateToHistory();
+            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+            const clienteParaAtualizar = clientesExibidos[clienteIndexParaAlterarProduto];
+            let clienteOriginalIndex = clientes.findIndex(c => c.id === clienteParaAtualizar.id);
+            const clienteNome = clienteParaAtualizar.nome;
+            if (clienteOriginalIndex !== -1) {
+                let nomeSemProduto = clientes[clienteOriginalIndex].nome.replace(/\s\(UniTv\)|\(Duplecast\)/g, '').trim();
+                clientes[clienteOriginalIndex].Produto = novoProduto;
+                clientes[clienteOriginalIndex].nome = `${nomeSemProduto} (${novoProduto})`;
+                clientes[clienteOriginalIndex].clicado = false;
+            }
+            saveClientsToLocalStorage();
+            chamarFiltroAtual();
+            exibirClientesAvisados();
+            fecharModal();
+            clienteIndexParaAlterarProduto = null;
+            exibirAlerta(`Produto do cliente alterado para ${novoProduto}!`);
+            atualizarUltimaAtualizacao(`produto alterado para ${novoProduto}`, clienteNome);
+            prepararClientesVencidosParaMensagem();
+            try {
+                await salvarClientes();
+            } catch (error) {
+                clientes = estadoAnteriorClientes;
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                exibirClientesAvisados();
+                exibirAlerta(`Erro ao alterar produto: ${error.message}. Ação desfeita localmente.`);
+            }
+        }
+
+        async function salvarClientes() {
+            try {
+                const response = await sendRequestToBackend('bulk_update_clients', { clients: clientes });
+                if (response.status !== 'success') {
+                    throw new Error(response.message || 'Erro ao sincronizar com backend.');
+                }
+            } catch (e) {
+                console.error("Erro ao salvar clientes no Google Sheets:", e);
+                throw e;
+            }
+        }
+
+        async function loadClientes() {
+            mostrarCarregando();
+            try {
+                const response = await sendRequestToBackend('get_all_clients');
+                if (Array.isArray(response)) {
+                    clientes = response.map(c => {
+                        const telefoneLimpo = String(c.telefone || '').replace(/[^\d]/g, '');
+                        const clienteId = telefoneLimpo.length >= 5 ? telefoneLimpo.slice(-5) : null;
+                        let dataClienteFormatada = c.data;
+                        if (c.data && typeof c.data === 'string') {
+                            let datePart = c.data.split('T')[0];
+                            const parts = datePart.split('-');
+                            if (parts.length === 3) {
+                                dataClienteFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                            }
+                        }
+                        return {
+                            id: c.id || clienteId, data: dataClienteFormatada, nome: c.nome, telefone: telefoneLimpo,
+                            avisado: c.avisado || false, debito: c.debito || false,
+                            Produto: c.Produto || "Não informado", arquivado: c.arquivado || false,
+                            oculto: c.oculto || false, reexibirEm: c.reexibirEm || null, // ATUALIZADO
+                            desativado: c.desativado || false, dola_sent: c.dola_sent || false,
+                            clicado: c.clicado || false
+                        };
+                    }).filter(c => c.id !== null);
+                    saveClientsToLocalStorage();
+                } else {
+                    throw new Error("Formato de dados inválido.");
+                }
+            } catch (e) {
+                console.error("Erro ao carregar do Sheets:", e);
+                const cache = localStorage.getItem('clientesCache');
+                if (cache) {
+                    try {
+                        clientes = JSON.parse(cache);
+                        exibirAlerta("Erro ao carregar dados. Carregando do cache local.");
+                    } catch (parseError) {
+                        clientes = [];
+                        exibirAlerta("Erro no Sheets e cache corrompido.");
+                    }
+                } else {
+                    clientes = [];
+                    exibirAlerta("Erro ao carregar e sem cache local.");
+                }
+            } finally {
+                esconderCarregando();
+                filtrarHojeEVencidos();
+                exibirClientesAvisados();
+                prepararClientesVencidosParaMensagem();
+                saveStateToHistory();
+                loadSettings();
+            }
+            document.getElementById('ultimaAtualizacaoInfo').textContent = localStorage.getItem('ultimaAtualizacaoCliente') || 'Última Alteração: Nunca';
+        }
+
+        function compartilharWhatsApp() {
+            window.open(`https://wa.me/?text=${encodeURIComponent('Olá, estou compartilhando esta lista de clientes com você.')}`, '_blank');
+        }
+
+        function debouncePesquisa() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                exibirTabela();
+                exibirClientesAvisados();
+            }, 300);
+        }
+
+        function limparPesquisa() {
+            document.getElementById("searchInput").value = "";
+            exibirTodos();
+        }
+
+        const SETTINGS_KEY = 'inputSettings';
+        const DEFAULT_INPUT_WIDTH_PERCENT = 16;
+
+        function toggleSettingsArea() {
+            const settingsArea = document.getElementById('settingsArea');
+            settingsArea.style.display = (settingsArea.style.display === 'block') ? 'none' : 'block';
+            if (settingsArea.style.display === 'block') loadSettings();
+        }
+
+        function applyInputWidth(widthPercent) {
+            document.querySelectorAll('.configurable-input').forEach(input => {
+                input.style.flexBasis = `${widthPercent}%`;
+                input.style.maxWidth = `${widthPercent}%`;
+            });
+        }
+        function updateInputWidth(value) {
+            document.getElementById('inputWidthValue').textContent = `${value}%`;
+            applyInputWidth(value);
+        }
+        function saveSettings() {
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify({ width: document.getElementById('inputWidth').value }));
+            exibirAlerta("Ajustes salvos!");
+            toggleSettingsArea();
+        }
+        function loadSettings() {
+            const savedSettings = localStorage.getItem(SETTINGS_KEY);
+            let widthToApply = DEFAULT_INPUT_WIDTH_PERCENT;
+            if (savedSettings) {
+                try {
+                    widthToApply = JSON.parse(savedSettings).width || DEFAULT_INPUT_WIDTH_PERCENT;
+                } catch (e) {
+                    localStorage.removeItem(SETTINGS_KEY);
+                }
+            }
+            document.getElementById('inputWidth').value = widthToApply;
+            document.getElementById('inputWidthValue').textContent = `${widthToApply}%`;
+            applyInputWidth(widthToApply);
+        }
+        function resetSettings() {
+            localStorage.removeItem(SETTINGS_KEY);
+            exibirAlerta("Ajustes redefinidos!");
+            loadSettings();
+            toggleSettingsArea();
+        }
+
+        function atualizarContadores() {
+            const hoje = new Date();
+            const hojeFormatada = hoje.toLocaleDateString('pt-BR');
+            const hojeStr = new Date().toISOString().split('T')[0];
+
+            const clientesVisiveis = clientes.filter(c => !c.arquivado && !c.oculto && !c.desativado && (!c.reexibirEm || c.reexibirEm <= hojeStr));
+            
+            const countHoje = clientesVisiveis.filter(c => c.data === hojeFormatada && !c.avisado).length;
+            const countAmanha = clientesVisiveis.filter(c => {
+                const amanha = new Date(); amanha.setDate(amanha.getDate() + 1);
+                return c.data === amanha.toLocaleDateString('pt-BR');
+            }).length;
+            const countVencidos = clientesVisiveis.filter(c => {
+                const [dia, mes, ano] = c.data.split('/').map(Number);
+                const dataCliente = new Date(ano, mes - 1, dia);
+                const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+                return dataCliente < hojeSemHora && !c.avisado;
+            }).length;
+
+            updateBadge('badgeHojeEVencidos', countHoje + countVencidos);
+            updateBadge('badgeHoje', countHoje);
+            updateBadge('badgeAmanha', countAmanha);
+            updateBadge('badgeVencidos', countVencidos);
+            updateBadge('badgeDebito', clientesVisiveis.filter(c => c.debito).length);
+            updateBadge('badgeArquivados', clientes.filter(c => c.arquivado).length);
+            updateBadge('badgeDesativados', clientes.filter(c => c.desativado).length);
+            updateBadge('badgeVerDepois', clientes.filter(c => c.reexibirEm && c.reexibirEm > hojeStr).length);
+            updateBadge('badgeOcultos', clientes.filter(c => c.oculto && !c.arquivado && !c.reexibirEm && !c.desativado).length);
+            updateBadge('badgeCentralMessage', clientesVencidosParaMensagem.length);
+        }
+
+        function updateBadge(badgeId, count) {
+            const badge = document.getElementById(badgeId);
+            if (badge) {
+                badge.style.display = count > 0 ? 'inline-block' : 'none';
+                badge.textContent = count;
+            }
+        }
+        function mostrarContagemProdutos() {
+            const clientesAtivos = clientes.filter(c => !c.arquivado && !c.oculto && !c.desativado);
+            document.getElementById('countUniTv').textContent = clientesAtivos.filter(c => c.Produto === 'UniTv').length;
+            document.getElementById('countDuplecast').textContent = clientesAtivos.filter(c => c.Produto === 'Duplecast').length;
+            document.getElementById('modalContagemProdutos').style.display = 'flex';
+        }
+
+        function prepararClientesVencidosParaMensagem() {
+            const hoje = new Date();
+            const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+            const hojeStr = hoje.toISOString().split('T')[0];
+            clientesVencidosParaMensagem = clientes.filter(c => {
+                const [dia, mes, ano] = c.data.split("/").map(Number);
+                const dataCliente = new Date(ano, mes - 1, dia);
+                const isVencidoOuHoje = dataCliente.getTime() <= hojeSemHora.getTime();
+                const isVisivel = !c.reexibirEm || c.reexibirEm <= hojeStr;
+                return isVencidoOuHoje && isVisivel && !c.avisado && !c.arquivado && !c.oculto && !c.desativado;
+            });
+            atualizarContadores();
+        }
+
+        function enviarProximoClienteVencido() {
+            prepararClientesVencidosParaMensagem();
+            if (clientesVencidosParaMensagem.length === 0) {
+                exibirAlerta("Não há clientes vencidos para enviar mensagem.");
+                return;
+            }
+            const cliente = clientesVencidosParaMensagem[0];
+            const nomeExibicaoBase = cliente.nome.replace(/\s\(UniTv\)|\(Duplecast\)/g, '').trim();
+            const originalClientesExibidos = clientesExibidos;
+            clientesExibidos = [cliente];
+            enviarMensagemWhatsApp(nomeExibicaoBase, cliente.telefone, 0);
+            clientesExibidos = originalClientesExibidos;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date();
+            document.getElementById('dataInput').value = today.toISOString().split('T')[0];
+            document.getElementById('dataAtual').innerText = today.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+            loadClientes();
+        });
+    </script>
+</body>
+</html>
