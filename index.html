@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -6,349 +7,343 @@
     <title>Controle de Clientes</title>
     <style>
         /* Estilos gerais */
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background-color: #f0f8ff;
-            color: #333;
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --white-color: #fff;
+            --font-family: 'Segoe UI', Arial, sans-serif;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --button-gap: 5px; /* Variavel para o espaçamento */
+            --client-name-color: #007bff; /* Variavel para a cor do nome */
+            --avisado-color: #e0f7fa;
+            --debito-color: #fff3e0;
+            --vencendo-hoje-color: #fff9c4;
+            --vencido-color: #ffcdd2;
         }
+
+        body {
+            font-family: var(--font-family);
+            padding: 20px;
+            background-color: #f4f7f9;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
         .container {
             width: 100%;
             max-width: 2000px;
             margin: auto;
-            background: #fff;
+            background: var(--white-color);
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
         }
+
         h1, h3 {
             text-align: center;
-            color: #0066cc;
+            color: var(--primary-color);
         }
-        /* Estilos para Inputs e Botões */
+
+        /* Estilos para Inputs e Rádios */
         input[type="text"],
         input[type="tel"],
         input[type="date"],
         textarea {
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 10px;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: var(--border-radius);
             box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
+
+        input[type="text"]:focus,
+        input[type="tel"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+
         .input-group-horizontal {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
+
         .input-group-horizontal input {
             flex: 1;
             min-width: 150px;
             margin-bottom: 0;
         }
-        .configurable-input {
-            /* Largura será definida pelo JavaScript */
+        
+        div > label {
+            margin-right: 15px;
+            font-weight: 500;
         }
+
+        /* --- NOVOS ESTILOS DE BOTÃO --- */
         button {
-            background-color: #0066cc;
-            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             padding: 10px 20px;
-            margin: 5px 0;
+            margin: 5px;
             border: none;
-            border-radius: 4px;
+            border-radius: var(--border-radius);
             cursor: pointer;
-            transition: background-color 0.3s;
-            position: relative;
-            /* Necessário para posicionar o badge */
+            font-family: var(--font-family);
+            font-weight: bold;
+            font-size: 1em;
+            color: var(--white-color);
+            background-color: var(--primary-color);
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative; /* Para o badge */
+            min-width: 44px;
+            min-height: 44px;
         }
+
         button:hover {
-            background-color: #004d99;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
-        /* Estilos específicos de botão */
-        .btn-debito-segurar {
-            background-color: #ffcc00;
-            /* Amarelo fraco */
-            color: #333;
-            /* Texto escuro para contraste */
+        
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .btn-debito-segurar:hover {
-            background-color: #e6b800;
-            /* Amarelo um pouco mais escuro no hover */
+        
+        /* Botões de ícone */
+        button.icon-btn {
+            padding: 0;
+            width: 44px;
+            height: 44px;
+            font-size: 1.2em;
         }
-        /* Novo estilo para o botão de renovar (Data Atual) */
-        .btn-renovar-data-atual {
-            background-color: #ffc107;
-            /* Amarelo Bootstrap */
-            color: #212529;
-            /* Texto escuro */
-            border: 1px solid #ffc107;
+
+        /* Variações de Cor dos Botões */
+        button.btn-secondary { background-color: var(--secondary-color); }
+        button.btn-success { background-color: var(--success-color); }
+        button.btn-danger { background-color: var(--danger-color); }
+        button.btn-warning { background-color: var(--warning-color); color: var(--dark-color); }
+        button.btn-info { background-color: var(--info-color); }
+
+        /* Estilos específicos de botões existentes */
+        .btn-debito-segurar { background-color: var(--warning-color); color: var(--dark-color); }
+        .btn-renovar-data-atual { background-color: var(--warning-color); color: var(--dark-color); }
+        .modal-confirm-danger { background-color: var(--danger-color); }
+        .btn-dola { background-color: #ff9800; } /* Laranja */
+        .btn-dola-sent { background-color: var(--success-color); }
+        
+        #centralMessageButton {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            background-color: var(--success-color);
+            border-radius: 10px;
         }
-        .btn-renovar-data-atual:hover {
-            background-color: #e0a800;
-            border-color: #d39e00;
-        }
-        /* Novo estilo para o botão de confirmação perigosa (vermelho) */
-        .modal-confirm-danger {
-            background-color: #dc3545;
-            /* Vermelho */
-            color: #fff;
-        }
-        .modal-confirm-danger:hover {
-            background-color: #c82333;
-            /* Vermelho mais escuro */
-        }
+
         /* Estilos da Tabela */
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
             display: none;
-            /* Escondido por padrão, mostrado com JS */
         }
+
         th, td {
-            padding: 10px;
-            border: 1px solid #ccc;
+            padding: 12px;
+            border: 1px solid #ddd;
             text-align: left;
+            vertical-align: middle;
         }
-        /* Flexbox para td com botões */
+
         td {
             display: flex;
             align-items: center;
-            flex-wrap: nowrap;
-            /* Impede quebras de linha inesperadas nos botões */
-            gap: 5px;
+            flex-wrap: wrap; 
+            gap: var(--button-gap);
         }
-        td button, td span {
-            display: inline-block;
-            margin-right: 5px;
-            flex-shrink: 0;
-            /* Previne que os botões encolham */
+        
+        /* Botões dentro da tabela menores */
+        td button {
+            padding: 8px;
+            font-size: 1.2em; /* Ícones maiores */
+            margin: 2px;
+            width: 40px;
+            height: 40px;
+            line-height: 1; /* Alinhamento vertical */
         }
-        /* Cores das linhas da tabela - Ajustado para maior especificidade */
-        tr.avisado {
-            background-color: #007bff !important;
-            /* Azul */
-            color: white;
+        
+        td a {
+            font-weight: bold;
+            color: var(--client-name-color);
+            text-decoration: none;
+            transition: color 0.2s;
+            margin-right: 15px; /* Espaço entre o nome e os botões */
         }
-        tr.debito {
-            background-color: #ffa500 !important;
-            /* Laranja */
+        td a:hover {
+            filter: brightness(85%);
         }
-        tr.vencendo-hoje {
-            background-color: #ffff99 !important;
-            /* Amarelo claro */
+
+        tr.avisado { background-color: var(--avisado-color) !important; }
+        tr.debito { background-color: var(--debito-color) !important; }
+        tr.vencendo-hoje { background-color: var(--vencendo-hoje-color) !important; }
+        tr.vencido { background-color: var(--vencido-color) !important; }
+
+        .center { text-align: center; }
+
+        a.cliente-clicado, a.cliente-clicado:link, a.cliente-clicado:visited, a.cliente-clicado:hover, a.cliente-clicado:active {
+            color: var(--success-color) !important;
+            font-style: italic;
         }
-        tr.vencido {
-            background-color: #ff6666 !important;
-            /* Vermelho claro */
+        
+        /* NOVOS ESTILOS PERSONALIZÁVEIS */
+        body.round-buttons td button,
+        body.round-buttons .icon-btn {
+            border-radius: 50%;
         }
-        .center {
-            text-align: center;
+
+        body.transparent-buttons td button {
+            background-color: transparent;
+            color: var(--dark-color);
+            box-shadow: none;
+            border: 1px solid transparent;
         }
-        /* ESTILO PARA SOBREPOR A COR PADRÃO DO LINK E FORÇAR BRANCO */
-        /* Note o uso de a.cliente-clicado para aumentar a especificidade */
-        a.cliente-clicado,
-        a.cliente-clicado:link,
-        a.cliente-clicado:visited,
-        a.cliente-clicado:hover,
-        a.cliente-clicado:active {
-            color: white !important;
-            text-decoration: none !important; /* opcional, tira o sublinhado */
+        body.transparent-buttons td button:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            border-color: #ddd;
         }
+        body.transparent-buttons td button.btn-danger { color: var(--danger-color); }
+        body.transparent-buttons td button.btn-success { color: var(--success-color); }
+        body.transparent-buttons td button.btn-info { color: var(--info-color); }
+        body.transparent-buttons td button.btn-warning { color: #c69500; }
+        body.transparent-buttons td button.btn-dola { color: #ff9800; }
+        body.transparent-buttons td button.btn-dola-sent { color: var(--success-color); }
+
+
         /* Estilos de Modal */
         .modal {
             display: none;
             position: fixed;
-            top: 0;
+            z-index: 1000;
             left: 0;
+            top: 0;
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
             justify-content: center;
             align-items: center;
-            z-index: 1000;
         }
+
         .modal-content {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
+            background-color: var(--white-color);
+            padding: 25px;
+            border-radius: var(--border-radius);
             text-align: center;
             width: 90%;
-            max-width: 400px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 450px;
+            box-shadow: var(--box-shadow);
         }
-        .modal button {
-            background-color: #0066cc;
-            color: #fff;
-            padding: 10px 20px;
-            margin: 5px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+        
+        .modal .modal-content button {
+            margin-top: 10px;
         }
-        .modal button:hover {
-            background-color: #004d99;
-        }
+
         /* Ícone de Configurações */
         .settings-icon {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            font-size: 30px;
+            font-size: 24px;
             cursor: pointer;
-            background-color: #0066cc;
-            color: white;
+            background-color: var(--primary-color);
+            color: var(--white-color);
             border-radius: 50%;
             width: 50px;
             height: 50px;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--box-shadow);
             z-index: 999;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
         }
-        /* O trecho duplicado foi removido daqui e ajustado acima. */
+
         .settings-icon:hover {
-            background-color: #004d99;
+            background-color: #0056b3;
+            transform: rotate(45deg);
         }
+
         #settingsArea {
             display: none;
             background-color: #f9f9f9;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: var(--border-radius);
             margin-top: 30px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
-        #settingsArea label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        #settingsArea input[type="range"],
-        #settingsArea input[type="number"] {
-            width: calc(100% - 22px);
-            margin-bottom: 15px;
-        }
+        
+        #settingsArea label { display: block; margin-bottom: 10px; font-weight: bold; }
+        #settingsArea input[type="range"] { width: 100%; margin-bottom: 15px; }
+        #settingsArea h4 { margin-top: 20px; color: var(--secondary-color); border-bottom: 1px solid #ddd; padding-bottom: 5px;}
+        #settingsArea .color-picker-label { display: flex; align-items: center; gap: 10px;}
+
+
         /* Estilo para o badge numérico */
         .notification-badge {
             position: absolute;
             top: -8px;
             right: -8px;
-            background-color: red;
-            color: white;
+            background-color: var(--danger-color);
+            color: var(--white-color);
             border-radius: 50%;
-            padding: 3px 7px;
-            font-size: 0.7em;
-            min-width: 15px;
+            padding: 4px 7px;
+            font-size: 0.75em;
+            min-width: 18px;
             text-align: center;
             line-height: 1;
-            box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 2px rgba(0,0,0,0.3);
+            font-weight: bold;
         }
-        /* Novo estilo para o botão central de mensagens */
-        #centralMessageButton {
-            display: block;
-            margin: 20px auto;
-            /* Centraliza o botão */
-            padding: 15px 30px;
-            font-size: 1.2em;
-            background-color: #28a745;
-            /* Verde vibrante */
-            color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-        #centralMessageButton:hover {
-            background-color: #218838;
-            transform: translateY(-2px);
-        }
-        #centralMessageButton:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        /* Novo estilo para o botão Dola (laranja com ícone) */
-        .btn-dola {
-            background-color: #ff9800; /* Laranja */
-            color: white;
-        }
-        .btn-dola:hover {
-            background-color: #e68900; /* Laranja mais escuro */
-        }
-        /* NOVO: Estilo para o botão Dola quando a mensagem já foi enviada */
-        .btn-dola-sent {
-            background-color: #28a745; /* Verde */
-            color: white;
-        }
-        .btn-dola-sent:hover {
-            background-color: #218838; /* Verde mais escuro no hover */
-        }
-        /* Estilos para a nova seção de clientes avisados */
-        #clientesAvisadosSection {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
-        #clientesAvisadosList {
-            list-style: none;
-            padding: 0;
-        }
-        #clientesAvisadosList li {
-            background-color: #e0f2f7;
-            /* Um azul claro para destaque */
-            border: 1px solid #b3e5fc;
-            margin-bottom: 8px;
-            padding: 10px 15px;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        #clientesAvisadosList li .client-info {
-            flex-grow: 1;
-        }
-        #clientesAvisadosList li button {
-            margin-left: 5px;
-            padding: 8px 12px;
-            font-size: 0.9em;
-        }
-        /* Estilos para o overlay de carregamento */
+
+        /* Overlay de Carregamento */
         .loading-overlay {
             display: none;
-            /* Escondido por padrão */
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(255, 255, 255, 0.8);
             display: flex;
-            /* Usar flexbox para centralizar */
             justify-content: center;
             align-items: center;
             z-index: 2000;
-            /* Acima de outros elementos, incluindo modais */
         }
+
         .spinner {
             border: 8px solid #f3f3f3;
-            /* Light grey */
-            border-top: 8px solid #0066cc;
-            /* Blue */
+            border-top: 8px solid var(--primary-color);
             border-radius: 50%;
             width: 60px;
             height: 60px;
             animation: spin 1s linear infinite;
         }
+
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -362,8 +357,9 @@
             Enviar Mensagem para Próximo Vencido
             <span id="badgeCentralMessage" class="notification-badge" style="display:none;"></span>
         </button>
-        <button onclick="importarClientes()">Importar Clientes (JSON)</button>
-        <button onclick="exportarClientes()">Exportar Clientes (JSON)</button>
+        <button onclick="importarClientes()" class="btn-info icon-btn" title="Importar Clientes (JSON)">📥</button>
+        <button onclick="exportarClientes()" class="btn-secondary icon-btn" title="Exportar Clientes (JSON)">📤</button>
+
         <h3>Adicionar Cliente</h3>
         <div class="input-group-horizontal">
             <input type="date" id="dataInput" class="configurable-input" required>
@@ -378,75 +374,106 @@
                 <input type="radio" name="produto" value="Duplecast"> Duplecast
             </label>
         </div>
-        <button onclick="adicionarCliente()">Adicionar Cliente</button>
+        <button onclick="adicionarCliente()" class="btn-success">➕ Adicionar Cliente</button>
+
         <h3>Filtros e Ações</h3>
         <button onclick="filtrarHojeEVencidos()">Vencendo Hoje + Vencidos <span id="badgeHojeEVencidos" class="notification-badge" style="display:none;"></span></button>
         <button onclick="filtrarHoje()">Clientes Vencendo Hoje <span id="badgeHoje" class="notification-badge" style="display:none;"></span></button>
         <button onclick="filtrarAmanha()">Clientes Vencendo Amanhã <span id="badgeAmanha" class="notification-badge" style="display:none;"></span></button>
         <button onclick="filtrarVencidos()">Clientes Vencidos <span id="badgeVencidos" class="notification-badge" style="display:none;"></span></button>
-        <button onclick="filtrarDebito()">Clientes com Débito <span id="badgeDebito" class="notification-badge" style="display:none;"></span></button>
-        <button onclick="filtrarVerDepois()">Ver Depois <span id="badgeVerDepois" class="notification-badge" style="display:none;"></span></button>
-        <button onclick="filtrarArquivados()">Arquivados <span id="badgeArquivados" class="notification-badge" style="display:none;"></span></button>
-        <button onclick="filtrarDesativados()">Clientes Desativados <span id="badgeDesativados" class="notification-badge" style="display:none;"></span></button>
-        <button onclick="mostrarContagemProdutos()">Produtos</button>
+        <button onclick="filtrarDebito()" class="btn-warning">Clientes com Débito <span id="badgeDebito" class="notification-badge" style="display:none;"></span></button>
+        <button onclick="filtrarVerDepois()" class="btn-secondary">Ver Depois <span id="badgeVerDepois" class="notification-badge" style="display:none;"></span></button>
+        <button onclick="filtrarArquivados()" class="btn-secondary">Arquivados <span id="badgeArquivados" class="notification-badge" style="display:none;"></span></button>
+        <button onclick="filtrarDesativados()" class="btn-secondary">Clientes Desativados <span id="badgeDesativados" class="notification-badge" style="display:none;"></span></button>
+        <button onclick="mostrarContagemProdutos()" class="btn-info">Produtos</button>
         <button onclick="exibirTodos()">Reexibir Todos</button>
-        <button onclick="confirmarLimparTodos()">Limpar Todos</button>
-        <button onclick="confirmarDesfazer()">Desfazer Última Ação</button>
-        <button onclick="confirmarRefazer()">Refazer Última Ação</button>
+        <button onclick="confirmarLimparTodos()" class="btn-danger icon-btn" title="Limpar Todos">🗑️</button>
+        <button onclick="confirmarDesfazer()" class="btn-secondary icon-btn" title="Desfazer">↩️</button>
+        <button onclick="confirmarRefazer()" class="btn-secondary icon-btn" title="Refazer">↪️</button>
+
         <h3>Pesquisa de Clientes</h3>
         <input type="text" id="searchInput" placeholder="Pesquisar por nome ou telefone" oninput="debouncePesquisa()">
-        <button onclick="limparPesquisa()">Limpar Pesquisa</button>
+        <button onclick="limparPesquisa()" class="btn-secondary icon-btn" title="Limpar Pesquisa">❌</button>
+
         <table>
             <thead>
                 <tr>
-                    <th>Data de Vencimento</th>
+                    <th>Cliente e Ações</th>
                 </tr>
             </thead>
             <tbody id="tabelaClientes"></tbody>
         </table>
-        <button onclick="compartilharWhatsApp()">Compartilhar no WhatsApp</button>
-        <hr>
-        <div id="clientesAvisadosSection">
-            <h3>Clientes Avisados (WhatsApp) <span id="badgeOcultos" class="notification-badge" style="display:none;"></span></h3>
-            <ul id="clientesAvisadosList">
-            </ul>
-        </div>
+
         <hr>
         <h3>Data Atual</h3>
         <p id="dataAtual"></p>
+
         <div class="settings-icon" onclick="toggleSettingsArea()" title="Ajustes">⚙️</div>
         <div id="settingsArea">
             <h3>Ajustes de Interface</h3>
-            <p>Defina o tamanho das caixas de entrada de Data, Nome e Telefone.</p>
-            <div>
-                <label for="inputWidth">Largura dos Inputs (em %): <span id="inputWidthValue"></span></label>
-                <input type="range" id="inputWidth" min="10" max="100" value="16" oninput="updateInputWidth(this.value)">
-            </div>
-            <button onclick="saveSettings()">Salvar Ajustes</button>
-            <button onclick="resetSettings()">Redefinir Padrão</button>
+            
+            <h4>Layout e Cores</h4>
+            <label for="inputWidth">Largura dos Inputs (%): <span id="inputWidthValue"></span></label>
+            <input type="range" id="inputWidth" min="10" max="100" value="16" oninput="updateInputWidth(this.value)">
+            <label class="color-picker-label">
+                Cor do Nome do Cliente
+                <input type="color" id="clientNameColorPicker" oninput="updateCssVariable('--client-name-color', this.value)">
+            </label>
+             <label class="color-picker-label">
+                Fundo "Avisado"
+                <input type="color" id="avisadoColorPicker" oninput="updateCssVariable('--avisado-color', this.value)">
+            </label>
+            <label class="color-picker-label">
+                Fundo "Débito"
+                <input type="color" id="debitoColorPicker" oninput="updateCssVariable('--debito-color', this.value)">
+            </label>
+            <label class="color-picker-label">
+                Fundo "Vencendo Hoje"
+                <input type="color" id="vencendoHojeColorPicker" oninput="updateCssVariable('--vencendo-hoje-color', this.value)">
+            </label>
+            <label class="color-picker-label">
+                Fundo "Vencido"
+                <input type="color" id="vencidoColorPicker" oninput="updateCssVariable('--vencido-color', this.value)">
+            </label>
+
+            <h4>Botões de Ação</h4>
+            <label>
+                <input type="checkbox" id="roundButtonsCheckbox" onchange="applyButtonStyles()"> Botões Redondos
+            </label>
+            <label>
+                <input type="checkbox" id="transparentButtonsCheckbox" onchange="applyButtonStyles()"> Fundo Transparente
+            </label>
+            <label for="buttonSpacingSlider">Espaçamento (px): <span id="buttonSpacingValue">5</span></label>
+            <input type="range" id="buttonSpacingSlider" min="0" max="20" value="5" oninput="updateButtonSpacing(this.value)">
+
+            <button onclick="abrirModalConfigurarBotoes()">Configurar Botões Visíveis</button>
+            <button onclick="saveSettings()" class="btn-success icon-btn" title="Salvar Ajustes">💾</button>
+            <button onclick="resetSettings()" class="btn-secondary icon-btn" title="Redefinir Padrão">🔄</button>
         </div>
+
+        <!-- Modais -->
         <div id="modalConfirmacao" class="modal">
             <div class="modal-content">
                 <h3>Confirmar Duplicação</h3>
                 <p>Você tem certeza que deseja duplicar este cliente?</p>
-                <button onclick="confirmarDuplicacao()">Confirmar</button>
-                <button onclick="fecharModal()">Cancelar</button>
+                <button onclick="confirmarDuplicacao()" class="btn-success">Confirmar</button>
+                <button onclick="fecharModal()" class="btn-secondary">Cancelar</button>
             </div>
         </div>
         <div id="modalExclusao" class="modal">
             <div class="modal-content">
                 <h3>Confirmar Exclusão</h3>
                 <p>Você tem certeza que deseja excluir este cliente?</p>
-                <button onclick="confirmarExclusao()">Confirmar</button>
-                <button onclick="fecharModal()">Cancelar</button>
+                <button onclick="confirmarExclusao()" class="btn-danger">Confirmar</button>
+                <button onclick="fecharModal()" class="btn-secondary">Cancelar</button>
             </div>
         </div>
         <div id="modalRenovarComDebito" class="modal">
             <div class="modal-content">
                 <h3>Renovar com Débito?</h3>
                 <p>Tem certeza que deseja renovar este cliente e marcá-lo como Débito?</p>
-                <button id="btnConfirmarRenovacaoDebito">Confirmar</button>
-                <button onclick="fecharModal()">Cancelar</button>
+                <button id="btnConfirmarRenovacaoDebito" class="btn-warning">Confirmar</button>
+                <button onclick="fecharModal()" class="btn-secondary">Cancelar</button>
             </div>
         </div>
         <div id="modalConfirmacaoGenerica" class="modal">
@@ -454,7 +481,7 @@
                 <h3 id="modalConfirmacaoGenericaTitulo">Confirmação</h3>
                 <p id="modalConfirmacaoGenericaMensagem">Tem certeza?</p>
                 <button id="btnConfirmacaoGenericaConfirmar">Confirmar</button>
-                <button onclick="fecharModal()">Cancelar</button>
+                <button onclick="fecharModal()" class="btn-secondary">Cancelar</button>
             </div>
         </div>
         <div id="modalEdicao" class="modal" style="display: none;"></div>
@@ -464,7 +491,7 @@
                 <h3>Contagem de Produtos</h3>
                 <p>UniTv: <span id="countUniTv">0</span> clientes <button onclick="filtrarPorProduto('UniTv')">Detalhes</button></p>
                 <p>Duplecast: <span id="countDuplecast">0</span> clientes <button onclick="filtrarPorProduto('Duplecast')">Detalhes</button></p>
-                <button onclick="fecharModal()">Fechar</button>
+                <button onclick="fecharModal()" class="btn-secondary">Fechar</button>
             </div>
         </div>
         <div id="modalEscolherProduto" class="modal">
@@ -473,7 +500,7 @@
                 <p>Selecione o tipo de produto para o cliente:</p>
                 <button onclick="alterarProdutoClienteConfirm('UniTv')">UniTv</button>
                 <button onclick="alterarProdutoClienteConfirm('Duplecast')">Duplecast</button>
-                <button onclick="fecharModal()">Cancelar</button>
+                <button onclick="fecharModal()" class="btn-secondary">Cancelar</button>
             </div>
         </div>
         <div id="modalConflitoIdNome" class="modal" style="display: none;">
@@ -484,9 +511,9 @@
                 <p><b>Cliente Importado:</b> <span id="conflitoNomeImportado"></span></p>
                 <p>O que deseja fazer?</p>
                 <button id="btnConflitoManterExistente">Manter o Existente</button>
-                <button id="btnConflitoUsarImportado">Atualizar Cliente Existente</button>
-                <button id="btnConflitoManterAmbos">Manter Ambos (Criar Novo Cliente)</button>
-                <button onclick="cancelarConflitoIdNome()">Cancelar Importação Deste</button>
+                <button id="btnConflitoUsarImportado" class="btn-warning">Atualizar Cliente Existente</button>
+                <button id="btnConflitoManterAmbos" class="btn-info">Manter Ambos (Criar Novo Cliente)</button>
+                <button onclick="cancelarConflitoIdNome()" class="btn-secondary">Cancelar Importação Deste</button>
             </div>
         </div>
         <div id="modalVerDepois" class="modal">
@@ -494,14 +521,27 @@
                 <h3>Agendar Reexibição</h3>
                 <p>Escolha a data em que este cliente deve voltar a aparecer na lista principal.</p>
                 <input type="date" id="dataReexibicaoInput" style="width: 90%; padding: 10px; margin: 10px 0;">
-                <button id="btnConfirmarVerDepois">Confirmar</button>
-                <button onclick="fecharModal()">Cancelar</button>
+                <button id="btnConfirmarVerDepois" class="btn-success">Confirmar</button>
+                <button onclick="fecharModal()" class="btn-secondary">Cancelar</button>
+            </div>
+        </div>
+        <!-- NOVO MODAL PARA CONFIGURAR BOTÕES -->
+        <div id="modalConfigurarBotoes" class="modal">
+            <div class="modal-content">
+                <h3>Configurar Botões de Ação</h3>
+                <p>Marque os botões que deseja exibir na lista de clientes.</p>
+                <div id="botoesConfigList" style="text-align: left; max-height: 300px; overflow-y: auto; margin: 15px 0; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                    <!-- Checkboxes serão inseridos aqui pelo JS -->
+                </div>
+                <button onclick="salvarConfiguracaoBotoes()" class="btn-success">Salvar</button>
+                <button onclick="fecharModal()" class="btn-secondary">Cancelar</button>
             </div>
         </div>
     </div>
     <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
     </div>
+
     <script>
         let clientes = []; // Inicializado como array vazio, será preenchido por loadClientes()
         let clientesFiltrados = [];
@@ -517,27 +557,39 @@
         let redoHistory = [];
         const MAX_HISTORY_STATES = 10;
         let confirmActionCallback = null;
-        let clienteIdParaVerDepois = null; // NOVO: Para armazenar o ID do cliente ao agendar
-
+        let clienteIdParaVerDepois = null; // Para armazenar o ID do cliente ao agendar
         // Variáveis para gerenciar o processo de importação com conflitos
         let clientesParaProcessarImportacao = [];
         let currentIndexImportacao = 0;
-
         // Variáveis para o botão de mensagem central
         let clientesVencidosParaMensagem = [];
-        
         // Variável para armazenar o ID do cliente para "Renovar HOJE"
         let clienteIdParaRenovarHoje = null;
-        
         // Variável para o debounce da pesquisa
         let debounceTimer;
-        
+
         // ====================================================================================
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwoeQZB6yl-RBXQ8gn7PUOz-QsyYJfeWW8UgDgNf8WUYPCH7DczuoXLb_5PkipxD6OY/exec';
         // ====================================================================================
-        
+
         let filtroAtual = "hojeEVencidos";
-        
+        // NOVO: Configuração dos botões de ação
+        let acaoBotoesConfig = {};
+        const defaultAcaoBotoesConfig = {
+            dola: {                label: '🤖 Dola',                visivel: true            },
+            renovarAuto: {                label: 'Renov. Auto (🔁)',                visivel: true            },
+            debito: {                label: 'DÉBITO',                visivel: true            },
+            renovarHoje: {                label: 'RENOVAR HOJE',                visivel: true            },
+            verDepois: {                label: 'Ver Depois',                visivel: true            },
+            produto: {                label: 'Produto',                visivel: true            },
+            editar: {                label: 'Edit',                visivel: true            },
+            excluir: {                label: 'Excluir (❌)',                visivel: true            },
+            arquivar: {                label: 'Arquivar (📂)',                visivel: true            },
+            desativar: {                label: 'Desativar',                visivel: true            },
+            copiar: {                label: '📋 Copiar',                visivel: true            },
+            duplicar: {                label: '➕ Duplicar',                visivel: true            }
+        };
+
         // --- Funções de Loading/Spinner ---
         function mostrarCarregando() {
             document.getElementById('loadingOverlay').style.display = 'flex';
@@ -545,6 +597,9 @@
 
         // FUNÇÃO ATUALIZADA: Marca o link clicado e ATUALIZA O OBJETO CLIENTE
         function marcarClienteClicado(elemento) {
+            // Remove a classe de outros links para garantir que apenas um esteja ativo visualmente
+            document.querySelectorAll('a.cliente-clicado').forEach(el => el.classList.remove('cliente-clicado'));
+
             elemento.classList.add("cliente-clicado");
             const tr = elemento.closest("tr");
             if (tr) {
@@ -563,7 +618,7 @@
         function esconderCarregando() {
             document.getElementById('loadingOverlay').style.display = 'none';
         }
-        
+
         function saveClientsToLocalStorage() {
             try {
                 localStorage.setItem('clientesCache', JSON.stringify(clientes));
@@ -571,7 +626,7 @@
                 console.error('Erro ao salvar clientes no localStorage:', e);
             }
         }
-        
+
         async function sendRequestToBackend(action, data = {}) {
             try {
                 const url = `${WEB_APP_URL}?action=${action}`;
@@ -607,7 +662,15 @@
 
         function atualizarUltimaAtualizacao(acao = "dados atualizados", clienteNome = "") {
             const now = new Date();
-            const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const options = {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            };
             const formattedDateTime = now.toLocaleString('pt-BR', options);
             let fullMessage = `Última Alteração: ${formattedDateTime}`;
             if (clienteNome) {
@@ -637,11 +700,11 @@
             document.getElementById("modalConfirmacaoGenericaTitulo").innerText = titulo;
             document.getElementById("modalConfirmacaoGenericaMensagem").innerHTML = mensagem;
             confirmActionCallback = callback;
-            if (isDanger) {
-                btnConfirmar.classList.add("modal-confirm-danger");
-            } else {
-                btnConfirmar.classList.remove("modal-confirm-danger");
-            }
+            
+            // Remove classes existentes e adiciona a correta
+            btnConfirmar.classList.remove("btn-danger", "btn-success");
+            btnConfirmar.classList.add(isDanger ? "btn-danger" : "btn-success");
+            
             btnConfirmar.onclick = () => {
                 if (confirmActionCallback) {
                     confirmActionCallback();
@@ -654,44 +717,39 @@
         }
 
         function fecharModal() {
-            document.getElementById("modalConfirmacao").style.display = "none";
-            document.getElementById("modalExclusao").style.display = "none";
-            document.getElementById("modalRenovarComDebito").style.display = "none";
-            document.getElementById("modalConfirmacaoGenerica").style.display = "none";
-            document.getElementById("modalConflitoIdNome").style.display = "none";
-            document.getElementById("modalContagemProdutos").style.display = "none";
-            document.getElementById("modalEscolherProduto").style.display = "none";
-            document.getElementById("modalVerDepois").style.display = "none"; // NOVO
-
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.style.display = "none";
+            });
             const modalEdicao = document.getElementById("modalEdicao");
             if (modalEdicao) {
-                modalEdicao.style.display = "none";
                 modalEdicao.innerHTML = "";
-                document.removeEventListener("keydown", fecharComEsc);
             }
             const modalAlerta = document.getElementById("modalAlerta");
             if (modalAlerta) {
-                modalAlerta.style.display = "none";
                 modalAlerta.innerHTML = "";
-                document.removeEventListener("keydown", fecharComEscOuEnter);
             }
+            document.removeEventListener("keydown", fecharComEsc);
+            document.removeEventListener("keydown", fecharComEscOuEnter);
             clienteIdParaRenovarHoje = null;
         }
+
 
         function fecharComEsc(event) {
             if (event.key === "Escape") {
                 fecharModal();
             }
         }
+
         function fecharComEscOuEnter(event) {
             if (event.key === "Enter" || event.key === "Escape") {
                 fecharModal();
             }
         }
+
         function exibirAlerta(mensagem) {
             let modalAlerta = document.getElementById("modalAlerta");
             modalAlerta.style.display = "flex";
-            modalAlerta.innerHTML = `<div class="modal-content"><h3>Aviso</h3><p>${mensagem}</p><button onclick="fecharModal()">OK</button></div>`;
+            modalAlerta.innerHTML = `<div class="modal-content"><h3>Aviso</h3><p>${mensagem}</p><button class="btn-primary" onclick="fecharModal()">OK</button></div>`;
             document.addEventListener("keydown", fecharComEscOuEnter);
         }
 
@@ -736,7 +794,7 @@
                 Produto: produtoSelecionado,
                 arquivado: false,
                 oculto: false,
-                reexibirEm: null, // ATUALIZADO
+                reexibirEm: null,
                 desativado: false,
                 dola_sent: false,
                 clicado: false
@@ -747,7 +805,7 @@
             document.getElementById("nomeInput").value = "";
             document.getElementById("telefoneInput").value = "";
             exibirTabela();
-            exibirClientesAvisados();
+            atualizarContadores();
             atualizarUltimaAtualizacao("adicionado", nomeInput);
 
             try {
@@ -756,12 +814,12 @@
                 clientes = estadoAnteriorClientes;
                 saveClientsToLocalStorage();
                 exibirTabela();
-                exibirClientesAvisados();
+                atualizarContadores();
                 exibirAlerta(`Erro ao adicionar cliente: ${error.message}. Ação desfeita localmente. Tente novamente.`);
                 atualizarUltimaAtualizacao("falha na adição", nomeInput);
             }
         }
-        
+
         async function arquivar(index) {
             const clienteParaArquivar = clientesExibidos[index];
             const clienteOriginalIndex = clientes.findIndex(c => c.id === clienteParaArquivar.id);
@@ -771,12 +829,12 @@
             const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
             clientes[clienteOriginalIndex].arquivado = true;
             clientes[clienteOriginalIndex].oculto = false;
-            clientes[clienteOriginalIndex].reexibirEm = null; // ATUALIZADO
+            clientes[clienteOriginalIndex].reexibirEm = null;
             clientes[clienteOriginalIndex].desativado = false;
             clientes[clienteOriginalIndex].clicado = false;
             saveClientsToLocalStorage();
             chamarFiltroAtual();
-            exibirClientesAvisados();
+            atualizarContadores();
             atualizarUltimaAtualizacao("arquivado", clienteParaArquivar.nome);
             try {
                 await salvarClientes();
@@ -784,12 +842,12 @@
                 clientes = estadoAnteriorClientes;
                 saveClientsToLocalStorage();
                 chamarFiltroAtual();
-                exibirClientesAvisados();
+                atualizarContadores();
                 exibirAlerta(`Erro ao arquivar cliente: ${error.message}. Ação desfeita localmente. Tente novamente.`);
                 atualizarUltimaAtualizacao("falha ao arquivar", clienteParaArquivar.nome);
             }
         }
-        
+
         async function desarquivar(index) {
             const clienteParaDesarquivar = clientesExibidos[index];
             const clienteOriginalIndex = clientes.findIndex(c => c.id === clienteParaDesarquivar.id);
@@ -798,10 +856,10 @@
             saveStateToHistory();
             const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
             clientes[clienteOriginalIndex].arquivado = false;
-            clientes[clienteOriginalIndex].reexibirEm = null; // ATUALIZADO
+            clientes[clienteOriginalIndex].reexibirEm = null;
             saveClientsToLocalStorage();
             chamarFiltroAtual();
-            exibirClientesAvisados();
+            atualizarContadores();
             atualizarUltimaAtualizacao("desarquivado", clienteParaDesarquivar.nome);
             try {
                 await salvarClientes();
@@ -809,7 +867,7 @@
                 clientes = estadoAnteriorClientes;
                 saveClientsToLocalStorage();
                 chamarFiltroAtual();
-                exibirClientesAvisados();
+                atualizarContadores();
                 exibirAlerta(`Erro ao desarquivar cliente: ${error.message}. Ação desfeita localmente. Tente novamente.`);
                 atualizarUltimaAtualizacao("falha ao desarquivar", clienteParaDesarquivar.nome);
             }
@@ -825,28 +883,24 @@
             filtroAtual = "arquivados";
             document.getElementById("searchInput").value = "";
             exibirTabela();
-            exibirClientesAvisados();
         }
 
         function mostrarApenasOcultosPorFiltro() {
             filtroAtual = "ocultos";
             document.getElementById("searchInput").value = "";
             exibirTabela();
-            exibirClientesAvisados();
         }
 
         function filtrarVerDepois() {
             filtroAtual = "verDepois";
             document.getElementById("searchInput").value = "";
             exibirTabela();
-            exibirClientesAvisados();
         }
 
         function filtrarDesativados() {
             filtroAtual = "desativados";
             document.getElementById("searchInput").value = "";
             exibirTabela();
-            exibirClientesAvisados();
         }
 
         function filtrarPorProduto(produto) {
@@ -854,9 +908,7 @@
             document.getElementById("searchInput").value = "";
             fecharModal();
             exibirTabela();
-            exibirClientesAvisados();
         }
-
         let clientesExibidos = [];
 
         function formatDateForDisplay(dateString) {
@@ -867,25 +919,21 @@
             }
             return dateString.substring(0, 5);
         }
-        
-        // ATUALIZADO: Função centralizada para exibir a tabela com a nova lógica de "Ver Depois"
+
         function exibirTabela() {
             const termoPesquisa = document.getElementById("searchInput").value.trim().toLowerCase();
             let clientesParaProcessar;
-            const hojeStr = new Date().toISOString().split('T')[0]; // Data de hoje no formato AAAA-MM-DD para comparação
+            const hojeStr = new Date().toISOString().split('T')[0];
 
-            // Função auxiliar para verificar se o cliente deve ser visível (não agendado para o futuro)
             const isVisivelHoje = (cliente) => {
                 return !cliente.reexibirEm || cliente.reexibirEm <= hojeStr;
             };
 
-            // Lógica de filtragem atualizada
             if (termoPesquisa !== '') {
                 clientesParaProcessar = clientes.filter(cliente =>
                     (cliente.nome.toLowerCase().includes(termoPesquisa) || cliente.telefone.includes(termoPesquisa))
                 );
             } else if (filtroAtual === "verDepois") {
-                // O filtro "Ver Depois" agora mostra clientes agendados PARA O FUTURO
                 clientesParaProcessar = clientes.filter(cliente => cliente.reexibirEm && cliente.reexibirEm > hojeStr);
             } else if (filtroAtual === "hojeEVencidos") {
                 const hoje = new Date();
@@ -976,42 +1024,41 @@
                 } else if (dataCliente < hojeSemHora) {
                     tr.classList.add("vencido");
                 }
-                
                 let botoesAcao = '';
                 if (filtroAtual === "arquivados") {
                     botoesAcao = `
-                        <button title="Desarquivar Cliente" onclick="desarquivar(${index})">Desarquivar</button>
-                        <button title="Excluir Cliente" onclick="excluir(${index})">❌</button>
+                        <button title="Desarquivar Cliente" onclick="desarquivar(${index})" class="btn-success">↩️</button>
+                        <button title="Excluir Cliente" onclick="excluir(${index})" class="btn-danger">❌</button>
                     `;
                 } else if (filtroAtual === "verDepois") {
                     const dataAgendada = new Date(cliente.reexibirEm + 'T00:00:00').toLocaleDateString('pt-BR');
                     botoesAcao = `
                         <span>Reexibir em: ${dataAgendada}</span>
-                        <button title="Reexibir Agora" onclick="desmarcarVerDepois(${index})">Reexibir Agora</button>
-                        <button title="Editar Cliente" onclick="editar(${index})">Edit</button>
-                        <button title="Excluir Cliente" onclick="excluir(${index})">❌</button>
+                        <button title="Reexibir Agora" onclick="desmarcarVerDepois(${index})" class="btn-success">↩️</button>
+                        <button title="Editar Cliente" onclick="editar(${index})" class="btn-info">✏️</button>
+                        <button title="Excluir Cliente" onclick="excluir(${index})" class="btn-danger">❌</button>
                     `;
                 } else if (filtroAtual === "desativados") {
                     botoesAcao = `
-                        <button title="Reativar Cliente" onclick="toggleDesativado(${index})">Reativar</button>
-                        <button title="Excluir Cliente" onclick="excluir(${index})">❌</button>
+                        <button title="Reativar Cliente" onclick="toggleDesativado(${index})" class="btn-success">⚡</button>
+                        <button title="Excluir Cliente" onclick="excluir(${index})" class="btn-danger">❌</button>
                     `;
                 } else {
                     const dolaButtonClass = cliente.dola_sent ? 'btn-dola-sent' : 'btn-dola';
-                    botoesAcao = `
-                        <button title="Enviar Lembrete Dola" class="${dolaButtonClass}" onclick="enviarMensagemWhatsAppDola(${index})">🤖 Dola</button>
-                        <button title="Renovar Automático" onclick="renovarAutomatico(${index})">🔁</button>
-                        <button title="Renovar com Débito (Confirmação)" class="btn-debito-segurar" onclick="pedirConfirmacaoRenovacaoDebito(${index})">DÉBITO</button>
-                        <button title="Renovar a Partir de Hoje" class="btn-renovar-data-atual" onclick="pedirConfirmacaoRenovarHoje(${index})">RENOVAR HOJE</button>
-                        <button title="Agendar Reexibição" onclick="abrirModalVerDepois(${index})">Ver Depois</button>
-                        <button title="Alterar Produto" onclick="abrirModalAlterarProduto(${index})">Produto</button>
-                        <button title="Editar Cliente" onclick="editar(${index})">Edit</button>
-                        <button title="Excluir Cliente" onclick="excluir(${index})">❌</button>
-                        <button title="Arquivar Cliente" onclick="arquivar(${index})">📂</button>
-                        <button title="Desativar Cliente" onclick="toggleDesativado(${index})">Desativar</button>
-                        <button title="Copiar Mensagem WhatsApp" onclick="copiarMensagemWhatsApp(${index})">📋 Copiar</button>
-                        <button title="Duplicar Cliente" onclick="duplicarCliente(${index})">➕ Duplicar</button>
-                    `;
+                    let botoesHtml = [];
+                    if (acaoBotoesConfig.dola.visivel) botoesHtml.push(`<button title="Enviar Lembrete Dola" class="${dolaButtonClass}" onclick="enviarMensagemWhatsAppDola(${index})">🤖</button>`);
+                    if (acaoBotoesConfig.renovarAuto.visivel) botoesHtml.push(`<button title="Renovar Automático" onclick="renovarAutomatico(${index})">🔁</button>`);
+                    if (acaoBotoesConfig.debito.visivel) botoesHtml.push(`<button title="Renovar com Débito" class="btn-debito-segurar" onclick="pedirConfirmacaoRenovacaoDebito(${index})">💰</button>`);
+                    if (acaoBotoesConfig.renovarHoje.visivel) botoesHtml.push(`<button title="Renovar a Partir de Hoje" class="btn-renovar-data-atual" onclick="pedirConfirmacaoRenovarHoje(${index})">📅</button>`);
+                    if (acaoBotoesConfig.verDepois.visivel) botoesHtml.push(`<button title="Agendar Reexibição" onclick="abrirModalVerDepois(${index})">⏰</button>`);
+                    if (acaoBotoesConfig.produto.visivel) botoesHtml.push(`<button title="Alterar Produto" onclick="abrirModalAlterarProduto(${index})">📦</button>`);
+                    if (acaoBotoesConfig.editar.visivel) botoesHtml.push(`<button title="Editar Cliente" onclick="editar(${index})">✏️</button>`);
+                    if (acaoBotoesConfig.excluir.visivel) botoesHtml.push(`<button title="Excluir Cliente" onclick="excluir(${index})" class="btn-danger">❌</button>`);
+                    if (acaoBotoesConfig.arquivar.visivel) botoesHtml.push(`<button title="Arquivar Cliente" onclick="arquivar(${index})">📂</button>`);
+                    if (acaoBotoesConfig.desativar.visivel) botoesHtml.push(`<button title="Desativar Cliente" onclick="toggleDesativado(${index})" class="btn-secondary">🔌</button>`);
+                    if (acaoBotoesConfig.copiar.visivel) botoesHtml.push(`<button title="Copiar Mensagem WhatsApp" onclick="copiarMensagemWhatsApp(${index})">📋</button>`);
+                    if (acaoBotoesConfig.duplicar.visivel) botoesHtml.push(`<button title="Duplicar Cliente" onclick="duplicarCliente(${index})">➕</button>`);
+                    botoesAcao = botoesHtml.join('');
                 }
 
                 const nomeExibicaoBase = cliente.nome.replace(/\s\(UniTv\)/g, '').replace(/\s\(Duplecast\)/g, '');
@@ -1019,7 +1066,7 @@
 
                 tr.innerHTML = `
                     <td>
-                        ${formatDateForDisplay(cliente.data)} 
+                        <span>${formatDateForDisplay(cliente.data)}</span>
                         <a href="#" class="${classeDinamica}" onclick="marcarClienteClicado(this); enviarMensagemWhatsApp('${nomeExibicaoBase}', '${cliente.telefone}', ${index}); return false;">
                             ${nomeExibicaoBase} (${cliente.Produto || 'N/I'})
                         </a>
@@ -1031,51 +1078,6 @@
             atualizarContadores();
         }
 
-
-        function exibirClientesAvisados() {
-            const clientesAvisadosList = document.getElementById('clientesAvisadosList');
-            clientesAvisadosList.innerHTML = '';
-            const avisados = clientes.filter(cliente => cliente.avisado && cliente.oculto && !cliente.arquivado && !cliente.reexibirEm && !cliente.desativado);
-
-            if (avisados.length === 0) {
-                clientesAvisadosList.innerHTML = '<li>Nenhum cliente avisado para exibir.</li>';
-                return;
-            }
-
-            avisados.sort((a, b) => {
-                const [diaA, mesA, anoA] = a.data.split("/").map(num => parseInt(num));
-                const [diaB, mesB, anoB] = b.data.split("/").map(num => parseInt(num));
-                const dataA = new Date(anoA, mesA - 1, diaA);
-                const dataB = new Date(anoB, mesB - 1, diaB);
-                return dataA - dataB;
-            });
-
-            avisados.forEach(cliente => {
-                const li = document.createElement('li');
-                const nomeExibicaoBase = cliente.nome.replace(/\s\(UniTv\)/g, '').replace(/\s\(Duplecast\)/g, '');
-                const dolaButtonClass = cliente.dola_sent ? 'btn-dola-sent' : 'btn-dola';
-                li.innerHTML = `
-                    <div class="client-info"><strong>${nomeExibicaoBase}</strong> (${cliente.Produto || 'N/I'}) - Vencimento: ${formatDateForDisplay(cliente.data)}</div>
-                    <div class="client-actions">
-                         <button title="Desmarcar Avisado e Reexibir" onclick="toggleAvisadoFromAvisados('${cliente.id}')">Reexibir</button>
-                         <button title="Enviar Lembrete Dola" class="${dolaButtonClass}" onclick="enviarMensagemWhatsAppDolaById('${cliente.id}')">🤖 Dola</button>
-                         <button title="Copiar Mensagem WhatsApp" onclick="copiarMensagemWhatsAppById('${cliente.id}')">📋 Copiar</button>
-                         <button title="Duplicar Cliente" onclick="duplicarClienteById('${cliente.id}')">➕ Duplicar</button>
-                         <button title="Renovar Automático" onclick="renovarAutomatiscoById('${cliente.id}')">🔁</button>
-                         <button title="Renovar com Débito (Confirmação)" class="btn-debito-segurar" onclick="pedirConfirmacaoRenovacaoDebitoById('${cliente.id}')">DÉBITO</button>
-                         <button title="Renovar a Partir de Hoje" class="btn-renovar-data-atual" onclick="pedirConfirmacaoRenovarHojeById('${cliente.id}')">RENOVAR HOJE</button>
-                         <button title="Agendar Reexibição" onclick="abrirModalVerDepoisById('${cliente.id}')">Ver Depois</button>
-                         <button title="Alterar Produto" onclick="abrirModalAlterarProdutoById('${cliente.id}')">Produto</button>
-                         <button title="Editar Cliente" onclick="editarClienteById('${cliente.id}')">Edit</button>
-                         <button title="Excluir Cliente" onclick="excluirClienteById('${cliente.id}')">❌</button>
-                         <button title="Arquivar Cliente" onclick="arquivarById('${cliente.id}')">📂</button>
-                         <button title="Desativar Cliente" onclick="toggleDesativadoById('${cliente.id}')">Desativar</button>
-                    </div>
-                `;
-                clientesAvisadosList.appendChild(li);
-            });
-        }
-        
         async function toggleAvisadoFromAvisados(clientId) {
             const clienteOriginalIndex = clientes.findIndex(c => c.id === clientId);
             if (clienteOriginalIndex === -1) return;
@@ -1087,7 +1089,7 @@
             clientes[clienteOriginalIndex].clicado = false;
             saveClientsToLocalStorage();
             chamarFiltroAtual();
-            exibirClientesAvisados();
+            atualizarContadores();
             atualizarUltimaAtualizacao("desmarcado avisado", clientes[clienteOriginalIndex].nome);
             try {
                 await salvarClientes();
@@ -1095,9 +1097,66 @@
                 clientes = estadoAnteriorClientes;
                 saveClientsToLocalStorage();
                 chamarFiltroAtual();
-                exibirClientesAvisados();
+                atualizarContadores();
                 exibirAlerta(`Erro ao desmarcar cliente como avisado: ${error.message}. Ação desfeita localmente. Tente novamente.`);
                 atualizarUltimaAtualizacao("falha ao desmarcar avisado", clientes[clienteOriginalIndex].nome);
+            }
+        }
+        // --- Novas funções auxiliares para a lista de Avisados ---
+        function abrirModalVerDepoisById(clientId) {
+            const index = clientes.findIndex(c => c.id === clientId);
+            if (index !== -1) {
+                const originalClientesExibidos = clientesExibidos;
+                clientesExibidos = [clientes[index]];
+                abrirModalVerDepois(0);
+                clientesExibidos = originalClientesExibidos;
+            }
+        }
+
+        function abrirModalAlterarProdutoById(clientId) {
+            const index = clientes.findIndex(c => c.id === clientId);
+            if (index !== -1) {
+                const originalClientesExibidos = clientesExibidos;
+                clientesExibidos = [clientes[index]];
+                abrirModalAlterarProduto(0);
+                clientesExibidos = originalClientesExibidos;
+            }
+        }
+
+        function editarClienteById(clientId) {
+            const index = clientes.findIndex(c => c.id === clientId);
+            if (index !== -1) {
+                const originalClientesExibidos = clientesExibidos;
+                clientesExibidos = [clientes[index]];
+                editar(0);
+                clientesExibidos = originalClientesExibidos;
+            }
+        }
+
+        function excluirClienteById(clientId) {
+            const index = clientes.findIndex(c => c.id === clientId);
+            if (index !== -1) {
+                excluir(index);
+            }
+        }
+
+        function arquivarById(clientId) {
+            const index = clientes.findIndex(c => c.id === clientId);
+            if (index !== -1) {
+                const originalClientesExibidos = clientesExibidos;
+                clientesExibidos = [clientes[index]];
+                arquivar(0);
+                clientesExibidos = originalClientesExibidos;
+            }
+        }
+
+        function toggleDesativadoById(clientId) {
+            const index = clientes.findIndex(c => c.id === clientId);
+            if (index !== -1) {
+                const originalClientesExibidos = clientesExibidos;
+                clientesExibidos = [clientes[index]];
+                toggleDesativado(0);
+                clientesExibidos = originalClientesExibidos;
             }
         }
 
@@ -1120,6 +1179,7 @@
                 clientesExibidos = originalClientesExibidos;
             }
         }
+
         function renovarAutomatiscoById(clientId) {
             const index = clientes.findIndex(c => c.id === clientId);
             if (index !== -1) {
@@ -1129,6 +1189,7 @@
                 clientesExibidos = originalClientesExibidos;
             }
         }
+
         function pedirConfirmacaoRenovacaoDebitoById(clientId) {
             const index = clientes.findIndex(c => c.id === clientId);
             if (index !== -1) {
@@ -1138,11 +1199,18 @@
                 clientesExibidos = originalClientesExibidos;
             }
         }
+
+        function pedirConfirmacaoRenovacaoDebito(index) {
+             clienteIndexParaRenovarDebito = index;
+             document.getElementById('modalRenovarComDebito').style.display = 'flex';
+             document.getElementById('btnConfirmarRenovacaoDebito').onclick = confirmarRenovacaoComDebito;
+        }
+
         function pedirConfirmacaoRenovarHojeById(clientId) {
             clienteIdParaRenovarHoje = clientId;
             exibirConfirmacaoGenerica("Confirmar Renovação HOJE", "Tem certeza que deseja renovar a data de vencimento deste cliente para **HOJE**?", confirmarRenovarHoje, false);
         }
-        
+
         async function renovarAutomatico(index) {
             const cliente = clientesExibidos[index];
             if (!cliente.Produto || cliente.Produto === "Não informado") {
@@ -1157,14 +1225,14 @@
                 clientes[clienteOriginalIndex].debito = false;
                 clientes[clienteOriginalIndex].oculto = false;
                 clientes[clienteOriginalIndex].avisado = false;
-                clientes[clienteOriginalIndex].reexibirEm = null; // ATUALIZADO
+                clientes[clienteOriginalIndex].reexibirEm = null;
                 clientes[clienteOriginalIndex].desativado = false;
                 clientes[clienteOriginalIndex].dola_sent = false;
                 clientes[clienteOriginalIndex].clicado = false;
             }
             saveClientsToLocalStorage();
             chamarFiltroAtual();
-            exibirClientesAvisados();
+            atualizarContadores();
             atualizarUltimaAtualizacao("renovado automaticamente", cliente.nome);
             try {
                 await salvarClientes();
@@ -1172,7 +1240,7 @@
                 clientes = estadoAnteriorClientes;
                 saveClientsToLocalStorage();
                 chamarFiltroAtual();
-                exibirClientesAvisados();
+                atualizarContadores();
                 exibirAlerta(`Erro ao renovar automaticamente: ${error.message}. Ação desfeita localmente. Tente novamente.`);
                 atualizarUltimaAtualizacao("falha na renovação automática", cliente.nome);
             }
@@ -1197,14 +1265,14 @@
                 clientes[clienteOriginalIndex].debito = false;
                 clientes[clienteOriginalIndex].oculto = false;
                 clientes[clienteOriginalIndex].avisado = false;
-                clientes[clienteOriginalIndex].reexibirEm = null; // ATUALIZADO
+                clientes[clienteOriginalIndex].reexibirEm = null;
                 clientes[clienteOriginalIndex].desativado = false;
                 clientes[clienteOriginalIndex].dola_sent = false;
                 clientes[clienteOriginalIndex].clicado = false;
             }
             saveClientsToLocalStorage();
             chamarFiltroAtual();
-            exibirClientesAvisados();
+            atualizarContadores();
             atualizarUltimaAtualizacao("renovado a partir da data atual", clienteOriginalNome);
             exibirAlerta(`Cliente "${clienteOriginalNome.replace(/\s\(UniTv\)/g, '').replace(/\s\(Duplecast\)/g, '')}" renovado para hoje!`);
             try {
@@ -1213,7 +1281,7 @@
                 clientes = estadoAnteriorClientes;
                 saveClientsToLocalStorage();
                 chamarFiltroAtual();
-                exibirClientesAvisados();
+                atualizarContadores();
                 exibirAlerta(`Erro ao renovar para hoje: ${error.message}. Ação desfeita localmente. Tente novamente.`);
                 atualizarUltimaAtualizacao("falha na renovação para hoje", clienteOriginalNome);
             }
@@ -1237,14 +1305,14 @@
                 clientes[clienteOriginalIndex].debito = true;
                 clientes[clienteOriginalIndex].oculto = false;
                 clientes[clienteOriginalIndex].avisado = false;
-                clientes[clienteOriginalIndex].reexibirEm = null; // ATUALIZADO
+                clientes[clienteOriginalIndex].reexibirEm = null;
                 clientes[clienteOriginalIndex].desativado = false;
                 clientes[clienteOriginalIndex].dola_sent = false;
                 clientes[clienteOriginalIndex].clicado = false;
             }
             saveClientsToLocalStorage();
             chamarFiltroAtual();
-            exibirClientesAvisados();
+            atualizarContadores();
             fecharModal();
             clienteIndexParaRenovarDebito = null;
             exibirAlerta("Cliente renovado e marcado como DÉBITO!");
@@ -1255,7 +1323,7 @@
                 clientes = estadoAnteriorClientes;
                 saveClientsToLocalStorage();
                 chamarFiltroAtual();
-                exibirClientesAvisados();
+                atualizarContadores();
                 exibirAlerta(`Erro ao renovar com débito: ${error.message}. Ação desfeita localmente. Tente novamente.`);
                 atualizarUltimaAtualizacao("falha na renovação com débito", clienteNome);
             }
@@ -1270,7 +1338,7 @@
             }
             clienteObj.data = `${dataObj.getDate().toString().padStart(2, '0')}/${(dataObj.getMonth() + 1).toString().padStart(2, '0')}/${dataObj.getFullYear()}`;
         }
-        
+
         function duplicarCliente(index) {
             clienteIndexParaDuplicar = index;
             document.getElementById("modalConfirmacao").style.display = "flex";
@@ -1309,7 +1377,7 @@
                 Produto: clienteOriginal.Produto || "Não informado",
                 arquivado: false,
                 oculto: false,
-                reexibirEm: null, // ATUALIZADO
+                reexibirEm: null,
                 desativado: false,
                 dola_sent: false,
                 clicado: false
@@ -1317,7 +1385,7 @@
             clientes.push(novoCliente);
             saveClientsToLocalStorage();
             chamarFiltroAtual();
-            exibirClientesAvisados();
+            atualizarContadores();
             fecharModal();
             clienteIndexParaDuplicar = null;
             atualizarUltimaAtualizacao("duplicado", clienteOriginal.nome);
@@ -1327,12 +1395,12 @@
                 clientes = estadoAnteriorClientes;
                 saveClientsToLocalStorage();
                 chamarFiltroAtual();
-                exibirClientesAvisados();
+                atualizarContadores();
                 exibirAlerta(`Erro ao duplicar cliente: ${error.message}. Ação desfeita localmente. Tente novamente.`);
                 atualizarUltimaAtualizacao("falha na duplicação", clienteOriginal.nome);
             }
         }
-        
+
         function getNomeMes(mesNumero) {
             const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
             return meses[mesNumero - 1];
@@ -1405,7 +1473,7 @@
             }
             saveClientsToLocalStorage();
             chamarFiltroAtual();
-            exibirClientesAvisados();
+            atualizarContadores();
             atualizarUltimaAtualizacao("mensagem Dola enviada", cliente.nome);
             prepararClientesVencidosParaMensagem();
             try {
@@ -1414,7 +1482,7 @@
                 clientes = estadoAnteriorClientes;
                 saveClientsToLocalStorage();
                 chamarFiltroAtual();
-                exibirClientesAvisados();
+                atualizarContadores();
                 exibirAlerta(`Erro ao enviar mensagem WhatsApp: ${error.message}. Ação desfeita localmente. Tente novamente.`);
                 atualizarUltimaAtualizacao("falha no envio de mensagem Dola", cliente.nome);
             }
@@ -1448,7 +1516,7 @@
             }
             const url = `https://wa.me/${telefoneParaWhatsApp}?text=${encodeURIComponent(mensagem)}`;
             window.open(url, '_blank');
-            
+
             saveStateToHistory();
             const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
             let clienteOriginal = clientes.find(c => c.id === cliente.id);
@@ -1459,7 +1527,7 @@
             }
             saveClientsToLocalStorage();
             chamarFiltroAtual();
-            exibirClientesAvisados();
+            atualizarContadores();
             atualizarUltimaAtualizacao("mensagem WhatsApp enviada", cliente.nome);
             prepararClientesVencidosParaMensagem();
             try {
@@ -1468,7 +1536,7 @@
                 clientes = estadoAnteriorClientes;
                 saveClientsToLocalStorage();
                 chamarFiltroAtual();
-                exibirClientesAvisados();
+                atualizarContadores();
                 exibirAlerta(`Erro ao enviar mensagem WhatsApp: ${error.message}. Ação desfeita localmente. Tente novamente.`);
                 atualizarUltimaAtualizacao("falha no envio de mensagem", cliente.nome);
             }
@@ -1476,22 +1544,31 @@
 
         function exportarClientes() {
             const clientesParaExportar = clientes.map(c => ({
-                id: c.id, data: c.data, nome: c.nome, telefone: c.telefone,
-                avisado: c.avisado || false, debito: c.debito || false,
-                Produto: c.Produto || "Não informado", arquivado: c.arquivado || false,
-                oculto: c.oculto || false, reexibirEm: c.reexibirEm || null, // ATUALIZADO
-                desativado: c.desativado || false, dola_sent: c.dola_sent || false,
+                id: c.id,
+                data: c.data,
+                nome: c.nome,
+                telefone: c.telefone,
+                avisado: c.avisado || false,
+                debito: c.debito || false,
+                Produto: c.Produto || "Não informado",
+                arquivado: c.arquivado || false,
+                oculto: c.oculto || false,
+                reexibirEm: c.reexibirEm || null,
+                desativado: c.desativado || false,
+                dola_sent: c.dola_sent || false,
                 clicado: c.clicado || false
             }));
             const clientesJson = JSON.stringify(clientesParaExportar, null, 4);
-            const blob = new Blob([clientesJson], { type: "application/json" });
+            const blob = new Blob([clientesJson], {
+                type: "application/json"
+            });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
             link.download = "clientes.json";
             link.click();
             atualizarUltimaAtualizacao("clientes exportados");
         }
-        
+
         async function importarClientes(file = null) {
             let fileToImport = file;
             if (!fileToImport) {
@@ -1510,24 +1587,32 @@
                     saveStateToHistory();
                     const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
                     const clientesImportadosRaw = JSON.parse(reader.result);
-                    
                     const clientesProcessados = clientesImportadosRaw.map(c => {
                         const telefoneLimpo = c.telefone ? String(c.telefone).replace(/[^\d]/g, '') : '';
                         const id = telefoneLimpo.length >= 5 ? telefoneLimpo.slice(-5) : null;
                         const nomeAjustado = c.Produto && !c.nome.includes(`(${c.Produto})`) ?
                             `${c.nome.replace(/\s\(UniTv\)|\(Duplecast\)/g, '').trim()} (${c.Produto})` : c.nome;
                         return {
-                            id: id, data: c.data, nome: nomeAjustado, telefone: telefoneLimpo,
-                            avisado: c.avisado || false, debito: c.debito || false,
-                            Produto: c.Produto || "Não informado", arquivado: c.arquivado || false,
-                            oculto: c.oculto || false, reexibirEm: c.reexibirEm || null, // ATUALIZADO
-                            desativado: c.desativado || false, dola_sent: c.dola_sent || false,
+                            id: id,
+                            data: c.data,
+                            nome: nomeAjustado,
+                            telefone: telefoneLimpo,
+                            avisado: c.avisado || false,
+                            debito: c.debito || false,
+                            Produto: c.Produto || "Não informado",
+                            arquivado: c.arquivado || false,
+                            oculto: c.oculto || false,
+                            reexibirEm: c.reexibirEm || null,
+                            desativado: c.desativado || false,
+                            dola_sent: c.dola_sent || false,
                             clicado: c.clicado || false
                         };
                     });
-                    
-                    let novosClientesAdicionados = 0, clientesAtualizados = 0, clientesIgnorados = 0;
-                    
+
+                    let novosClientesAdicionados = 0,
+                        clientesAtualizados = 0,
+                        clientesIgnorados = 0;
+
                     for (const clienteImportado of clientesProcessados) {
                         if (!clienteImportado.id) {
                             clientesIgnorados++;
@@ -1535,7 +1620,9 @@
                         }
                         const indexClienteExistente = clientes.findIndex(c => c.id === clienteImportado.id);
                         if (indexClienteExistente !== -1) {
-                            clientes[indexClienteExistente] = { ...clientes[indexClienteExistente], ...clienteImportado };
+                            clientes[indexClienteExistente] = { ...clientes[indexClienteExistente],
+                                ...clienteImportado
+                            };
                             clientesAtualizados++;
                         } else {
                             clientes.push(clienteImportado);
@@ -1545,7 +1632,7 @@
 
                     saveClientsToLocalStorage();
                     chamarFiltroAtual();
-                    exibirClientesAvisados();
+                    atualizarContadores();
                     prepararClientesVencidosParaMensagem();
                     exibirAlerta(`Importação concluída: ${novosClientesAdicionados} novos, ${clientesAtualizados} atualizados, ${clientesIgnorados} ignorados.`);
                     atualizarUltimaAtualizacao("clientes importados/atualizados");
@@ -1591,10 +1678,14 @@
 
         function chamarFiltroAtual() {
             const filtros = {
-                "hojeEVencidos": filtrarHojeEVencidos, "hoje": filtrarHoje,
-                "amanha": filtrarAmanha, "vencidos": filtrarVencidos,
-                "debito": filtrarDebito, "verDepois": filtrarVerDepois,
-                "arquivados": filtrarArquivados, "desativados": filtrarDesativados,
+                "hojeEVencidos": filtrarHojeEVencidos,
+                "hoje": filtrarHoje,
+                "amanha": filtrarAmanha,
+                "vencidos": filtrarVencidos,
+                "debito": filtrarDebito,
+                "verDepois": filtrarVerDepois,
+                "arquivados": filtrarArquivados,
+                "desativados": filtrarDesativados,
                 "todos": exibirTodos
             };
             if (filtros[filtroAtual]) {
@@ -1610,7 +1701,6 @@
             filtroAtual = "todos";
             document.getElementById("searchInput").value = "";
             exibirTabela();
-            exibirClientesAvisados();
             atualizarContadores();
         }
 
@@ -1640,7 +1730,7 @@
             clientes = [];
             saveClientsToLocalStorage();
             chamarFiltroAtual();
-            exibirClientesAvisados();
+            atualizarContadores();
             atualizarUltimaAtualizacao("lista limpa", "");
             prepararClientesVencidosParaMensagem();
             try {
@@ -1649,7 +1739,7 @@
                 clientes = estadoAnteriorClientes;
                 saveClientsToLocalStorage();
                 chamarFiltroAtual();
-                exibirClientesAvisados();
+                atualizarContadores();
                 exibirAlerta(`Erro ao limpar clientes no Google Sheets: ${e.message}. Ação desfeita localmente.`);
             }
         }
@@ -1692,11 +1782,35 @@
                         <label><input type="radio" name="editarProduto" value="UniTv" ${cliente.Produto === "UniTv" ? "checked" : ""}> UniTv</label>
                         <label><input type="radio" name="editarProduto" value="Duplecast" ${cliente.Produto === "Duplecast" ? "checked" : ""}> Duplecast</label>
                     </div><br>
-                    <button id="salvarBtn">Salvar</button>
-                    <button onclick="fecharModal()">Cancelar</button>
+                    <button id="salvarBtn" class="btn-success icon-btn" title="Salvar">💾</button>
+                    <button onclick="fecharModal()" class="btn-secondary icon-btn" title="Cancelar">❌</button>
                 </div>
             `;
             document.getElementById("salvarBtn").onclick = () => salvarEdicao(cliente.id);
+
+            const novoNomeInput = document.getElementById('novoNome');
+            const novoTelefoneInput = document.getElementById('novoTelefone');
+            const novaDataInput = document.getElementById('novaData');
+
+            novoNomeInput.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    novoTelefoneInput.focus();
+                }
+            });
+            novoTelefoneInput.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    novaDataInput.focus();
+                }
+            });
+            novaDataInput.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    salvarEdicao(cliente.id);
+                }
+            });
+
             document.addEventListener("keydown", fecharComEsc);
         }
 
@@ -1726,13 +1840,17 @@
             let nomeComNovoProduto = `${novoNome.replace(/\s\(UniTv\)|\(Duplecast\)/g, '').trim()} (${novoProduto})`;
             clientes[originalClienteIndex] = {
                 ...clientes[originalClienteIndex],
-                id: novoId, nome: nomeComNovoProduto, telefone: telefoneLimpoEditado,
-                data: novaData.split("-").reverse().join("/"), Produto: novoProduto,
-                dola_sent: false, clicado: false
+                id: novoId,
+                nome: nomeComNovoProduto,
+                telefone: telefoneLimpoEditado,
+                data: novaData.split("-").reverse().join("/"),
+                Produto: novoProduto,
+                dola_sent: false,
+                clicado: false
             };
             saveClientsToLocalStorage();
             chamarFiltroAtual();
-            exibirClientesAvisados();
+            atualizarContadores();
             fecharModal();
             atualizarUltimaAtualizacao("editado", nomeComNovoProduto);
             prepararClientesVencidosParaMensagem();
@@ -1742,7 +1860,7 @@
                 clientes = estadoAnteriorClientes;
                 saveClientsToLocalStorage();
                 chamarFiltroAtual();
-                exibirClientesAvisados();
+                atualizarContadores();
                 exibirAlerta(`Erro ao salvar edição: ${error.message}. Ação desfeita localmente.`);
             }
         }
@@ -1751,7 +1869,7 @@
             let [dia, mes, ano] = data.split("/");
             return `${ano}-${mes}-${dia}`;
         }
-        
+
         function excluir(index) {
             const cliente = clientesExibidos[index];
             clienteIndexParaExcluir = clientes.findIndex(c => c.id === cliente.id);
@@ -1768,7 +1886,7 @@
             clientes.splice(clienteIndexParaExcluir, 1);
             saveClientsToLocalStorage();
             chamarFiltroAtual();
-            exibirClientesAvisados();
+            atualizarContadores();
             fecharModal();
             clienteIndexParaExcluir = null;
             atualizarUltimaAtualizacao("excluído", nomeClienteExcluido);
@@ -1779,15 +1897,14 @@
                 clientes = estadoAnteriorClientes;
                 saveClientsToLocalStorage();
                 chamarFiltroAtual();
-                exibirClientesAvisados();
+                atualizarContadores();
                 exibirAlerta(`Erro ao excluir cliente no Google Sheets: ${e.message}. Ação desfeita localmente.`);
             }
         }
-        
-        // NOVO: Abre o modal para escolher a data de reexibição
+
         function abrirModalVerDepois(index) {
             const cliente = clientesExibidos[index];
-            clienteIdParaVerDepois = cliente.id; // Armazena o ID
+            clienteIdParaVerDepois = cliente.id;
             const amanha = new Date();
             amanha.setDate(amanha.getDate() + 1);
             document.getElementById('dataReexibicaoInput').value = amanha.toISOString().split('T')[0];
@@ -1795,7 +1912,6 @@
             document.getElementById('btnConfirmarVerDepois').onclick = confirmarVerDepois;
         }
 
-        // NOVO: Confirma a data e agenda a reexibição do cliente
         async function confirmarVerDepois() {
             if (!clienteIdParaVerDepois) return;
             const dataReexibicao = document.getElementById('dataReexibicaoInput').value;
@@ -1816,7 +1932,7 @@
             clientes[clienteOriginalIndex].clicado = false;
             saveClientsToLocalStorage();
             chamarFiltroAtual();
-            exibirClientesAvisados();
+            atualizarContadores();
             fecharModal();
             atualizarUltimaAtualizacao(`agendado para ${dataReexibicao.split('-').reverse().join('/')}`, nomeCliente);
             prepararClientesVencidosParaMensagem();
@@ -1826,12 +1942,11 @@
                 clientes = estadoAnteriorClientes;
                 saveClientsToLocalStorage();
                 chamarFiltroAtual();
-                exibirClientesAvisados();
+                atualizarContadores();
                 exibirAlerta(`Erro ao agendar cliente: ${error.message}. Ação desfeita localmente.`);
             }
         }
 
-        // NOVO: Remove o agendamento e reexibe o cliente imediatamente
         async function desmarcarVerDepois(index) {
             const cliente = clientesExibidos[index];
             const clienteOriginalIndex = clientes.findIndex(c => c.id === cliente.id);
@@ -1842,7 +1957,7 @@
             clientes[clienteOriginalIndex].reexibirEm = null;
             saveClientsToLocalStorage();
             chamarFiltroAtual();
-            exibirClientesAvisados();
+            atualizarContadores();
             atualizarUltimaAtualizacao("reexibido (agendamento removido)", nomeCliente);
             prepararClientesVencidosParaMensagem();
             try {
@@ -1851,11 +1966,10 @@
                 clientes = estadoAnteriorClientes;
                 saveClientsToLocalStorage();
                 chamarFiltroAtual();
-                exibirClientesAvisados();
+                atualizarContadores();
                 exibirAlerta(`Erro ao desmarcar cliente: ${error.message}. Ação desfeita localmente.`);
             }
         }
-
 
         async function toggleDesativado(index) {
             const cliente = clientesExibidos[index];
@@ -1868,13 +1982,13 @@
                 clientes[clienteOriginalIndex].avisado = false;
                 clientes[clienteOriginalIndex].debito = false;
                 clientes[clienteOriginalIndex].oculto = false;
-                clientes[clienteOriginalIndex].reexibirEm = null; // ATUALIZADO
+                clientes[clienteOriginalIndex].reexibirEm = null;
                 clientes[clienteOriginalIndex].arquivado = false;
                 clientes[clienteOriginalIndex].clicado = false;
             }
             saveClientsToLocalStorage();
             chamarFiltroAtual();
-            exibirClientesAvisados();
+            atualizarContadores();
             atualizarUltimaAtualizacao(`status desativado: ${clientes[clienteOriginalIndex].desativado ? 'sim' : 'não'}`, cliente.nome);
             prepararClientesVencidosParaMensagem();
             try {
@@ -1883,7 +1997,7 @@
                 clientes = estadoAnteriorClientes;
                 saveClientsToLocalStorage();
                 chamarFiltroAtual();
-                exibirClientesAvisados();
+                atualizarContadores();
                 exibirAlerta(`Erro ao alterar status desativado: ${error.message}. Ação desfeita localmente.`);
             }
         }
@@ -1908,7 +2022,7 @@
             }
             saveClientsToLocalStorage();
             chamarFiltroAtual();
-            exibirClientesAvisados();
+            atualizarContadores();
             fecharModal();
             clienteIndexParaAlterarProduto = null;
             exibirAlerta(`Produto do cliente alterado para ${novoProduto}!`);
@@ -1920,14 +2034,16 @@
                 clientes = estadoAnteriorClientes;
                 saveClientsToLocalStorage();
                 chamarFiltroAtual();
-                exibirClientesAvisados();
+                atualizarContadores();
                 exibirAlerta(`Erro ao alterar produto: ${error.message}. Ação desfeita localmente.`);
             }
         }
 
         async function salvarClientes() {
             try {
-                const response = await sendRequestToBackend('bulk_update_clients', { clients: clientes });
+                const response = await sendRequestToBackend('bulk_update_clients', {
+                    clients: clientes
+                });
                 if (response.status !== 'success') {
                     throw new Error(response.message || 'Erro ao sincronizar com backend.');
                 }
@@ -1954,11 +2070,18 @@
                             }
                         }
                         return {
-                            id: c.id || clienteId, data: dataClienteFormatada, nome: c.nome, telefone: telefoneLimpo,
-                            avisado: c.avisado || false, debito: c.debito || false,
-                            Produto: c.Produto || "Não informado", arquivado: c.arquivado || false,
-                            oculto: c.oculto || false, reexibirEm: c.reexibirEm || null, // ATUALIZADO
-                            desativado: c.desativado || false, dola_sent: c.dola_sent || false,
+                            id: c.id || clienteId,
+                            data: dataClienteFormatada,
+                            nome: c.nome,
+                            telefone: telefoneLimpo,
+                            avisado: c.avisado || false,
+                            debito: c.debito || false,
+                            Produto: c.Produto || "Não informado",
+                            arquivado: c.arquivado || false,
+                            oculto: c.oculto || false,
+                            reexibirEm: c.reexibirEm || null,
+                            desativado: c.desativado || false,
+                            dola_sent: c.dola_sent || false,
                             clicado: c.clicado || false
                         };
                     }).filter(c => c.id !== null);
@@ -1983,8 +2106,8 @@
                 }
             } finally {
                 esconderCarregando();
+                loadConfiguracaoBotoes();
                 filtrarHojeEVencidos();
-                exibirClientesAvisados();
                 prepararClientesVencidosParaMensagem();
                 saveStateToHistory();
                 loadSettings();
@@ -1992,15 +2115,10 @@
             document.getElementById('ultimaAtualizacaoInfo').textContent = localStorage.getItem('ultimaAtualizacaoCliente') || 'Última Alteração: Nunca';
         }
 
-        function compartilharWhatsApp() {
-            window.open(`https://wa.me/?text=${encodeURIComponent('Olá, estou compartilhando esta lista de clientes com você.')}`, '_blank');
-        }
-
         function debouncePesquisa() {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
                 exibirTabela();
-                exibirClientesAvisados();
             }, 300);
         }
 
@@ -2009,49 +2127,163 @@
             exibirTodos();
         }
 
-        const SETTINGS_KEY = 'inputSettings';
-        const DEFAULT_INPUT_WIDTH_PERCENT = 16;
+        const SETTINGS_KEY = 'interfaceSettings';
+        const DEFAULT_SETTINGS = {
+            width: 16,
+            roundButtons: false,
+            transparentButtons: false,
+            buttonSpacing: 5,
+            clientNameColor: '#007bff',
+            avisadoColor: '#e0f7fa',
+            debitoColor: '#fff3e0',
+            vencendoHojeColor: '#fff9c4',
+            vencidoColor: '#ffcdd2'
+        };
 
         function toggleSettingsArea() {
             const settingsArea = document.getElementById('settingsArea');
             settingsArea.style.display = (settingsArea.style.display === 'block') ? 'none' : 'block';
-            if (settingsArea.style.display === 'block') loadSettings();
+        }
+        
+        function applyButtonStyles() {
+            const round = document.getElementById('roundButtonsCheckbox').checked;
+            const transparent = document.getElementById('transparentButtonsCheckbox').checked;
+            document.body.classList.toggle('round-buttons', round);
+            document.body.classList.toggle('transparent-buttons', transparent);
+        }
+        
+        function updateButtonSpacing(value) {
+            document.getElementById('buttonSpacingValue').textContent = value;
+            document.documentElement.style.setProperty('--button-gap', `${value}px`);
+        }
+        
+        function updateCssVariable(variable, value) {
+            document.documentElement.style.setProperty(variable, value);
         }
 
-        function applyInputWidth(widthPercent) {
+        function updateInputWidth(value) {
+            document.getElementById('inputWidthValue').textContent = value;
             document.querySelectorAll('.configurable-input').forEach(input => {
-                input.style.flexBasis = `${widthPercent}%`;
-                input.style.maxWidth = `${widthPercent}%`;
+                input.style.flexBasis = `${value}%`;
+                input.style.maxWidth = `${value}%`;
             });
         }
-        function updateInputWidth(value) {
-            document.getElementById('inputWidthValue').textContent = `${value}%`;
-            applyInputWidth(value);
-        }
+
         function saveSettings() {
-            localStorage.setItem(SETTINGS_KEY, JSON.stringify({ width: document.getElementById('inputWidth').value }));
+            const settings = {
+                width: document.getElementById('inputWidth').value,
+                roundButtons: document.getElementById('roundButtonsCheckbox').checked,
+                transparentButtons: document.getElementById('transparentButtonsCheckbox').checked,
+                buttonSpacing: document.getElementById('buttonSpacingSlider').value,
+                clientNameColor: document.getElementById('clientNameColorPicker').value,
+                avisadoColor: document.getElementById('avisadoColorPicker').value,
+                debitoColor: document.getElementById('debitoColorPicker').value,
+                vencendoHojeColor: document.getElementById('vencendoHojeColorPicker').value,
+                vencidoColor: document.getElementById('vencidoColorPicker').value
+            };
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
             exibirAlerta("Ajustes salvos!");
             toggleSettingsArea();
         }
+
         function loadSettings() {
+            let settings = { ...DEFAULT_SETTINGS };
             const savedSettings = localStorage.getItem(SETTINGS_KEY);
-            let widthToApply = DEFAULT_INPUT_WIDTH_PERCENT;
             if (savedSettings) {
                 try {
-                    widthToApply = JSON.parse(savedSettings).width || DEFAULT_INPUT_WIDTH_PERCENT;
+                    settings = { ...settings, ...JSON.parse(savedSettings) };
                 } catch (e) {
                     localStorage.removeItem(SETTINGS_KEY);
                 }
             }
-            document.getElementById('inputWidth').value = widthToApply;
-            document.getElementById('inputWidthValue').textContent = `${widthToApply}%`;
-            applyInputWidth(widthToApply);
+            
+            // Aplicar Input Width
+            document.getElementById('inputWidth').value = settings.width;
+            updateInputWidth(settings.width);
+
+            // Aplicar Estilos de Botão
+            document.getElementById('roundButtonsCheckbox').checked = settings.roundButtons;
+            document.getElementById('transparentButtonsCheckbox').checked = settings.transparentButtons;
+            applyButtonStyles();
+            
+            // Aplicar Espaçamento de Botão
+            document.getElementById('buttonSpacingSlider').value = settings.buttonSpacing;
+            updateButtonSpacing(settings.buttonSpacing);
+
+            // Aplicar Cor do Nome do Cliente
+            document.getElementById('clientNameColorPicker').value = settings.clientNameColor;
+            updateCssVariable('--client-name-color', settings.clientNameColor);
+
+            // Aplicar Cores de Status
+            document.getElementById('avisadoColorPicker').value = settings.avisadoColor;
+            updateCssVariable('--avisado-color', settings.avisadoColor);
+
+            document.getElementById('debitoColorPicker').value = settings.debitoColor;
+            updateCssVariable('--debito-color', settings.debitoColor);
+
+            document.getElementById('vencendoHojeColorPicker').value = settings.vencendoHojeColor;
+            updateCssVariable('--vencendo-hoje-color', settings.vencendoHojeColor);
+            
+            document.getElementById('vencidoColorPicker').value = settings.vencidoColor;
+            updateCssVariable('--vencido-color', settings.vencidoColor);
         }
+
         function resetSettings() {
             localStorage.removeItem(SETTINGS_KEY);
-            exibirAlerta("Ajustes redefinidos!");
+            exibirAlerta("Ajustes redefinidos para o padrão!");
             loadSettings();
-            toggleSettingsArea();
+        }
+        
+        function loadConfiguracaoBotoes() {
+            const configSalva = localStorage.getItem('acaoBotoesConfig');
+            if (configSalva) {
+                try {
+                    const parsedConfig = JSON.parse(configSalva);
+                    acaoBotoesConfig = { ...defaultAcaoBotoesConfig
+                    };
+                    for (const key in parsedConfig) {
+                        if (acaoBotoesConfig.hasOwnProperty(key)) {
+                            acaoBotoesConfig[key].visivel = parsedConfig[key].visivel;
+                        }
+                    }
+                } catch (e) {
+                    console.error("Erro ao carregar configuração de botões, usando padrão.", e);
+                    acaoBotoesConfig = JSON.parse(JSON.stringify(defaultAcaoBotoesConfig));
+                }
+            } else {
+                acaoBotoesConfig = JSON.parse(JSON.stringify(defaultAcaoBotoesConfig));
+            }
+        }
+
+        function abrirModalConfigurarBotoes() {
+            const listContainer = document.getElementById('botoesConfigList');
+            listContainer.innerHTML = '';
+            for (const key in acaoBotoesConfig) {
+                const config = acaoBotoesConfig[key];
+                const checkboxId = `chk-btn-${key}`;
+                const itemHtml = `
+                    <div style="margin-bottom: 5px;">
+                        <input type="checkbox" id="${checkboxId}" data-key="${key}" ${config.visivel ? 'checked' : ''}>
+                        <label for="${checkboxId}">${config.label}</label>
+                    </div>
+                `;
+                listContainer.innerHTML += itemHtml;
+            }
+            document.getElementById('modalConfigurarBotoes').style.display = 'flex';
+        }
+
+        function salvarConfiguracaoBotoes() {
+            const checkboxes = document.querySelectorAll('#botoesConfigList input[type="checkbox"]');
+            checkboxes.forEach(chk => {
+                const key = chk.dataset.key;
+                if (acaoBotoesConfig[key]) {
+                    acaoBotoesConfig[key].visivel = chk.checked;
+                }
+            });
+            localStorage.setItem('acaoBotoesConfig', JSON.stringify(acaoBotoesConfig));
+            fecharModal();
+            chamarFiltroAtual();
+            exibirAlerta("Configuração de botões salva!");
         }
 
         function atualizarContadores() {
@@ -2060,10 +2292,10 @@
             const hojeStr = new Date().toISOString().split('T')[0];
 
             const clientesVisiveis = clientes.filter(c => !c.arquivado && !c.oculto && !c.desativado && (!c.reexibirEm || c.reexibirEm <= hojeStr));
-            
             const countHoje = clientesVisiveis.filter(c => c.data === hojeFormatada && !c.avisado).length;
             const countAmanha = clientesVisiveis.filter(c => {
-                const amanha = new Date(); amanha.setDate(amanha.getDate() + 1);
+                const amanha = new Date();
+                amanha.setDate(amanha.getDate() + 1);
                 return c.data === amanha.toLocaleDateString('pt-BR');
             }).length;
             const countVencidos = clientesVisiveis.filter(c => {
@@ -2092,6 +2324,7 @@
                 badge.textContent = count;
             }
         }
+
         function mostrarContagemProdutos() {
             const clientesAtivos = clientes.filter(c => !c.arquivado && !c.oculto && !c.desativado);
             document.getElementById('countUniTv').textContent = clientesAtivos.filter(c => c.Produto === 'UniTv').length;
@@ -2130,9 +2363,33 @@
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date();
             document.getElementById('dataInput').value = today.toISOString().split('T')[0];
-            document.getElementById('dataAtual').innerText = today.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+            document.getElementById('dataAtual').innerText = today.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit'
+            });
+
+            document.getElementById('dataInput').addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    document.getElementById('nomeInput').focus();
+                }
+            });
+            document.getElementById('nomeInput').addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    document.getElementById('telefoneInput').focus();
+                }
+            });
+            document.getElementById('telefoneInput').addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    adicionarCliente();
+                }
+            });
+
             loadClientes();
         });
     </script>
 </body>
 </html>
+
