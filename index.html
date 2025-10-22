@@ -62,6 +62,7 @@
             border-radius: var(--border-radius);
             box-sizing: border-box;
             transition: border-color 0.3s, box-shadow 0.3s;
+            width: 100%;
         }
 
         input[type="text"]:focus,
@@ -80,10 +81,9 @@
             margin-bottom: 15px;
         }
 
-        .input-group-horizontal input {
+        .input-group-horizontal .input-wrapper {
             flex: 1;
             min-width: 150px;
-            margin-bottom: 0;
         }
         
         div > label {
@@ -131,6 +131,26 @@
             height: 44px;
             font-size: 1.2em;
         }
+        
+        .pulsing-btn {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+            }
+        }
+
 
         /* Variações de Cor dos Botões */
         button.btn-secondary { background-color: var(--secondary-color); }
@@ -362,10 +382,12 @@
 
         <h3>Adicionar Cliente</h3>
         <div class="input-group-horizontal">
-            <input type="date" id="dataInput" class="configurable-input" required>
-            <input type="text" id="nomeInput" class="configurable-input" placeholder="Nome do Cliente" required>
-            <input type="tel" id="telefoneInput" class="configurable-input" placeholder="Telefone (ex: 11999999999)" required>
+            <div class="input-wrapper"><input type="date" id="dataInput" required title="Data de Vencimento"></div>
+            <div class="input-wrapper"><input type="text" id="nomeInput" placeholder="Nome do Cliente" required></div>
+            <div class="input-wrapper"><input type="tel" id="telefoneInput" placeholder="Telefone (ex: 11999999999)" required></div>
+            <div class="input-wrapper"><input type="date" id="dataCobrancaInput" title="Data de Cobrança (Opcional)"></div>
         </div>
+        <textarea id="observacaoInput" placeholder="Observação (Opcional)"></textarea>
         <div>
             <label>
                 <input type="radio" name="produto" value="UniTv" checked> UniTv
@@ -378,6 +400,7 @@
 
         <h3>Filtros e Ações</h3>
         <button onclick="filtrarHojeEVencidos()">Vencendo Hoje + Vencidos <span id="badgeHojeEVencidos" class="notification-badge" style="display:none;"></span></button>
+        <button onclick="filtrarCobrancaHoje()" class="btn-info">Cobrança Hoje <span id="badgeCobrancaHoje" class="notification-badge" style="display:none;"></span></button>
         <button onclick="filtrarHoje()">Clientes Vencendo Hoje <span id="badgeHoje" class="notification-badge" style="display:none;"></span></button>
         <button onclick="filtrarAmanha()">Clientes Vencendo Amanhã <span id="badgeAmanha" class="notification-badge" style="display:none;"></span></button>
         <button onclick="filtrarVencidos()">Clientes Vencidos <span id="badgeVencidos" class="notification-badge" style="display:none;"></span></button>
@@ -520,7 +543,7 @@
             <div class="modal-content">
                 <h3>Agendar Reexibição</h3>
                 <p>Escolha a data em que este cliente deve voltar a aparecer na lista principal.</p>
-                <input type="date" id="dataReexibicaoInput" style="width: 90%; padding: 10px; margin: 10px 0;">
+                <input type="date" id="dataReexibicaoInput" onkeydown="if(event.key==='Enter'){event.preventDefault(); document.getElementById('btnConfirmarVerDepois').click();}" style="width: 90%; padding: 10px; margin: 10px 0;">
                 <button id="btnConfirmarVerDepois" class="btn-success">Confirmar</button>
                 <button onclick="fecharModal()" class="btn-secondary">Cancelar</button>
             </div>
@@ -576,6 +599,7 @@
         // NOVO: Configuração dos botões de ação
         let acaoBotoesConfig = {};
         const defaultAcaoBotoesConfig = {
+            observacao: {                label: '💬 Observação',                visivel: true            },
             dola: {                label: '🤖 Dola',                visivel: true            },
             renovarAuto: {                label: 'Renov. Auto (🔁)',                visivel: true            },
             debito: {                label: 'DÉBITO',                visivel: true            },
@@ -764,9 +788,11 @@
             const nomeInput = document.getElementById("nomeInput").value.trim();
             const telefoneInput = document.getElementById("telefoneInput").value.trim();
             const produtoSelecionado = document.querySelector('input[name="produto"]:checked').value;
+            const dataCobrancaInput = document.getElementById("dataCobrancaInput").value.trim();
+            const observacaoInput = document.getElementById("observacaoInput").value.trim();
 
             if (!dataInput || !nomeInput || !telefoneInput) {
-                return exibirAlerta("Por favor, insira a data, o nome e o telefone do cliente.");
+                return exibirAlerta("Por favor, insira a data de vencimento, o nome e o telefone do cliente.");
             }
             const telefoneLimpo = telefoneInput.replace(/[^\d]/g, '');
             if (telefoneLimpo.length < 5) {
@@ -797,13 +823,17 @@
                 reexibirEm: null,
                 desativado: false,
                 dola_sent: false,
-                clicado: false
+                clicado: false,
+                dataCobranca: dataCobrancaInput ? dataCobrancaInput.split("-").reverse().join("/") : null,
+                observacao: observacaoInput || null
             };
 
             clientes.push(novoClienteObj);
             saveClientsToLocalStorage();
             document.getElementById("nomeInput").value = "";
             document.getElementById("telefoneInput").value = "";
+            document.getElementById("dataCobrancaInput").value = "";
+            document.getElementById("observacaoInput").value = "";
             exibirTabela();
             atualizarContadores();
             atualizarUltimaAtualizacao("adicionado", nomeInput);
@@ -902,6 +932,12 @@
             document.getElementById("searchInput").value = "";
             exibirTabela();
         }
+        
+        function filtrarCobrancaHoje() {
+            filtroAtual = "cobrancaHoje";
+            document.getElementById("searchInput").value = "";
+            exibirTabela();
+        }
 
         function filtrarPorProduto(produto) {
             filtroAtual = `produto:${produto}`;
@@ -924,6 +960,8 @@
             const termoPesquisa = document.getElementById("searchInput").value.trim().toLowerCase();
             let clientesParaProcessar;
             const hojeStr = new Date().toISOString().split('T')[0];
+            const hojeFormatada = new Date().toLocaleDateString('pt-BR').split('/').map(p => p.padStart(2,'0')).join('/');
+
 
             const isVisivelHoje = (cliente) => {
                 return !cliente.reexibirEm || cliente.reexibirEm <= hojeStr;
@@ -935,13 +973,14 @@
                 );
             } else if (filtroAtual === "verDepois") {
                 clientesParaProcessar = clientes.filter(cliente => cliente.reexibirEm && cliente.reexibirEm > hojeStr);
+            } else if (filtroAtual === "cobrancaHoje") {
+                clientesParaProcessar = clientes.filter(c => c.dataCobranca === hojeFormatada && !c.arquivado && !c.oculto && !c.desativado && isVisivelHoje(c));
             } else if (filtroAtual === "hojeEVencidos") {
                 const hoje = new Date();
                 const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
-                const hojeFormatada = hoje.getDate().toString().padStart(2, '0') + "/" +
-                    (hoje.getMonth() + 1).toString().padStart(2, '0') + "/" +
-                    hoje.getFullYear();
+                
                 clientesParaProcessar = clientes.filter(cliente => {
+                    if (!cliente.data) return false;
                     const [dia, mes, ano] = cliente.data.split("/").map(num => parseInt(num));
                     const dataCliente = new Date(ano, mes - 1, dia);
                     const isVencendoHoje = cliente.data === hojeFormatada;
@@ -956,21 +995,16 @@
                 const produto = filtroAtual.split(":")[1];
                 clientesParaProcessar = clientes.filter(cliente => cliente.Produto === produto && !cliente.arquivado && !cliente.oculto && !cliente.desativado && isVisivelHoje(cliente));
             } else if (filtroAtual === "hoje") {
-                const hoje = new Date();
-                const hojeFormatada = hoje.getDate().toString().padStart(2, '0') + "/" +
-                    (hoje.getMonth() + 1).toString().padStart(2, '0') + "/" +
-                    hoje.getFullYear();
                 clientesParaProcessar = clientes.filter(cliente => cliente.data === hojeFormatada && !cliente.arquivado && !cliente.oculto && !cliente.desativado && !cliente.avisado && isVisivelHoje(cliente));
             } else if (filtroAtual === "amanha") {
                 const amanha = new Date();
                 amanha.setDate(amanha.getDate() + 1);
-                const amanhaFormatada = amanha.getDate().toString().padStart(2, '0') + "/" +
-                    (amanha.getMonth() + 1).toString().padStart(2, '0') + "/" +
-                    amanha.getFullYear();
+                const amanhaFormatada = amanha.toLocaleDateString('pt-BR').split('/').map(p => p.padStart(2,'0')).join('/');
                 clientesParaProcessar = clientes.filter(cliente => cliente.data === amanhaFormatada && !cliente.arquivado && !cliente.oculto && !cliente.desativado && isVisivelHoje(cliente));
             } else if (filtroAtual === "vencidos") {
                 const hoje = new Date();
                 clientesParaProcessar = clientes.filter(cliente => {
+                    if (!cliente.data) return false;
                     const [dia, mes, ano] = cliente.data.split("/").map(num => parseInt(num));
                     const dataCliente = new Date(ano, mes - 1, dia);
                     const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
@@ -999,6 +1033,7 @@
             tabela.innerHTML = "";
 
             clientesExibidos.sort((a, b) => {
+                if (!a.data || !b.data) return 0;
                 const [diaA, mesA, anoA] = a.data.split("/").map(num => parseInt(num));
                 const [diaB, mesB, anoB] = b.data.split("/").map(num => parseInt(num));
                 const dataA = new Date(anoA, mesA - 1, diaA);
@@ -1007,23 +1042,25 @@
             });
 
             const hoje = new Date();
-            const hojeFormatadaDDMMYYYY = hoje.getDate().toString().padStart(2, '0') + "/" +
-                (hoje.getMonth() + 1).toString().padStart(2, '0') + "/" +
-                hoje.getFullYear();
+            const hojeFormatadaDDMMYYYY = hoje.toLocaleDateString('pt-BR').split('/').map(p => p.padStart(2,'0')).join('/');
 
             clientesExibidos.forEach((cliente, index) => {
                 const tr = document.createElement("tr");
                 tr.classList.remove("avisado", "debito", "vencendo-hoje", "vencido");
                 if (cliente.avisado) tr.classList.add("avisado");
                 if (cliente.debito) tr.classList.add("debito");
-                const [diaCliente, mesCliente, anoCliente] = cliente.data.split("/").map(num => parseInt(num));
-                const dataCliente = new Date(anoCliente, mesCliente - 1, diaCliente);
-                const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
-                if (cliente.data === hojeFormatadaDDMMYYYY) {
-                    tr.classList.add("vencendo-hoje");
-                } else if (dataCliente < hojeSemHora) {
-                    tr.classList.add("vencido");
+                
+                if(cliente.data) {
+                    const [diaCliente, mesCliente, anoCliente] = cliente.data.split("/").map(num => parseInt(num));
+                    const dataCliente = new Date(anoCliente, mesCliente - 1, diaCliente);
+                    const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+                    if (cliente.data === hojeFormatadaDDMMYYYY) {
+                        tr.classList.add("vencendo-hoje");
+                    } else if (dataCliente < hojeSemHora) {
+                        tr.classList.add("vencido");
+                    }
                 }
+
                 let botoesAcao = '';
                 if (filtroAtual === "arquivados") {
                     botoesAcao = `
@@ -1046,6 +1083,7 @@
                 } else {
                     const dolaButtonClass = cliente.dola_sent ? 'btn-dola-sent' : 'btn-dola';
                     let botoesHtml = [];
+                    if (cliente.observacao && acaoBotoesConfig.observacao.visivel) botoesHtml.push(`<button title="Ver Observação" class="btn-info pulsing-btn" onclick="mostrarObservacao(${index})">💬</button>`);
                     if (acaoBotoesConfig.dola.visivel) botoesHtml.push(`<button title="Enviar Lembrete Dola" class="${dolaButtonClass}" onclick="enviarMensagemWhatsAppDola(${index})">🤖</button>`);
                     if (acaoBotoesConfig.renovarAuto.visivel) botoesHtml.push(`<button title="Renovar Automático" onclick="renovarAutomatico(${index})">🔁</button>`);
                     if (acaoBotoesConfig.debito.visivel) botoesHtml.push(`<button title="Renovar com Débito" class="btn-debito-segurar" onclick="pedirConfirmacaoRenovacaoDebito(${index})">💰</button>`);
@@ -1063,10 +1101,15 @@
 
                 const nomeExibicaoBase = cliente.nome.replace(/\s\(UniTv\)/g, '').replace(/\s\(Duplecast\)/g, '');
                 const classeDinamica = cliente.clicado ? 'cliente-clicado' : '';
+                
+                let datasHtml = `<span>📅 ${formatDateForDisplay(cliente.data)}</span>`;
+                if (cliente.dataCobranca) {
+                    datasHtml += ` <span style="color: var(--success-color); font-weight: bold;">💲 ${formatDateForDisplay(cliente.dataCobranca)}</span>`;
+                }
 
                 tr.innerHTML = `
                     <td>
-                        <span>${formatDateForDisplay(cliente.data)}</span>
+                        ${datasHtml}
                         <a href="#" class="${classeDinamica}" onclick="marcarClienteClicado(this); enviarMensagemWhatsApp('${nomeExibicaoBase}', '${cliente.telefone}', ${index}); return false;">
                             ${nomeExibicaoBase} (${cliente.Produto || 'N/I'})
                         </a>
@@ -1077,6 +1120,7 @@
             });
             atualizarContadores();
         }
+
 
         async function toggleAvisadoFromAvisados(clientId) {
             const clienteOriginalIndex = clientes.findIndex(c => c.id === clientId);
@@ -1380,7 +1424,8 @@
                 reexibirEm: null,
                 desativado: false,
                 dola_sent: false,
-                clicado: false
+                clicado: false,
+                dataCobranca: clienteOriginal.dataCobranca
             };
             clientes.push(novoCliente);
             saveClientsToLocalStorage();
@@ -1556,7 +1601,9 @@
                 reexibirEm: c.reexibirEm || null,
                 desativado: c.desativado || false,
                 dola_sent: c.dola_sent || false,
-                clicado: c.clicado || false
+                clicado: c.clicado || false,
+                dataCobranca: c.dataCobranca || null,
+                observacao: c.observacao || null
             }));
             const clientesJson = JSON.stringify(clientesParaExportar, null, 4);
             const blob = new Blob([clientesJson], {
@@ -1605,7 +1652,9 @@
                             reexibirEm: c.reexibirEm || null,
                             desativado: c.desativado || false,
                             dola_sent: c.dola_sent || false,
-                            clicado: c.clicado || false
+                            clicado: c.clicado || false,
+                            dataCobranca: c.dataCobranca || null,
+                            observacao: c.observacao || null
                         };
                     });
 
@@ -1679,6 +1728,7 @@
         function chamarFiltroAtual() {
             const filtros = {
                 "hojeEVencidos": filtrarHojeEVencidos,
+                "cobrancaHoje": filtrarCobrancaHoje,
                 "hoje": filtrarHoje,
                 "amanha": filtrarAmanha,
                 "vencidos": filtrarVencidos,
@@ -1777,7 +1827,11 @@
                     <h3>Editar Cliente</h3>
                     <input type="text" id="novoNome" value="${nomeLimpo}" placeholder="Nome"><br><br>
                     <input type="tel" id="novoTelefone" value="${cliente.telefone}" placeholder="Telefone"><br><br>
+                    <label>Data de Vencimento</label><br>
                     <input type="date" id="novaData" value="${formatarParaInputDate(cliente.data)}"><br><br>
+                    <label>Data de Cobrança (Opcional)</label><br>
+                    <input type="date" id="novaDataCobranca" value="${formatarParaInputDate(cliente.dataCobranca)}"><br><br>
+                    <textarea id="novaObservacao" placeholder="Observação (Opcional)">${cliente.observacao || ''}</textarea><br><br>
                     <div>
                         <label><input type="radio" name="editarProduto" value="UniTv" ${cliente.Produto === "UniTv" ? "checked" : ""}> UniTv</label>
                         <label><input type="radio" name="editarProduto" value="Duplecast" ${cliente.Produto === "Duplecast" ? "checked" : ""}> Duplecast</label>
@@ -1813,6 +1867,13 @@
 
             document.addEventListener("keydown", fecharComEsc);
         }
+        
+        function mostrarObservacao(index) {
+            const cliente = clientesExibidos[index];
+            if (cliente && cliente.observacao) {
+                exibirAlerta(`<b>Observação para ${cliente.nome.replace(/\s\(.*\)/, '')}:</b><br><br>${cliente.observacao}`);
+            }
+        }
 
         async function salvarEdicao(clientId) {
             const originalClienteIndex = clientes.findIndex(c => c.id === clientId);
@@ -1822,9 +1883,11 @@
             let novoNome = document.getElementById("novoNome").value.trim();
             let novoTelefone = document.getElementById("novoTelefone").value.trim();
             let novaData = document.getElementById("novaData").value.trim();
+            let novaDataCobranca = document.getElementById("novaDataCobranca").value.trim();
+            let novaObservacao = document.getElementById("novaObservacao").value.trim();
             let novoProduto = document.querySelector('input[name="editarProduto"]:checked').value;
             if (!novoNome || !novaData) {
-                exibirAlerta("Nome e data são obrigatórios!");
+                exibirAlerta("Nome e data de vencimento são obrigatórios!");
                 return;
             }
             const telefoneLimpoEditado = novoTelefone.replace(/[^\d]/g, '');
@@ -1846,7 +1909,9 @@
                 data: novaData.split("-").reverse().join("/"),
                 Produto: novoProduto,
                 dola_sent: false,
-                clicado: false
+                clicado: false,
+                dataCobranca: novaDataCobranca ? novaDataCobranca.split("-").reverse().join("/") : null,
+                observacao: novaObservacao || null
             };
             saveClientsToLocalStorage();
             chamarFiltroAtual();
@@ -1866,7 +1931,10 @@
         }
 
         function formatarParaInputDate(data) {
-            let [dia, mes, ano] = data.split("/");
+            if (!data) return '';
+            let parts = data.split("/");
+            if(parts.length !== 3) return '';
+            let [dia, mes, ano] = parts;
             return `${ano}-${mes}-${dia}`;
         }
 
@@ -1910,6 +1978,7 @@
             document.getElementById('dataReexibicaoInput').value = amanha.toISOString().split('T')[0];
             document.getElementById('modalVerDepois').style.display = 'flex';
             document.getElementById('btnConfirmarVerDepois').onclick = confirmarVerDepois;
+            document.addEventListener("keydown", fecharComEsc);
         }
 
         async function confirmarVerDepois() {
@@ -2082,7 +2151,9 @@
                             reexibirEm: c.reexibirEm || null,
                             desativado: c.desativado || false,
                             dola_sent: c.dola_sent || false,
-                            clicado: c.clicado || false
+                            clicado: c.clicado || false,
+                            dataCobranca: c.dataCobranca || null,
+                            observacao: c.observacao || null
                         };
                     }).filter(c => c.id !== null);
                     saveClientsToLocalStorage();
@@ -2138,6 +2209,7 @@
             debitoColor: '#fff3e0',
             vencendoHojeColor: '#fff9c4',
             vencidoColor: '#ffcdd2'
+            // Removed tableWidth, tableAlign, paddingLeft, paddingRight defaults
         };
 
         function toggleSettingsArea() {
@@ -2154,7 +2226,7 @@
         
         function updateButtonSpacing(value) {
             document.getElementById('buttonSpacingValue').textContent = value;
-            document.documentElement.style.setProperty('--button-gap', `${value}px`);
+            updateCssVariable('--button-gap', `${value}px`);
         }
         
         function updateCssVariable(variable, value) {
@@ -2163,11 +2235,16 @@
 
         function updateInputWidth(value) {
             document.getElementById('inputWidthValue').textContent = value;
-            document.querySelectorAll('.configurable-input').forEach(input => {
-                input.style.flexBasis = `${value}%`;
-                input.style.maxWidth = `${value}%`;
+            document.querySelectorAll('.input-wrapper').forEach(wrapper => {
+                wrapper.style.flexBasis = `calc(${value}% - 10px)`;
             });
         }
+        
+        // Remove functions related to missing elements
+        // function updateTableWidth(value) { ... }
+        // function updateTableAlignment(value) { ... }
+        // function updateTablePaddingLeft(value) { ... }
+        // function updateTablePaddingRight(value) { ... }
 
         function saveSettings() {
             const settings = {
@@ -2180,6 +2257,7 @@
                 debitoColor: document.getElementById('debitoColorPicker').value,
                 vencendoHojeColor: document.getElementById('vencendoHojeColorPicker').value,
                 vencidoColor: document.getElementById('vencidoColorPicker').value
+                // Removed lines trying to read tableWidth, tableAlign, paddingLeft, paddingRight
             };
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
             exibirAlerta("Ajustes salvos!");
@@ -2226,6 +2304,8 @@
             
             document.getElementById('vencidoColorPicker').value = settings.vencidoColor;
             updateCssVariable('--vencido-color', settings.vencidoColor);
+            
+            // Removed code applying tableWidth, tableAlign, paddingLeft, paddingRight
         }
 
         function resetSettings() {
@@ -2288,7 +2368,7 @@
 
         function atualizarContadores() {
             const hoje = new Date();
-            const hojeFormatada = hoje.toLocaleDateString('pt-BR');
+            const hojeFormatada = hoje.toLocaleDateString('pt-BR').split('/').map(p => p.padStart(2,'0')).join('/');
             const hojeStr = new Date().toISOString().split('T')[0];
 
             const clientesVisiveis = clientes.filter(c => !c.arquivado && !c.oculto && !c.desativado && (!c.reexibirEm || c.reexibirEm <= hojeStr));
@@ -2296,16 +2376,20 @@
             const countAmanha = clientesVisiveis.filter(c => {
                 const amanha = new Date();
                 amanha.setDate(amanha.getDate() + 1);
-                return c.data === amanha.toLocaleDateString('pt-BR');
+                return c.data === amanha.toLocaleDateString('pt-BR').split('/').map(p => p.padStart(2,'0')).join('/');
             }).length;
             const countVencidos = clientesVisiveis.filter(c => {
+                if(!c.data) return false;
                 const [dia, mes, ano] = c.data.split('/').map(Number);
                 const dataCliente = new Date(ano, mes - 1, dia);
                 const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
                 return dataCliente < hojeSemHora && !c.avisado;
             }).length;
+            
+            const countCobrancaHoje = clientesVisiveis.filter(c => c.dataCobranca === hojeFormatada).length;
 
             updateBadge('badgeHojeEVencidos', countHoje + countVencidos);
+            updateBadge('badgeCobrancaHoje', countCobrancaHoje);
             updateBadge('badgeHoje', countHoje);
             updateBadge('badgeAmanha', countAmanha);
             updateBadge('badgeVencidos', countVencidos);
@@ -2337,6 +2421,7 @@
             const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
             const hojeStr = hoje.toISOString().split('T')[0];
             clientesVencidosParaMensagem = clientes.filter(c => {
+                if(!c.data) return false;
                 const [dia, mes, ano] = c.data.split("/").map(Number);
                 const dataCliente = new Date(ano, mes - 1, dia);
                 const isVencidoOuHoje = dataCliente.getTime() <= hojeSemHora.getTime();
