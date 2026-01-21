@@ -1,4 +1,6 @@
 
+
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -365,6 +367,70 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+    
+        /* === Seleção múltipla + ações em lote === */
+        .bulk-bar {
+            position: sticky;
+            top: 0;
+            z-index: 1500;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(6px);
+            border: 1px solid #e6e6e6;
+            border-radius: var(--border-radius);
+            padding: 10px;
+            margin: 10px 0 15px;
+            display: none;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        }
+        .bulk-bar .bulk-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+        .bulk-bar .bulk-count {
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-right: 6px;
+        }
+        .bulk-bar .bulk-hint {
+            color: #666;
+            font-size: 0.9em;
+            margin-left: 6px;
+        }
+        .select-cliente {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            accent-color: var(--primary-color);
+            cursor: pointer;
+        }
+        .row-selected {
+            outline: 2px solid rgba(0,123,255,0.25);
+            outline-offset: -2px;
+        }
+
+    
+        /* === Recolher / reexibir seção "Adicionar Cliente" === */
+        .section-header {
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:10px;
+            flex-wrap:wrap;
+            margin-top: 10px;
+        }
+        .collapse-btn {
+            background: var(--secondary-color);
+            color: var(--white-color);
+            padding: 8px 14px;
+            border-radius: var(--border-radius);
+            font-weight: 700;
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        }
+        .collapse-btn:hover { filter: brightness(0.95); }
+        .collapsed { display: none !important; }
+
     </style>
 </head>
 <body>
@@ -373,6 +439,31 @@
     </div>
     <div class="container">
         <h1>Controle de Clientes</h1>
+
+        <!-- Barra de ações em lote (aparece quando há seleção) -->
+        <div id="bulkBar" class="bulk-bar" aria-live="polite">
+            <div class="bulk-row">
+                <span class="bulk-count" id="bulkCount">0 selecionados</span>
+                <button onclick="selecionarTodosVisiveis()" class="btn-info">Selecionar todos (filtro atual)</button>
+                <button onclick="limparSelecao()" class="btn-secondary">Limpar seleção</button>
+                <span class="bulk-hint">Ações em lote:</span>
+                <button onclick="acaoEmLote('arquivar')" class="btn-secondary">Arquivar</button>
+                <button onclick="acaoEmLote('desarquivar')" class="btn-success">Desarquivar</button>
+                <button onclick="acaoEmLote('desativar')" class="btn-secondary">Desativar</button>
+                <button onclick="acaoEmLote('reativar')" class="btn-success">Reativar</button>
+                <button onclick="acaoEmLote('avisado')" class="btn-info">Marcar Avisado</button>
+                <button onclick="acaoEmLote('desavisar')" class="btn-secondary">Desmarcar Avisado</button>
+                <button onclick="abrirModalVerDepoisLote()" class="btn-warning">Ver Depois (data)</button>
+                <button onclick="exportarSelecionados()" class="btn-secondary">Exportar Selecionados</button>
+                <button onclick="acaoEmLote('renovarMes')" class="btn-success">Renovar Próx. Mês</button>
+                <button onclick="acaoEmLote('renovarHoje')" class="btn-warning">Renovar HOJE</button>
+                <button onclick="acaoEmLote('debitoOn')" class="btn-warning">Marcar Débito</button>
+                <button onclick="acaoEmLote('debitoOff')" class="btn-secondary">Remover Débito</button>
+                <button onclick="abrirModalProdutoLote()" class="btn-info">Trocar Produto</button>
+                <button onclick="abrirModalCobrancaLote()" class="btn-info">Definir Cobrança</button>
+            </div>
+        </div>
+
         <button id="centralMessageButton" onclick="enviarProximoClienteVencido()">
             Enviar Mensagem para Próximo Vencido
             <span id="badgeCentralMessage" class="notification-badge" style="display:none;"></span>
@@ -380,7 +471,12 @@
         <button onclick="importarClientes()" class="btn-info icon-btn" title="Importar Clientes (JSON)">📥</button>
         <button onclick="exportarClientes()" class="btn-secondary icon-btn" title="Exportar Clientes (JSON)">📤</button>
 
-        <h3>Adicionar Cliente</h3>
+        <div class="section-header">
+      <h3 style="margin:0;">Adicionar Cliente</h3>
+      <button id="toggleAddSectionBtn" type="button" class="collapse-btn" onclick="toggleAddSection()">Recolher ▲</button>
+    </div>
+
+    <div id="addClientSection">
         <div class="input-group-horizontal">
             <div class="input-wrapper"><input type="date" id="dataInput" required title="Data de Vencimento"></div>
             <div class="input-wrapper"><input type="text" id="nomeInput" placeholder="Nome do Cliente" required></div>
@@ -397,8 +493,9 @@
             </label>
         </div>
         <button onclick="adicionarCliente()" class="btn-success">➕ Adicionar Cliente</button>
+    </div>
 
-        <h3>Filtros e Ações</h3>
+    <h3>Filtros e Ações</h3>
         <button onclick="filtrarHojeEVencidos()">Vencendo Hoje + Vencidos <span id="badgeHojeEVencidos" class="notification-badge" style="display:none;"></span></button>
         <button onclick="filtrarCobrancaHoje()" class="btn-info">Cobrança Hoje <span id="badgeCobrancaHoje" class="notification-badge" style="display:none;"></span></button>
         <button onclick="filtrarHoje()">Clientes Vencendo Hoje <span id="badgeHoje" class="notification-badge" style="display:none;"></span></button>
@@ -543,9 +640,31 @@
             <div class="modal-content">
                 <h3>Agendar Reexibição</h3>
                 <p>Escolha a data em que este cliente deve voltar a aparecer na lista principal.</p>
-                <input type="date" id="dataReexibicaoInput" onkeydown="if(event.key==='Enter'){event.preventDefault(); document.getElementById('btnConfirmarVerDepois').click();}" style="width: 90%; padding: 10px; margin: 10px 0;">
-                <button id="btnConfirmarVerDepois" class="btn-success">Confirmar</button>
-                <button onclick="fecharModal()" class="btn-secondary">Cancelar</button>
+
+                <form id="formVerDepois">
+                    <input
+                        type="date"
+                        id="dataReexibicaoInput"
+                        required
+                        style="width: 90%; padding: 10px; margin: 10px 0;"
+                    >
+
+                    
+                    <div style=\"display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin: 6px 0 12px;\">
+                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoInput', 1)\" class=\"btn-secondary\">+1d</button>
+                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoInput', 3)\" class=\"btn-secondary\">+3d</button>
+                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoInput', 7)\" class=\"btn-secondary\">+7d</button>
+                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoInput', 15)\" class=\"btn-secondary\">+15d</button>
+                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoInput', 30)\" class=\"btn-secondary\">+30d</button>
+                    </div>
+<button id="btnConfirmarVerDepois" class="btn-success" type="submit">
+                        Confirmar
+                    </button>
+
+                    <button type="button" onclick="fecharModal()" class="btn-secondary">
+                        Cancelar
+                    </button>
+                </form>
             </div>
         </div>
         <!-- NOVO MODAL PARA CONFIGURAR BOTÕES -->
@@ -560,7 +679,82 @@
                 <button onclick="fecharModal()" class="btn-secondary">Cancelar</button>
             </div>
         </div>
+
+
+        <!-- Modal: Trocar Produto em lote -->
+        <div id="modalProdutoLote" class="modal">
+            <div class="modal-content">
+                <h3>Trocar Produto (em lote)</h3>
+                <p>Escolha o produto para aplicar em <b><span id="bulkCountInline2">0</span></b> clientes selecionados.</p>
+                <button onclick="confirmarProdutoLote('UniTv')">UniTv</button>
+                <button onclick="confirmarProdutoLote('Duplecast')">Duplecast</button>
+                <button onclick="fecharModal()" class="btn-secondary">Cancelar</button>
+            </div>
+        </div>
+
+        <!-- Modal: Definir Cobrança em lote -->
+        <div id="modalCobrancaLote" class="modal">
+            <div class="modal-content">
+                <h3>Definir Data de Cobrança (em lote)</h3>
+                <p>Defina a data de cobrança para <b><span id="bulkCountInline3">0</span></b> clientes selecionados.</p>
+                <form id="formCobrancaLote">
+                    <input type="date" id="dataCobrancaLoteInput" required style="width: 90%; padding: 10px; margin: 10px 0;">
+                    <button class="btn-success" type="submit">Confirmar</button>
+                    <button type="button" onclick="fecharModal()" class="btn-secondary">Cancelar</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal: Histórico do Cliente -->
+        <div id="modalHistorico" class="modal">
+            <div class="modal-content">
+                <h3>Histórico do Cliente</h3>
+                <div id="historicoConteudo" style="text-align:left; max-height: 320px; overflow-y:auto; padding:10px; border:1px solid #ddd; border-radius:6px; background:#fff;"></div>
+                <button onclick="fecharModal()" class="btn-secondary">Fechar</button>
+            </div>
+        </div>
+
+        <!-- Modal: Modo Cobrança (fluxo guiado) -->
+        <div id="modalCobranca" class="modal">
+            <div class="modal-content">
+                <h3>Modo Cobrança</h3>
+                <p id="cobrancaInfo" style="margin-bottom:10px;"></p>
+                <div id="cobrancaCliente" style="text-align:left; border:1px solid #ddd; border-radius:6px; padding:10px; margin-bottom:10px;"></div>
+                <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center;">
+                    <button onclick="cobrancaEnviarWhats()" class="btn-success">Abrir WhatsApp</button>
+                    <button onclick="cobrancaMarcarAvisado()" class="btn-info">Marcar Avisado</button>
+                    <button onclick="cobrancaVerDepois(7)" class="btn-warning">Ver Depois 7d</button>
+                    <button onclick="cobrancaProximo()" class="btn-secondary">Próximo</button>
+                    <button onclick="fecharModal()" class="btn-secondary">Sair</button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Modal: Ver Depois em lote -->
+        <div id="modalVerDepoisLote" class="modal">
+            <div class="modal-content">
+                <h3>Agendar Reexibição (em lote)</h3>
+                <p>Defina a data para reexibir <b><span id="bulkCountInline">0</span></b> clientes selecionados.</p>
+                <form id="formVerDepoisLote">
+                    <input type="date" id="dataReexibicaoLoteInput" required style="width: 90%; padding: 10px; margin: 10px 0;">
+                    
+                    <div style=\"display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin: 6px 0 12px;\">
+                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoLoteInput', 1)\" class=\"btn-secondary\">+1d</button>
+                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoLoteInput', 3)\" class=\"btn-secondary\">+3d</button>
+                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoLoteInput', 7)\" class=\"btn-secondary\">+7d</button>
+                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoLoteInput', 15)\" class=\"btn-secondary\">+15d</button>
+                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoLoteInput', 30)\" class=\"btn-secondary\">+30d</button>
+                    </div>
+<button class="btn-success" type="submit">Confirmar</button>
+                    <button type="button" onclick="fecharModal()" class="btn-secondary">Cancelar</button>
+                </form>
+            </div>
+        </div>
+
     </div>
+        <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
     <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
     </div>
@@ -591,8 +785,473 @@
         // Variável para o debounce da pesquisa
         let debounceTimer;
 
-        // ====================================================================================
+        
+
+
+        // === Seleção múltipla (em lote) ===
+        const selectedClientIds = new Set();
+
+        function updateBulkBar() {
+            const bulkBar = document.getElementById('bulkBar');
+            const bulkCount = document.getElementById('bulkCount');
+            const bulkCountInline = document.getElementById('bulkCountInline');
+            const count = selectedClientIds.size;
+            if (bulkCount) bulkCount.textContent = `${count} selecionados`;
+            if (bulkCountInline) bulkCountInline.textContent = String(count);
+            const b2=document.getElementById('bulkCountInline2'); if(b2) b2.textContent=String(count);
+            const b3=document.getElementById('bulkCountInline3'); if(b3) b3.textContent=String(count);
+            if (bulkBar) bulkBar.style.display = count > 0 ? 'block' : 'none';
+        }
+
+        function syncRowSelectionUI() {
+            // Marca checkboxes visíveis e destaca linhas
+            document.querySelectorAll('input.select-cliente').forEach(chk => {
+                const id = chk.getAttribute('data-id');
+                const isSel = selectedClientIds.has(id);
+                chk.checked = isSel;
+                const tr = chk.closest('tr');
+                if (tr) tr.classList.toggle('row-selected', isSel);
+            });
+            updateBulkBar();
+        }
+
+        function toggleSelecaoCliente(clientId, checked) {
+            if (!clientId) return;
+            if (checked) selectedClientIds.add(clientId);
+            else selectedClientIds.delete(clientId);
+            syncRowSelectionUI();
+        }
+
+        function limparSelecao() {
+            selectedClientIds.clear();
+            syncRowSelectionUI();
+        }
+
+        function selecionarTodosVisiveis() {
+            (clientesExibidos || []).forEach(c => c && c.id && selectedClientIds.add(String(c.id)));
+            syncRowSelectionUI();
+        }
+
+        function getSelectedClientsFromState() {
+            const ids = new Set(Array.from(selectedClientIds).map(String));
+            return clientes.filter(c => ids.has(String(c.id)));
+        }
+
+        function removerIdsInexistentesDaSelecao() {
+            const idsExistentes = new Set(clientes.map(c => String(c.id)));
+            Array.from(selectedClientIds).forEach(id => {
+                if (!idsExistentes.has(String(id))) selectedClientIds.delete(String(id));
+            });
+        }
+
+        async function acaoEmLote(acao) {
+            if (selectedClientIds.size === 0) {
+                exibirAlerta("Selecione pelo menos um cliente.");
+                return;
+            }
+
+            // Confirmações (para evitar cliques acidentais)
+            const titulos = {
+                arquivar: "Arquivar (em lote)",
+                desarquivar: "Desarquivar (em lote)",
+                desativar: "Desativar (em lote)",
+                reativar: "Reativar (em lote)",
+                avisado: "Marcar Avisado (em lote)",
+                desavisar: "Desmarcar Avisado (em lote)"
+            };
+            const mensagens = {
+                arquivar: `Arquivar <b>${selectedClientIds.size}</b> clientes selecionados?`,
+                desarquivar: `Desarquivar <b>${selectedClientIds.size}</b> clientes selecionados?`,
+                desativar: `Desativar <b>${selectedClientIds.size}</b> clientes selecionados?`,
+                reativar: `Reativar <b>${selectedClientIds.size}</b> clientes selecionados?`,
+                avisado: `Marcar como <b>Avisado</b> <b>${selectedClientIds.size}</b> clientes selecionados?`,
+                desavisar: `Desmarcar <b>Avisado</b> de <b>${selectedClientIds.size}</b> clientes selecionados?`
+            };
+
+            exibirConfirmacaoGenerica(
+                titulos[acao] || "Confirmar Ação",
+                mensagens[acao] || "Confirma a ação em lote?",
+                async () => {
+                    saveStateToHistory();
+                    const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+
+                    try {
+                        const ids = new Set(Array.from(selectedClientIds).map(String));
+                        clientes.forEach(c => {
+                            if (!ids.has(String(c.id))) return;
+
+                            if (acao === 'arquivar') {
+                                c.arquivado = true; c.oculto = false; c.reexibirEm = null; c.desativado = false; c.clicado = false;
+                            } else if (acao === 'desarquivar') {
+                                c.arquivado = false; c.reexibirEm = null;
+                            } else if (acao === 'desativar') {
+                                c.desativado = true;
+                                c.avisado = false; c.debito = false; c.oculto = false; c.reexibirEm = null; c.arquivado = false; c.clicado = false;
+                            } else if (acao === 'reativar') {
+                                c.desativado = false;
+                            } else if (acao === 'avisado') {
+                                c.avisado = true; c.oculto = false; c.clicado = true;
+                            } else if (acao === 'desavisar') {
+                                c.avisado = false; c.clicado = false;
+                            }
+                        });
+
+                        saveClientsToLocalStorage();
+                        removerIdsInexistentesDaSelecao();
+                        chamarFiltroAtual();
+                        atualizarContadores();
+                        prepararClientesVencidosParaMensagem();
+                        updateBulkBar();
+
+                        await salvarClientes();
+                        exibirAlerta("Ação em lote concluída!");
+                    } catch (error) {
+                        clientes = estadoAnteriorClientes;
+                        saveClientsToLocalStorage();
+                        chamarFiltroAtual();
+                        atualizarContadores();
+                        exibirAlerta(`Erro na ação em lote: ${error.message}. Ação desfeita localmente.`);
+                    }
+                },
+                (acao === 'desativar')
+            );
+        }
+
+        function abrirModalVerDepoisLote() {
+            if (selectedClientIds.size === 0) {
+                exibirAlerta("Selecione pelo menos um cliente.");
+                return;
+            }
+            const amanha = new Date();
+            amanha.setDate(amanha.getDate() + 1);
+            const inp = document.getElementById('dataReexibicaoLoteInput');
+            if (inp) inp.value = amanha.toISOString().split('T')[0];
+            document.getElementById('modalVerDepoisLote').style.display = 'flex';
+            updateBulkBar();
+            setTimeout(() => inp && inp.focus(), 0);
+            document.addEventListener("keydown", fecharComEsc);
+        }
+
+        async function confirmarVerDepoisLote() {
+            if (selectedClientIds.size === 0) return;
+            const dataReexibicao = document.getElementById('dataReexibicaoLoteInput').value;
+            if (!dataReexibicao) {
+                exibirAlerta("Por favor, selecione uma data.");
+                return;
+            }
+
+            saveStateToHistory();
+            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+
+            try {
+                const ids = new Set(Array.from(selectedClientIds).map(String));
+                clientes.forEach(c => {
+                    if (!ids.has(String(c.id))) return;
+                    c.reexibirEm = dataReexibicao;
+                    c.oculto = false;
+                    c.arquivado = false;
+                    c.desativado = false;
+                    c.clicado = false;
+                });
+
+                saveClientsToLocalStorage();
+                fecharModal();
+                chamarFiltroAtual();
+                atualizarContadores();
+                prepararClientesVencidosParaMensagem();
+                updateBulkBar();
+
+                await salvarClientes();
+                exibirAlerta("Agendamento em lote concluído!");
+            } catch (error) {
+                clientes = estadoAnteriorClientes;
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                atualizarContadores();
+                exibirAlerta(`Erro ao agendar em lote: ${error.message}. Ação desfeita localmente.`);
+            }
+        }
+
+        
+        function setDatePlusDays(inputId, days) {
+            const inp = document.getElementById(inputId);
+            if (!inp) return;
+            const base = new Date();
+            base.setDate(base.getDate() + days);
+            inp.value = base.toISOString().split('T')[0];
+        }
+
+        async function copiarPix() {
+            const msg = `PIX: ${PIX_KEY} (${PIX_NOME})`;
+            try {
+                await navigator.clipboard.writeText(msg);
+                showToast("PIX copiado!");
+            } catch (e) {
+                exibirAlerta("Não consegui copiar automaticamente. PIX: " + msg);
+            }
+        }
+
+        function abrirModalProdutoLote() {
+            if (selectedClientIds.size === 0) return exibirAlerta("Selecione pelo menos um cliente.");
+            document.getElementById('bulkCountInline2').textContent = String(selectedClientIds.size);
+            document.getElementById('modalProdutoLote').style.display = 'flex';
+            document.addEventListener("keydown", fecharComEsc);
+        }
+
+        function confirmarProdutoLote(novoProduto) {
+            if (selectedClientIds.size === 0) return;
+            acaoEmLote('produto:' + novoProduto);
+            fecharModal();
+        }
+
+        function abrirModalCobrancaLote() {
+            if (selectedClientIds.size === 0) return exibirAlerta("Selecione pelo menos um cliente.");
+            document.getElementById('bulkCountInline3').textContent = String(selectedClientIds.size);
+            const inp = document.getElementById('dataCobrancaLoteInput');
+            const today = new Date();
+            inp.value = today.toISOString().split('T')[0];
+            document.getElementById('modalCobrancaLote').style.display = 'flex';
+            setTimeout(() => inp.focus(), 0);
+            document.addEventListener("keydown", fecharComEsc);
+        }
+
+        async function confirmarCobrancaLote() {
+            if (selectedClientIds.size === 0) return;
+            const val = document.getElementById('dataCobrancaLoteInput').value;
+            if (!val) return exibirAlerta("Selecione uma data.");
+            saveStateToHistory();
+            const backup = JSON.parse(JSON.stringify(clientes));
+            try {
+                const ids = new Set(Array.from(selectedClientIds).map(String));
+                const ddmmyyyy = val.split("-").reverse().join("/");
+                clientes.forEach(c => {
+                    if (!ids.has(String(c.id))) return;
+                    c.dataCobranca = ddmmyyyy;
+                    pushLog(c, "cobrança definida", ddmmyyyy);
+                });
+                saveClientsToLocalStorage();
+                fecharModal();
+                chamarFiltroAtual();
+                atualizarContadores();
+                prepararClientesVencidosParaMensagem();
+                await salvarClientes();
+                exibirAlerta("Cobrança definida em lote!");
+            } catch (e) {
+                clientes = backup;
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                atualizarContadores();
+                exibirAlerta("Erro ao definir cobrança em lote: " + e.message);
+            }
+        }
+
+        function mostrarHistorico(index) {
+            const cliente = clientesExibidos[index];
+            if (!cliente) return;
+            const original = clientes.find(c => c.id === cliente.id) || cliente;
+            const logs = Array.isArray(original.logs) ? original.logs : [];
+            const box = document.getElementById('historicoConteudo');
+            if (logs.length === 0) {
+                box.innerHTML = "<i>Sem histórico ainda.</i>";
+            } else {
+                box.innerHTML = logs.slice().reverse().map(l => `<div style="margin-bottom:8px;"><b>${l.t}</b> — ${l.a}${l.e ? ` <span style="color:#555">(${l.e})</span>` : ""}</div>`).join("");
+            }
+            document.getElementById('modalHistorico').style.display = 'flex';
+            document.addEventListener("keydown", fecharComEsc);
+        }
+
+        // === Modo Cobrança (fluxo guiado) ===
+        let filaCobranca = [];
+        let cobrancaIndex = 0;
+
+        function iniciarModoCobranca() {
+            prepararClientesVencidosParaMensagem();
+            filaCobranca = clientesVencidosParaMensagem.slice(); // vencidos + hoje e não avisados
+            cobrancaIndex = 0;
+            if (filaCobranca.length === 0) return exibirAlerta("Não há clientes vencidos/hoje para cobrar.");
+            document.getElementById('modalCobranca').style.display = 'flex';
+            renderCobranca();
+            document.addEventListener("keydown", fecharComEsc);
+        }
+
+        function renderCobranca() {
+            const info = document.getElementById('cobrancaInfo');
+            const box = document.getElementById('cobrancaCliente');
+            const total = filaCobranca.length;
+            const c = filaCobranca[cobrancaIndex];
+            info.innerHTML = `Cliente ${cobrancaIndex+1} de ${total}`;
+            const nome = (c.nome || "").replace(/\s\(UniTv\)|\s\(Duplecast\)/g, "").trim();
+            box.innerHTML = `
+                <div><b>${nome}</b> (${c.Produto || "N/I"})</div>
+                <div>📞 ${c.telefone}</div>
+                <div>📅 Venc: ${c.data || "-"}</div>
+                ${c.dataCobranca ? `<div style="color:var(--success-color); font-weight:700;">💲 Cobrança: ${c.dataCobranca}</div>` : ""}
+                ${c.observacao ? `<div style="margin-top:8px; padding:8px; background:#f7f7f7; border-radius:6px;"><b>Obs:</b> ${c.observacao}</div>` : ""}
+            `;
+        }
+
+        function cobrancaEnviarWhats() {
+            const c = filaCobranca[cobrancaIndex];
+            if (!c) return;
+            const nome = (c.nome || "").replace(/\s\(UniTv\)|\s\(Duplecast\)/g, "").trim();
+            const originalClientesExibidos = clientesExibidos;
+            clientesExibidos = [c];
+            enviarMensagemWhatsApp(nome, c.telefone, 0);
+            clientesExibidos = originalClientesExibidos;
+        }
+
+        async function cobrancaMarcarAvisado() {
+            const c = filaCobranca[cobrancaIndex];
+            if (!c) return;
+            const idx = clientes.findIndex(x => x.id === c.id);
+            if (idx === -1) return;
+            saveStateToHistory();
+            const backup = JSON.parse(JSON.stringify(clientes));
+            try{
+                clientes[idx].avisado = true;
+                clientes[idx].clicado = true;
+                pushLog(clientes[idx], "marcado avisado", "");
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                prepararClientesVencidosParaMensagem();
+                await salvarClientes();
+                showToast("Marcado como avisado!");
+                cobrancaProximo();
+            } catch(e){
+                clientes = backup;
+                saveClientsToLocalStorage();
+                chamarFiltroAtual();
+                exibirAlerta("Erro: " + e.message);
+            }
+        }
+
+        function cobrancaVerDepois(dias) {
+            const c = filaCobranca[cobrancaIndex];
+            if (!c) return;
+            const idx = clientes.findIndex(x => x.id === c.id);
+            if (idx === -1) return;
+            const d = new Date(); d.setDate(d.getDate()+dias);
+            const iso = d.toISOString().split('T')[0];
+            saveStateToHistory();
+            const backup = JSON.parse(JSON.stringify(clientes));
+            (async () => {
+                try{
+                    clientes[idx].reexibirEm = iso;
+                    clientes[idx].clicado = false;
+                    pushLog(clientes[idx], "ver depois", iso.split('-').reverse().join('/'));
+                    saveClientsToLocalStorage();
+                    fecharModal();
+                    chamarFiltroAtual();
+                    prepararClientesVencidosParaMensagem();
+                    await salvarClientes();
+                    showToast("Agendado ver depois!");
+                    // reabre e avança
+                    document.getElementById('modalCobranca').style.display = 'flex';
+                    cobrancaProximo();
+                } catch(e){
+                    clientes = backup;
+                    saveClientsToLocalStorage();
+                    chamarFiltroAtual();
+                    exibirAlerta("Erro: " + e.message);
+                }
+            })();
+        }
+
+        function cobrancaProximo() {
+            if (filaCobranca.length === 0) return;
+            cobrancaIndex++;
+            if (cobrancaIndex >= filaCobranca.length) {
+                fecharModal();
+                exibirAlerta("Fim da fila de cobrança 🎉");
+                return;
+            }
+            renderCobranca();
+        }
+
+
+        function exportarSelecionados() {
+            if (selectedClientIds.size === 0) {
+                exibirAlerta("Selecione pelo menos um cliente.");
+                return;
+            }
+            const ids = new Set(Array.from(selectedClientIds).map(String));
+            const clientesParaExportar = clientes
+              .filter(c => ids.has(String(c.id)))
+              .map(c => ({
+                id: c.id, data: c.data, nome: c.nome, telefone: c.telefone,
+                avisado: c.avisado || false, debito: c.debito || false, Produto: c.Produto || "Não informado",
+                arquivado: c.arquivado || false, oculto: c.oculto || false, reexibirEm: c.reexibirEm || null,
+                desativado: c.desativado || false, dola_sent: c.dola_sent || false, clicado: c.clicado || false,
+                dataCobranca: c.dataCobranca || null, observacao: c.observacao || null,
+                            logs: c.logs || [],
+                            logs: c.logs || [],
+                logs: c.logs || []
+              }));
+            const blob = new Blob([JSON.stringify(clientesParaExportar, null, 4)], { type: "application/json" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "clientes_selecionados.json";
+            link.click();
+            showToast('Exportado!'); atualizarUltimaAtualizacao("clientes selecionados exportados");
+        }
+
+// ====================================================================================
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwoeQZB6yl-RBXQ8gn7PUOz-QsyYJfeWW8UgDgNf8WUYPCH7DczuoXLb_5PkipxD6OY/exec';
+        // === Configuração rápida ===
+        const PIX_KEY = "11947406124";
+        const PIX_NOME = "Waldemar Jose Luiz";
+        const TOAST_MS = 2200;
+
+        function nowBR() {
+            const d = new Date();
+            return d.toLocaleString('pt-BR', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false });
+        }
+
+        function pushLog(clienteObj, acao, extra="") {
+            if (!clienteObj) return;
+            if (!Array.isArray(clienteObj.logs)) clienteObj.logs = [];
+            clienteObj.logs.push({ t: nowBR(), a: acao, e: extra || "" });
+            // limita para não crescer infinito
+            if (clienteObj.logs.length > 50) clienteObj.logs = clienteObj.logs.slice(-50);
+        }
+
+        
+        // === Recolher / reexibir seção "Adicionar Cliente" (salva preferência) ===
+        function setAddSectionCollapsed(isCollapsed) {
+            const sec = document.getElementById('addClientSection');
+            const btn = document.getElementById('toggleAddSectionBtn');
+            if (!sec || !btn) return;
+            sec.classList.toggle('collapsed', isCollapsed);
+            btn.textContent = isCollapsed ? 'Exibir ▼' : 'Recolher ▲';
+            try { localStorage.setItem('addSectionCollapsed', isCollapsed ? '1' : '0'); } catch(e) {}
+        }
+
+        function toggleAddSection() {
+            const sec = document.getElementById('addClientSection');
+            if (!sec) return;
+            setAddSectionCollapsed(!sec.classList.contains('collapsed'));
+        }
+
+        function restoreAddSectionState() {
+            try {
+                let val = localStorage.getItem('addSectionCollapsed');
+                // padrão: recolhido
+                if (val === null) {
+                    val = '1';
+                    localStorage.setItem('addSectionCollapsed', '1');
+                }
+                setAddSectionCollapsed(val === '1');
+            } catch(e) {}
+        }
+
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            if (!el) return;
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), TOAST_MS);
+        }
+
         // ====================================================================================
 
         let filtroAtual = "hojeEVencidos";
@@ -825,7 +1484,8 @@
                 dola_sent: false,
                 clicado: false,
                 dataCobranca: dataCobrancaInput ? dataCobrancaInput.split("-").reverse().join("/") : null,
-                observacao: observacaoInput || null
+                observacao: observacaoInput || null,
+                logs: []
             };
 
             clientes.push(novoClienteObj);
@@ -836,7 +1496,7 @@
             document.getElementById("observacaoInput").value = "";
             exibirTabela();
             atualizarContadores();
-            atualizarUltimaAtualizacao("adicionado", nomeInput);
+            pushLog(novoClienteObj, 'adicionado', ''); showToast('Cliente adicionado'); atualizarUltimaAtualizacao("adicionado", nomeInput);
 
             try {
                 await salvarClientes();
@@ -865,7 +1525,7 @@
             saveClientsToLocalStorage();
             chamarFiltroAtual();
             atualizarContadores();
-            atualizarUltimaAtualizacao("arquivado", clienteParaArquivar.nome);
+            pushLog(clientes[clienteOriginalIndex], 'arquivado', ''); showToast('Arquivado'); atualizarUltimaAtualizacao("arquivado", clienteParaArquivar.nome);
             try {
                 await salvarClientes();
             } catch (error) {
@@ -890,7 +1550,7 @@
             saveClientsToLocalStorage();
             chamarFiltroAtual();
             atualizarContadores();
-            atualizarUltimaAtualizacao("desarquivado", clienteParaDesarquivar.nome);
+            pushLog(clientes[clienteOriginalIndex], 'desarquivado', ''); showToast('Desarquivado'); atualizarUltimaAtualizacao("desarquivado", clienteParaDesarquivar.nome);
             try {
                 await salvarClientes();
             } catch (error) {
@@ -1108,8 +1768,10 @@
                 }
 
                 tr.innerHTML = `
+
                     <td>
-                        ${datasHtml}
+                        <input class="select-cliente" type="checkbox" data-id="${cliente.id}" aria-label="Selecionar cliente" onclick="toggleSelecaoCliente(String(cliente.id), this.checked); event.stopPropagation();">
+${datasHtml}
                         <a href="#" class="${classeDinamica}" onclick="marcarClienteClicado(this); enviarMensagemWhatsApp('${nomeExibicaoBase}', '${cliente.telefone}', ${index}); return false;">
                             ${nomeExibicaoBase} (${cliente.Produto || 'N/I'})
                         </a>
@@ -1277,7 +1939,7 @@
             saveClientsToLocalStorage();
             chamarFiltroAtual();
             atualizarContadores();
-            atualizarUltimaAtualizacao("renovado automaticamente", cliente.nome);
+            pushLog(clientes[clienteOriginalIndex], 'renovado', 'auto'); showToast('Renovado'); atualizarUltimaAtualizacao("renovado automaticamente", cliente.nome);
             try {
                 await salvarClientes();
             } catch (error) {
@@ -1317,7 +1979,7 @@
             saveClientsToLocalStorage();
             chamarFiltroAtual();
             atualizarContadores();
-            atualizarUltimaAtualizacao("renovado a partir da data atual", clienteOriginalNome);
+            pushLog(clientes[clienteOriginalIndex], 'renovado', 'hoje'); showToast('Renovado para hoje'); atualizarUltimaAtualizacao("renovado a partir da data atual", clienteOriginalNome);
             exibirAlerta(`Cliente "${clienteOriginalNome.replace(/\s\(UniTv\)/g, '').replace(/\s\(Duplecast\)/g, '')}" renovado para hoje!`);
             try {
                 await salvarClientes();
@@ -1360,7 +2022,7 @@
             fecharModal();
             clienteIndexParaRenovarDebito = null;
             exibirAlerta("Cliente renovado e marcado como DÉBITO!");
-            atualizarUltimaAtualizacao("renovado com débito", clienteNome);
+            pushLog(clientes[clienteOriginalIndex], 'renovado', 'débito'); showToast('Renovado (débito)'); atualizarUltimaAtualizacao("renovado com débito", clienteNome);
             try {
                 await salvarClientes();
             } catch (error) {
@@ -1603,7 +2265,9 @@
                 dola_sent: c.dola_sent || false,
                 clicado: c.clicado || false,
                 dataCobranca: c.dataCobranca || null,
-                observacao: c.observacao || null
+                observacao: c.observacao || null,
+                            logs: c.logs || [],
+                            logs: c.logs || []
             }));
             const clientesJson = JSON.stringify(clientesParaExportar, null, 4);
             const blob = new Blob([clientesJson], {
@@ -1654,7 +2318,9 @@
                             dola_sent: c.dola_sent || false,
                             clicado: c.clicado || false,
                             dataCobranca: c.dataCobranca || null,
-                            observacao: c.observacao || null
+                            observacao: c.observacao || null,
+                            logs: c.logs || [],
+                            logs: c.logs || []
                         };
                     });
 
@@ -1669,9 +2335,7 @@
                         }
                         const indexClienteExistente = clientes.findIndex(c => c.id === clienteImportado.id);
                         if (indexClienteExistente !== -1) {
-                            clientes[indexClienteExistente] = { ...clientes[indexClienteExistente],
-                                ...clienteImportado
-                            };
+                            clientes[indexClienteExistente] = { ...clientes[indexClienteExistente], ...clienteImportado };
                             clientesAtualizados++;
                         } else {
                             clientes.push(clienteImportado);
@@ -1917,7 +2581,7 @@
             chamarFiltroAtual();
             atualizarContadores();
             fecharModal();
-            atualizarUltimaAtualizacao("editado", nomeComNovoProduto);
+            pushLog(clientes[originalClienteIndex], 'editado', ''); showToast('Cliente editado'); atualizarUltimaAtualizacao("editado", nomeComNovoProduto);
             prepararClientesVencidosParaMensagem();
             try {
                 await salvarClientes();
@@ -1957,7 +2621,7 @@
             atualizarContadores();
             fecharModal();
             clienteIndexParaExcluir = null;
-            atualizarUltimaAtualizacao("excluído", nomeClienteExcluido);
+            showToast('Cliente excluído'); atualizarUltimaAtualizacao("excluído", nomeClienteExcluido);
             prepararClientesVencidosParaMensagem();
             try {
                 await salvarClientes();
@@ -1977,11 +2641,19 @@
             amanha.setDate(amanha.getDate() + 1);
             document.getElementById('dataReexibicaoInput').value = amanha.toISOString().split('T')[0];
             document.getElementById('modalVerDepois').style.display = 'flex';
-            document.getElementById('btnConfirmarVerDepois').onclick = confirmarVerDepois;
-            document.addEventListener("keydown", fecharComEsc);
+            console.log('[VerDepois] modal aberto, clienteIdParaVerDepois=', clienteIdParaVerDepois);
+
+
+            // 🔥 foco automático (Enter funciona melhor)
+            setTimeout(() => {
+                document.getElementById('dataReexibicaoInput').focus();
+            }, 0);
+document.addEventListener("keydown", fecharComEsc);
         }
 
         async function confirmarVerDepois() {
+            console.log('[VerDepois] confirmarVerDepois() chamado. clienteIdParaVerDepois=', clienteIdParaVerDepois);
+
             if (!clienteIdParaVerDepois) return;
             const dataReexibicao = document.getElementById('dataReexibicaoInput').value;
             if (!dataReexibicao) {
@@ -2003,7 +2675,7 @@
             chamarFiltroAtual();
             atualizarContadores();
             fecharModal();
-            atualizarUltimaAtualizacao(`agendado para ${dataReexibicao.split('-').reverse().join('/')}`, nomeCliente);
+            pushLog(clientes[clienteOriginalIndex], 'ver depois', dataReexibicao.split('-').reverse().join('/')); showToast('Agendado'); atualizarUltimaAtualizacao(`agendado para ${dataReexibicao.split('-').reverse().join('/')}`, nomeCliente);
             prepararClientesVencidosParaMensagem();
             try {
                 await salvarClientes();
@@ -2058,7 +2730,7 @@
             saveClientsToLocalStorage();
             chamarFiltroAtual();
             atualizarContadores();
-            atualizarUltimaAtualizacao(`status desativado: ${clientes[clienteOriginalIndex].desativado ? 'sim' : 'não'}`, cliente.nome);
+            pushLog(clientes[clienteOriginalIndex], clientes[clienteOriginalIndex].desativado ? 'desativado' : 'reativado', ''); showToast(clientes[clienteOriginalIndex].desativado ? 'Desativado' : 'Reativado'); atualizarUltimaAtualizacao(`status desativado: ${clientes[clienteOriginalIndex].desativado ? 'sim' : 'não'}`, cliente.nome);
             prepararClientesVencidosParaMensagem();
             try {
                 await salvarClientes();
@@ -2153,7 +2825,9 @@
                             dola_sent: c.dola_sent || false,
                             clicado: c.clicado || false,
                             dataCobranca: c.dataCobranca || null,
-                            observacao: c.observacao || null
+                            observacao: c.observacao || null,
+                            logs: c.logs || [],
+                            logs: c.logs || []
                         };
                     }).filter(c => c.id !== null);
                     saveClientsToLocalStorage();
@@ -2182,6 +2856,8 @@
                 prepararClientesVencidosParaMensagem();
                 saveStateToHistory();
                 loadSettings();
+                restoreAddSectionState();
+                limparSelecao();
             }
             document.getElementById('ultimaAtualizacaoInfo').textContent = localStorage.getItem('ultimaAtualizacaoCliente') || 'Última Alteração: Nunca';
         }
@@ -2241,10 +2917,10 @@
         }
         
         // Remove functions related to missing elements
-        // function updateTableWidth(value) { ... }
-        // function updateTableAlignment(value) { ... }
-        // function updateTablePaddingLeft(value) { ... }
-        // function updateTablePaddingRight(value) { ... }
+        // function updateTableWidth(value) { /* removida */ }
+        // function updateTableAlignment(value) { /* removida */ }
+        // function updateTablePaddingLeft(value) { /* removida */ }
+        // function updateTablePaddingRight(value) { /* removida */ }
 
         function saveSettings() {
             const settings = {
@@ -2319,8 +2995,7 @@
             if (configSalva) {
                 try {
                     const parsedConfig = JSON.parse(configSalva);
-                    acaoBotoesConfig = { ...defaultAcaoBotoesConfig
-                    };
+                    acaoBotoesConfig = { ...defaultAcaoBotoesConfig };
                     for (const key in parsedConfig) {
                         if (acaoBotoesConfig.hasOwnProperty(key)) {
                             acaoBotoesConfig[key].visivel = parsedConfig[key].visivel;
@@ -2471,6 +3146,33 @@
                     adicionarCliente();
                 }
             });
+
+
+            // ✅ ENTER no modal "Agendar Reexibição" (submit do form)
+            const formVerDepois = document.getElementById('formVerDepois');
+            if (formVerDepois) {
+                formVerDepois.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    console.log('[VerDepois] submit disparou (Enter ou clique no Confirmar)');
+                    await confirmarVerDepois();
+                });
+            }
+
+
+            // ✅ Fallback: alguns navegadores NÃO disparam submit ao apertar Enter em input type="date"
+            document.addEventListener('keydown', async (e) => {
+                const modal = document.getElementById('modalVerDepois');
+                if (!modal) return;
+                const aberto = (modal.style.display === 'flex');
+                if (!aberto) return;
+
+                // Evita conflito com outros inputs/áreas (se quiser pode ajustar)
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    console.log('[VerDepois] keydown Enter capturado com modal aberto. target=', e.target && e.target.id);
+                    await confirmarVerDepois();
+                }
+            }, true);
 
             loadClientes();
         });
