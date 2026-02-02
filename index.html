@@ -1,6 +1,8 @@
 
 
 
+
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -1270,6 +1272,7 @@
             arquivar: {                label: 'Arquivar (📂)',                visivel: true            },
             desativar: {                label: 'Desativar',                visivel: true            },
             copiar: {                label: '📋 Copiar',                visivel: true            },
+                        copiarNumero: {                label: '🔢 Copiar Número',                visivel: true            },
             duplicar: {                label: '➕ Duplicar',                visivel: true            }
         };
 
@@ -1755,7 +1758,8 @@
                     if (acaoBotoesConfig.arquivar.visivel) botoesHtml.push(`<button title="Arquivar Cliente" onclick="arquivar(${index})">📂</button>`);
                     if (acaoBotoesConfig.desativar.visivel) botoesHtml.push(`<button title="Desativar Cliente" onclick="toggleDesativado(${index})" class="btn-secondary">🔌</button>`);
                     if (acaoBotoesConfig.copiar.visivel) botoesHtml.push(`<button title="Copiar Mensagem WhatsApp" onclick="copiarMensagemWhatsApp(${index})">📋</button>`);
-                    if (acaoBotoesConfig.duplicar.visivel) botoesHtml.push(`<button title="Duplicar Cliente" onclick="duplicarCliente(${index})">➕</button>`);
+                                        if (acaoBotoesConfig.copiarNumero.visivel) botoesHtml.push(`<button title=\"Copiar Número do Cliente\" onclick=\"copiarNumeroCliente(${index})\">🔢</button>`);
+if (acaoBotoesConfig.duplicar.visivel) botoesHtml.push(`<button title="Duplicar Cliente" onclick="duplicarCliente(${index})">➕</button>`);
                     botoesAcao = botoesHtml.join('');
                 }
 
@@ -2147,6 +2151,32 @@ ${datasHtml}
                 const originalClientesExibidos = clientesExibidos;
                 clientesExibidos = [clientes[index]];
                 await copiarMensagemWhatsApp(0);
+                clientesExibidos = originalClientesExibidos;
+            }
+        }
+
+
+
+        // === NOVO: Copiar número do cliente (telefone) ===
+        async function copiarNumeroCliente(index) {
+            const cliente = clientesExibidos[index];
+            const numero = (cliente && cliente.telefone) ? String(cliente.telefone).replace(/\D/g, '') : '';
+            if (!numero) return exibirAlerta("Número do cliente inválido!");
+            try {
+                await navigator.clipboard.writeText(numero);
+                showToast("Número copiado!");
+            } catch (err) {
+                exibirAlerta("Não consegui copiar automaticamente. Número: " + numero);
+                console.error("Erro ao copiar número: ", err);
+            }
+        }
+
+        async function copiarNumeroClienteById(clientId) {
+            const index = clientes.findIndex(c => c.id === clientId);
+            if (index !== -1) {
+                const originalClientesExibidos = clientesExibidos;
+                clientesExibidos = [clientes[index]];
+                await copiarNumeroCliente(0);
                 clientesExibidos = originalClientesExibidos;
             }
         }
