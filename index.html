@@ -1,8 +1,4 @@
 
-
-
-
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -24,8 +20,8 @@
             --font-family: 'Segoe UI', Arial, sans-serif;
             --border-radius: 8px;
             --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --button-gap: 5px; /* Variavel para o espaçamento */
-            --client-name-color: #007bff; /* Variavel para a cor do nome */
+            --button-gap: 5px;
+            --client-name-color: #007bff;
             --avisado-color: #e0f7fa;
             --debito-color: #fff3e0;
             --vencendo-hoje-color: #fff9c4;
@@ -35,6 +31,7 @@
         body {
             font-family: var(--font-family);
             padding: 20px;
+            padding-top: 20px;
             background-color: #f4f7f9;
             color: var(--dark-color);
             line-height: 1.6;
@@ -113,7 +110,7 @@
             background-color: var(--primary-color);
             transition: all 0.2s ease-in-out;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            position: relative; /* Para o badge */
+            position: relative;
             min-width: 44px;
             min-height: 44px;
         }
@@ -128,7 +125,6 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
-        /* Botões de ícone */
         button.icon-btn {
             padding: 0;
             width: 44px;
@@ -141,20 +137,10 @@
         }
 
         @keyframes pulse {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
-            }
-            70% {
-                transform: scale(1);
-                box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
-            }
-            100% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
-            }
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 123, 255, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
         }
-
 
         /* Variações de Cor dos Botões */
         button.btn-secondary { background-color: var(--secondary-color); }
@@ -163,11 +149,10 @@
         button.btn-warning { background-color: var(--warning-color); color: var(--dark-color); }
         button.btn-info { background-color: var(--info-color); }
 
-        /* Estilos específicos de botões existentes */
         .btn-debito-segurar { background-color: var(--warning-color); color: var(--dark-color); }
         .btn-renovar-data-atual { background-color: var(--warning-color); color: var(--dark-color); }
         .modal-confirm-danger { background-color: var(--danger-color); }
-        .btn-dola { background-color: #ff9800; } /* Laranja */
+        .btn-dola { background-color: #ff9800; }
         .btn-dola-sent { background-color: var(--success-color); }
         
         #centralMessageButton {
@@ -199,14 +184,13 @@
             gap: var(--button-gap);
         }
         
-        /* Botões dentro da tabela menores */
         td button {
             padding: 8px;
-            font-size: 1.2em; /* Ícones maiores */
+            font-size: 1.2em;
             margin: 2px;
             width: 40px;
             height: 40px;
-            line-height: 1; /* Alinhamento vertical */
+            line-height: 1;
         }
         
         td a {
@@ -214,7 +198,7 @@
             color: var(--client-name-color);
             text-decoration: none;
             transition: color 0.2s;
-            margin-right: 15px; /* Espaço entre o nome e os botões */
+            margin-right: 15px;
         }
         td a:hover {
             filter: brightness(85%);
@@ -232,7 +216,6 @@
             font-style: italic;
         }
         
-        /* NOVOS ESTILOS PERSONALIZÁVEIS */
         body.round-buttons td button,
         body.round-buttons .icon-btn {
             border-radius: 50%;
@@ -255,9 +238,8 @@
         body.transparent-buttons td button.btn-dola { color: #ff9800; }
         body.transparent-buttons td button.btn-dola-sent { color: var(--success-color); }
 
-
         /* Estilos de Modal */
-        .modal {
+                .modal {
             display: none;
             position: fixed;
             z-index: 1000;
@@ -268,9 +250,12 @@
             background-color: rgba(0, 0, 0, 0.5);
             justify-content: center;
             align-items: center;
+            /* Responsivo: garante espaço nas bordas e evita “cortar” o conteúdo */
+            padding: 16px;
+            box-sizing: border-box;
         }
 
-        .modal-content {
+                .modal-content {
             background-color: var(--white-color);
             padding: 25px;
             border-radius: var(--border-radius);
@@ -278,14 +263,29 @@
             width: 90%;
             max-width: 450px;
             box-shadow: var(--box-shadow);
+
+            /* Responsivo: rolagem interna quando o conteúdo é grande */
+            max-height: calc(100vh - 32px);
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .modal .modal-content button {
             margin-top: 10px;
         }
 
-        /* Ícone de Configurações */
-        .settings-icon {
+        
+        @media (max-width: 480px) {
+            .modal-content {
+                width: 100%;
+                padding: 16px;
+                border-radius: 14px;
+            }
+            #modalPopupVencendo .modal-content {
+                max-width: 100%;
+            }
+        }
+.settings-icon {
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -323,8 +323,6 @@
         #settingsArea h4 { margin-top: 20px; color: var(--secondary-color); border-bottom: 1px solid #ddd; padding-bottom: 5px;}
         #settingsArea .color-picker-label { display: flex; align-items: center; gap: 10px;}
 
-
-        /* Estilo para o badge numérico */
         .notification-badge {
             position: absolute;
             top: -8px;
@@ -341,7 +339,6 @@
             font-weight: bold;
         }
 
-        /* Overlay de Carregamento */
         .loading-overlay {
             display: none;
             position: fixed;
@@ -350,7 +347,6 @@
             width: 100%;
             height: 100%;
             background-color: rgba(255, 255, 255, 0.8);
-            display: flex;
             justify-content: center;
             align-items: center;
             z-index: 2000;
@@ -370,7 +366,6 @@
             100% { transform: rotate(360deg); }
         }
     
-        /* === Seleção múltipla + ações em lote === */
         .bulk-bar {
             position: sticky;
             top: 0;
@@ -411,9 +406,7 @@
             outline: 2px solid rgba(0,123,255,0.25);
             outline-offset: -2px;
         }
-
     
-        /* === Recolher / reexibir seção "Adicionar Cliente" === */
         .section-header {
             display:flex;
             align-items:center;
@@ -433,16 +426,152 @@
         .collapse-btn:hover { filter: brightness(0.95); }
         .collapsed { display: none !important; }
 
+        /* === POP-UP: Clientes com 3 dias para vencer === */
+        #modalPopupVencendo .modal-content { max-width: 900px; }
+        #popupVencendoLista { display:flex; flex-direction:column; gap:10px; margin-top:10px; }
+        .popup-card {
+            border: 1px solid #e6e6e6;
+            border-radius: 10px;
+            padding: 12px;
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+        }
+        .popup-card .top {
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+            align-items:center;
+            justify-content:space-between;
+        }
+        .popup-card .meta {
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+            color:#555;
+            font-size:0.95em;
+        }
+        .popup-card .actions {
+            display:flex;
+            flex-wrap:wrap;
+            gap: var(--button-gap);
+        }
+        .popup-muted { color:#777; font-size:0.95em; }
+        #popupConfigLista { max-height: 50vh; overflow:auto; border:1px solid #eee; border-radius:10px; padding:10px; }
+        .popup-config-row {
+            display:flex;
+            gap:10px;
+            align-items:flex-start;
+            padding:8px;
+            border-bottom:1px solid #f0f0f0;
+        }
+        .popup-config-row:last-child { border-bottom:none; }
+        .popup-config-row label { cursor:pointer; }
+        .popup-config-row .info { flex:1; }
+
+        /* ===== Painel de Logs ===== */
+        #debugLogPanel{
+            position: fixed;
+            right: 14px;
+            bottom: 14px;
+            width: min(780px, calc(100vw - 28px));
+            max-height: min(70vh, 520px);
+            z-index: 2500;
+            background: rgba(255,255,255,0.97);
+            border: 1px solid rgba(0,0,0,0.10);
+            border-radius: 14px;
+            box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+            display: none;
+            overflow: hidden;
+        }
+        #debugLogPanel.open{ display: flex; flex-direction: column; }
+        #debugLogPanel .log-head{
+            display:flex;
+            align-items:center;
+            justify-content: space-between;
+            gap:10px;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+        #debugLogPanel .log-head b{ font-size: 14px; }
+        #debugLogPanel .log-actions{
+            display:flex;
+            gap:8px;
+            align-items:center;
+            flex-wrap: wrap;
+        }
+        #debugLogPanel .log-body{
+            padding: 10px 12px;
+            overflow: auto;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 12px;
+            line-height: 1.35;
+            white-space: pre-wrap;
+        }
+        #debugLogPanel .log-body .err{ color: #b40000; font-weight: 700; }
+        #debugLogPanel .log-body .warn{ color: #8a5a00; font-weight: 700; }
+        #debugLogPanel .log-body .ok{ color: #006b2e; font-weight: 700; }
+        
+        /* Toast Notification */
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 16px;
+            position: fixed;
+            z-index: 2100;
+            left: 50%;
+            bottom: 30px;
+            font-size: 17px;
+        }
+        .toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+        
+        /* Ajuste para topbar */
+        .topQuickBar-right {
+            position: absolute;
+            top: 5px;
+            right: 15px;
+        }
+        .topQuickBar-status {
+            font-size: 0.85em;
+            color: #666;
+            background: rgba(255,255,255,0.8);
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
     </style>
 </head>
 <body>
-    <div id="ultimaAtualizacaoInfo" style="position: fixed; top: 10px; right: 10px; font-size: 0.9em; color: #555; background-color: #f9f9f9; padding: 5px 10px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); z-index: 1001;">
+
+    <div class="topQuickBar-right">
+        <span id="topQuickBarStatus" class="topQuickBar-status">Status: pronto</span>
+    </div>
+
+    <div id="ultimaAtualizacaoInfo" style="position: static; margin: 10px 0; font-size: 0.9em; color: #555; background-color: #f9f9f9; padding: 5px 10px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
         Última Alteração: Nunca
     </div>
     <div class="container">
         <h1>Controle de Clientes</h1>
 
-        <!-- Barra de ações em lote (aparece quando há seleção) -->
+        <!-- Barra de ações em lote -->
         <div id="bulkBar" class="bulk-bar" aria-live="polite">
             <div class="bulk-row">
                 <span class="bulk-count" id="bulkCount">0 selecionados</span>
@@ -474,30 +603,34 @@
         <button onclick="exportarClientes()" class="btn-secondary icon-btn" title="Exportar Clientes (JSON)">📤</button>
 
         <div class="section-header">
-      <h3 style="margin:0;">Adicionar Cliente</h3>
-      <button id="toggleAddSectionBtn" type="button" class="collapse-btn" onclick="toggleAddSection()">Recolher ▲</button>
-    </div>
-
-    <div id="addClientSection">
-        <div class="input-group-horizontal">
-            <div class="input-wrapper"><input type="date" id="dataInput" required title="Data de Vencimento"></div>
-            <div class="input-wrapper"><input type="text" id="nomeInput" placeholder="Nome do Cliente" required></div>
-            <div class="input-wrapper"><input type="tel" id="telefoneInput" placeholder="Telefone (ex: 11999999999)" required></div>
-            <div class="input-wrapper"><input type="date" id="dataCobrancaInput" title="Data de Cobrança (Opcional)"></div>
+            <h3 style="margin:0;">Adicionar Cliente</h3>
+            <button id="toggleAddSectionBtn" type="button" class="collapse-btn" onclick="toggleAddSection()">Recolher ▲</button>
         </div>
-        <textarea id="observacaoInput" placeholder="Observação (Opcional)"></textarea>
-        <div>
-            <label>
-                <input type="radio" name="produto" value="UniTv" checked> UniTv
-            </label>
-            <label>
-                <input type="radio" name="produto" value="Duplecast"> Duplecast
-            </label>
-        </div>
-        <button onclick="adicionarCliente()" class="btn-success">➕ Adicionar Cliente</button>
-    </div>
 
-    <h3>Filtros e Ações</h3>
+        <div id="addClientSection">
+            <div class="input-group-horizontal">
+                <div class="input-wrapper"><input type="date" id="dataInput" required title="Data de Vencimento"></div>
+                <div class="input-wrapper"><input type="text" id="nomeInput" placeholder="Nome do Cliente" required></div>
+                <div class="input-wrapper"><input type="tel" id="telefoneInput" placeholder="Telefone (ex: 11999999999)" required></div>
+                <div class="input-wrapper"><input type="date" id="dataCobrancaInput" title="Data de Cobrança (Opcional)"></div>
+            </div>
+            <textarea id="observacaoInput" placeholder="Observação (Opcional)"></textarea>
+            <div>
+                <label>
+                    <input type="radio" name="produto" value="UniTv" checked> UniTv
+                </label>
+                <label>
+                    <input type="radio" name="produto" value="Duplecast"> Duplecast
+                </label>
+            </div>
+            <div class="add-client-actions" style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:10px;">
+                <button onclick="adicionarCliente()" class="btn-success">➕ Adicionar Cliente</button>
+                <button onclick="abrirModalGerenciarPopup()" class="btn-info">⚙️ Gerenciar Pop-up</button>
+                <button onclick="abrirModalPopupConfig()" class="btn-secondary">👥 Importar P/ Pop-up</button>
+            </div>
+        </div>
+
+        <h3>Filtros e Ações</h3>
         <button onclick="filtrarHojeEVencidos()">Vencendo Hoje + Vencidos <span id="badgeHojeEVencidos" class="notification-badge" style="display:none;"></span></button>
         <button onclick="filtrarCobrancaHoje()" class="btn-info">Cobrança Hoje <span id="badgeCobrancaHoje" class="notification-badge" style="display:none;"></span></button>
         <button onclick="filtrarHoje()">Clientes Vencendo Hoje <span id="badgeHoje" class="notification-badge" style="display:none;"></span></button>
@@ -571,6 +704,7 @@
             <button onclick="abrirModalConfigurarBotoes()">Configurar Botões Visíveis</button>
             <button onclick="saveSettings()" class="btn-success icon-btn" title="Salvar Ajustes">💾</button>
             <button onclick="resetSettings()" class="btn-secondary icon-btn" title="Redefinir Padrão">🔄</button>
+            <hr>
         </div>
 
         <!-- Modais -->
@@ -638,37 +772,28 @@
                 <button onclick="cancelarConflitoIdNome()" class="btn-secondary">Cancelar Importação Deste</button>
             </div>
         </div>
+        
         <div id="modalVerDepois" class="modal">
             <div class="modal-content">
                 <h3>Agendar Reexibição</h3>
                 <p>Escolha a data em que este cliente deve voltar a aparecer na lista principal.</p>
 
                 <form id="formVerDepois">
-                    <input
-                        type="date"
-                        id="dataReexibicaoInput"
-                        required
-                        style="width: 90%; padding: 10px; margin: 10px 0;"
-                    >
-
+                    <input type="date" id="dataReexibicaoInput" required style="width: 90%; padding: 10px; margin: 10px 0;">
                     
-                    <div style=\"display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin: 6px 0 12px;\">
-                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoInput', 1)\" class=\"btn-secondary\">+1d</button>
-                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoInput', 3)\" class=\"btn-secondary\">+3d</button>
-                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoInput', 7)\" class=\"btn-secondary\">+7d</button>
-                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoInput', 15)\" class=\"btn-secondary\">+15d</button>
-                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoInput', 30)\" class=\"btn-secondary\">+30d</button>
+                    <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin: 6px 0 12px;">
+                        <button type="button" onclick="setDatePlusDays('dataReexibicaoInput', 1)" class="btn-secondary">+1d</button>
+                        <button type="button" onclick="setDatePlusDays('dataReexibicaoInput', 3)" class="btn-secondary">+3d</button>
+                        <button type="button" onclick="setDatePlusDays('dataReexibicaoInput', 7)" class="btn-secondary">+7d</button>
+                        <button type="button" onclick="setDatePlusDays('dataReexibicaoInput', 15)" class="btn-secondary">+15d</button>
+                        <button type="button" onclick="setDatePlusDays('dataReexibicaoInput', 30)" class="btn-secondary">+30d</button>
                     </div>
-<button id="btnConfirmarVerDepois" class="btn-success" type="submit">
-                        Confirmar
-                    </button>
-
-                    <button type="button" onclick="fecharModal()" class="btn-secondary">
-                        Cancelar
-                    </button>
+                    <button id="btnConfirmarVerDepois" class="btn-success" type="submit">Confirmar</button>
+                    <button type="button" onclick="fecharModal()" class="btn-secondary">Cancelar</button>
                 </form>
             </div>
         </div>
+        
         <!-- NOVO MODAL PARA CONFIGURAR BOTÕES -->
         <div id="modalConfigurarBotoes" class="modal">
             <div class="modal-content">
@@ -681,7 +806,6 @@
                 <button onclick="fecharModal()" class="btn-secondary">Cancelar</button>
             </div>
         </div>
-
 
         <!-- Modal: Trocar Produto em lote -->
         <div id="modalProdutoLote" class="modal">
@@ -732,7 +856,6 @@
             </div>
         </div>
 
-
         <!-- Modal: Ver Depois em lote -->
         <div id="modalVerDepoisLote" class="modal">
             <div class="modal-content">
@@ -740,29 +863,112 @@
                 <p>Defina a data para reexibir <b><span id="bulkCountInline">0</span></b> clientes selecionados.</p>
                 <form id="formVerDepoisLote">
                     <input type="date" id="dataReexibicaoLoteInput" required style="width: 90%; padding: 10px; margin: 10px 0;">
-                    
-                    <div style=\"display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin: 6px 0 12px;\">
-                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoLoteInput', 1)\" class=\"btn-secondary\">+1d</button>
-                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoLoteInput', 3)\" class=\"btn-secondary\">+3d</button>
-                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoLoteInput', 7)\" class=\"btn-secondary\">+7d</button>
-                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoLoteInput', 15)\" class=\"btn-secondary\">+15d</button>
-                        <button type=\"button\" onclick=\"setDatePlusDays('dataReexibicaoLoteInput', 30)\" class=\"btn-secondary\">+30d</button>
+                    <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin: 6px 0 12px;">
+                        <button type="button" onclick="setDatePlusDays('dataReexibicaoLoteInput', 1)" class="btn-secondary">+1d</button>
+                        <button type="button" onclick="setDatePlusDays('dataReexibicaoLoteInput', 3)" class="btn-secondary">+3d</button>
+                        <button type="button" onclick="setDatePlusDays('dataReexibicaoLoteInput', 7)" class="btn-secondary">+7d</button>
+                        <button type="button" onclick="setDatePlusDays('dataReexibicaoLoteInput', 15)" class="btn-secondary">+15d</button>
+                        <button type="button" onclick="setDatePlusDays('dataReexibicaoLoteInput', 30)" class="btn-secondary">+30d</button>
                     </div>
-<button class="btn-success" type="submit">Confirmar</button>
+                    <button class="btn-success" type="submit">Confirmar</button>
                     <button type="button" onclick="fecharModal()" class="btn-secondary">Cancelar</button>
                 </form>
             </div>
         </div>
 
     </div>
-        <div id="toast" class="toast" role="status" aria-live="polite"></div>
+        
+    <!-- POP-UP: Vencendo em até 3 dias -->
+    <div id="modalPopupVencendo" class="modal" style="display:none;" onclick="if(event.target===this) fecharPopupVencendo()">
+        <div class="modal-content" style="max-width: 950px; width: min(950px, 96vw);">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+                <h3 style="margin:0;">Clientes vencendo em até 3 dias</h3>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+                    <button class="btn-info" onclick="abrirModalGerenciarPopup()">👥 Gerenciar / Novo</button>
+                    <button class="btn-secondary" onclick="fecharPopupVencendo()">Fechar</button>
+                </div>
+            </div>
+
+            <div class="popup-muted" style="margin-top:6px;">
+                Mostra somente os clientes escolhidos na configuração e que estão com vencimento em 3, 2, 1 dia ou hoje.
+            </div>
+
+            <div id="popupVencendoLista"></div>
+        </div>
+    </div>
+
+    <!-- MODAL: Configurar clientes do pop-up (Checklist) -->
+    <div id="modalPopupConfig" class="modal" style="display:none;" onclick="if(event.target===this) fecharModalPopupConfig()">
+        <div class="modal-content" style="max-width: 900px; width: min(900px, 96vw);">
+            <h3>Importar Clientes Existentes</h3>
+            <p style="margin-top: 0;">
+                Selecione os clientes da lista principal para criar uma cópia no Pop-up.
+            </p>
+
+            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin: 8px 0 10px;">
+                <input
+                    type="text"
+                    id="popupConfigBusca"
+                    placeholder="Buscar por nome, telefone ou ID…"
+                    oninput="popupConfigRenderAtual()"
+                    style="width: min(520px, 92%); padding: 12px; border-radius: var(--border-radius); border: 1px solid #ccc;"
+                >
+                <button class="btn-secondary" type="button" onclick="(function(){ const el=document.getElementById('popupConfigBusca'); if(el) el.value=''; popupConfigRenderAtual(); })()">Limpar</button>
+            </div>
+
+            <div id="popupConfigLista"></div>
+
+            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top: 12px;">
+                <button class="btn-success" onclick="salvarPopupConfig()">Salvar Importação</button>
+                <button class="btn-secondary" onclick="fecharModalPopupConfig()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOVO MODAL: Gerenciar Clientes do Pop-up (Lista + Cadastro Manual) -->
+    <div id="modalGerenciarPopup" class="modal" style="display:none;" onclick="if(event.target===this) fecharModalGerenciarPopup()">
+        <div class="modal-content" style="max-width: 800px; width: min(800px, 96vw);">
+            <h3>Gerenciar Clientes do Pop-up</h3>
+            
+            <!-- Form de Cadastro Manual -->
+            <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-bottom:20px; border:1px solid #eee; text-align:left;">
+                <h4 style="margin-top:0; color:var(--primary-color);">➕ Cadastrar Novo (Exclusivo Pop-up)</h4>
+                <div class="input-group-horizontal">
+                    <div class="input-wrapper"><label>Nome</label><input type="text" id="popNome" placeholder="Nome do Cliente"></div>
+                    <div class="input-wrapper"><label>Telefone</label><input type="tel" id="popTel" placeholder="Telefone"></div>
+                    <div class="input-wrapper"><label>Vencimento</label><input type="date" id="popData"></div>
+                </div>
+                <div style="display:flex; gap:15px; margin:10px 0;">
+                    <label><input type="radio" name="popProd" value="UniTv" checked> UniTv</label>
+                    <label><input type="radio" name="popProd" value="Duplecast"> Duplecast</label>
+                </div>
+                <button class="btn-success" onclick="adicionarClienteManualPopup()">Adicionar Manualmente</button>
+            </div>
+
+            <!-- Lista e Ações -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
+                <h4 style="margin:0;">Lista de Clientes (Pop-up)</h4>
+                <button class="btn-info" onclick="abrirModalPopupConfig()">📂 Importar da Lista Principal</button>
+            </div>
+            
+            <input type="text" id="buscaGerenciarPop" placeholder="Filtrar lista de clones..." oninput="renderListaGerenciarPopup()" style="width:100%; margin-bottom:10px;">
+            
+            <div id="listaGerenciarPop" style="max-height:300px; overflow-y:auto; border:1px solid #eee; border-radius:8px; padding:10px; text-align:left;"></div>
+
+            <div style="margin-top:15px;">
+                <button class="btn-secondary" onclick="fecharModalGerenciarPopup()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
     <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
     </div>
 
     <script>
-        let clientes = []; // Inicializado como array vazio, será preenchido por loadClientes()
+        let clientes = [];
         let clientesFiltrados = [];
         let clienteIndexParaExcluir = null;
         let clienteIndexParaDuplicar = null;
@@ -776,21 +982,13 @@
         let redoHistory = [];
         const MAX_HISTORY_STATES = 10;
         let confirmActionCallback = null;
-        let clienteIdParaVerDepois = null; // Para armazenar o ID do cliente ao agendar
-        // Variáveis para gerenciar o processo de importação com conflitos
+        let clienteIdParaVerDepois = null;
         let clientesParaProcessarImportacao = [];
         let currentIndexImportacao = 0;
-        // Variáveis para o botão de mensagem central
         let clientesVencidosParaMensagem = [];
-        // Variável para armazenar o ID do cliente para "Renovar HOJE"
         let clienteIdParaRenovarHoje = null;
-        // Variável para o debounce da pesquisa
         let debounceTimer;
 
-        
-
-
-        // === Seleção múltipla (em lote) ===
         const selectedClientIds = new Set();
 
         function updateBulkBar() {
@@ -806,7 +1004,6 @@
         }
 
         function syncRowSelectionUI() {
-            // Marca checkboxes visíveis e destaca linhas
             document.querySelectorAll('input.select-cliente').forEach(chk => {
                 const id = chk.getAttribute('data-id');
                 const isSel = selectedClientIds.has(id);
@@ -852,7 +1049,6 @@
                 return;
             }
 
-            // Confirmações (para evitar cliques acidentais)
             const titulos = {
                 arquivar: "Arquivar (em lote)",
                 desarquivar: "Desarquivar (em lote)",
@@ -973,7 +1169,6 @@
                 exibirAlerta(`Erro ao agendar em lote: ${error.message}. Ação desfeita localmente.`);
             }
         }
-
         
         function setDatePlusDays(inputId, days) {
             const inp = document.getElementById(inputId);
@@ -1068,7 +1263,7 @@
 
         function iniciarModoCobranca() {
             prepararClientesVencidosParaMensagem();
-            filaCobranca = clientesVencidosParaMensagem.slice(); // vencidos + hoje e não avisados
+            filaCobranca = clientesVencidosParaMensagem.slice();
             cobrancaIndex = 0;
             if (filaCobranca.length === 0) return exibirAlerta("Não há clientes vencidos/hoje para cobrar.");
             document.getElementById('modalCobranca').style.display = 'flex';
@@ -1147,7 +1342,6 @@
                     prepararClientesVencidosParaMensagem();
                     await salvarClientes();
                     showToast("Agendado ver depois!");
-                    // reabre e avança
                     document.getElementById('modalCobranca').style.display = 'flex';
                     cobrancaProximo();
                 } catch(e){
@@ -1170,7 +1364,6 @@
             renderCobranca();
         }
 
-
         function exportarSelecionados() {
             if (selectedClientIds.size === 0) {
                 exibirAlerta("Selecione pelo menos um cliente.");
@@ -1185,8 +1378,6 @@
                 arquivado: c.arquivado || false, oculto: c.oculto || false, reexibirEm: c.reexibirEm || null,
                 desativado: c.desativado || false, dola_sent: c.dola_sent || false, clicado: c.clicado || false,
                 dataCobranca: c.dataCobranca || null, observacao: c.observacao || null,
-                            logs: c.logs || [],
-                            logs: c.logs || [],
                 logs: c.logs || []
               }));
             const blob = new Blob([JSON.stringify(clientesParaExportar, null, 4)], { type: "application/json" });
@@ -1197,9 +1388,7 @@
             showToast('Exportado!'); atualizarUltimaAtualizacao("clientes selecionados exportados");
         }
 
-// ====================================================================================
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwoeQZB6yl-RBXQ8gn7PUOz-QsyYJfeWW8UgDgNf8WUYPCH7DczuoXLb_5PkipxD6OY/exec';
-        // === Configuração rápida ===
         const PIX_KEY = "11947406124";
         const PIX_NOME = "Waldemar Jose Luiz";
         const TOAST_MS = 2200;
@@ -1213,12 +1402,9 @@
             if (!clienteObj) return;
             if (!Array.isArray(clienteObj.logs)) clienteObj.logs = [];
             clienteObj.logs.push({ t: nowBR(), a: acao, e: extra || "" });
-            // limita para não crescer infinito
             if (clienteObj.logs.length > 50) clienteObj.logs = clienteObj.logs.slice(-50);
         }
 
-        
-        // === Recolher / reexibir seção "Adicionar Cliente" (salva preferência) ===
         function setAddSectionCollapsed(isCollapsed) {
             const sec = document.getElementById('addClientSection');
             const btn = document.getElementById('toggleAddSectionBtn');
@@ -1237,10 +1423,9 @@
         function restoreAddSectionState() {
             try {
                 let val = localStorage.getItem('addSectionCollapsed');
-                // padrão: recolhido
                 if (val === null) {
-                    val = '1';
-                    localStorage.setItem('addSectionCollapsed', '1');
+                    val = '0';
+                    localStorage.setItem('addSectionCollapsed', '0');
                 }
                 setAddSectionCollapsed(val === '1');
             } catch(e) {}
@@ -1254,36 +1439,30 @@
             setTimeout(() => el.classList.remove('show'), TOAST_MS);
         }
 
-        // ====================================================================================
-
         let filtroAtual = "hojeEVencidos";
-        // NOVO: Configuração dos botões de ação
         let acaoBotoesConfig = {};
         const defaultAcaoBotoesConfig = {
-            observacao: {                label: '💬 Observação',                visivel: true            },
-            dola: {                label: '🤖 Dola',                visivel: true            },
-            renovarAuto: {                label: 'Renov. Auto (🔁)',                visivel: true            },
-            debito: {                label: 'DÉBITO',                visivel: true            },
-            renovarHoje: {                label: 'RENOVAR HOJE',                visivel: true            },
-            verDepois: {                label: 'Ver Depois',                visivel: true            },
-            produto: {                label: 'Produto',                visivel: true            },
-            editar: {                label: 'Edit',                visivel: true            },
-            excluir: {                label: 'Excluir (❌)',                visivel: true            },
-            arquivar: {                label: 'Arquivar (📂)',                visivel: true            },
-            desativar: {                label: 'Desativar',                visivel: true            },
-            copiar: {                label: '📋 Copiar',                visivel: true            },
-                        copiarNumero: {                label: '🔢 Copiar Número',                visivel: true            },
-            duplicar: {                label: '➕ Duplicar',                visivel: true            }
+            observacao: { label: '💬 Observação', visivel: true },
+            dola: { label: '🤖 Dola', visivel: true },
+            renovarAuto: { label: 'Renov. Auto (🔁)', visivel: true },
+            debito: { label: 'DÉBITO', visivel: true },
+            renovarHoje: { label: 'RENOVAR HOJE', visivel: true },
+            verDepois: { label: 'Ver Depois', visivel: true },
+            produto: { label: 'Produto', visivel: true },
+            editar: { label: 'Edit', visivel: true },
+            excluir: { label: 'Excluir (❌)', visivel: true },
+            arquivar: { label: 'Arquivar (📂)', visivel: true },
+            desativar: { label: 'Desativar', visivel: true },
+            copiar: { label: '📋 Copiar', visivel: true },
+            copiarNumero: { label: '🔢 Copiar Número', visivel: true },
+            duplicar: { label: '➕ Duplicar', visivel: true }
         };
 
-        // --- Funções de Loading/Spinner ---
         function mostrarCarregando() {
             document.getElementById('loadingOverlay').style.display = 'flex';
         }
 
-        // FUNÇÃO ATUALIZADA: Marca o link clicado e ATUALIZA O OBJETO CLIENTE
         function marcarClienteClicado(elemento) {
-            // Remove a classe de outros links para garantir que apenas um esteja ativo visualmente
             document.querySelectorAll('a.cliente-clicado').forEach(el => el.classList.remove('cliente-clicado'));
 
             elemento.classList.add("cliente-clicado");
@@ -1313,8 +1492,116 @@
             }
         }
 
+        const APP_LOG_KEY = 'appDebugLogs_v1';
+        let appDebugLogs = [];
+
+        function safeStringify(obj) {
+            try { return JSON.stringify(obj); } catch(e) { return String(obj); }
+        }
+
+        function nowIso() {
+            const d = new Date();
+            const pad = (n)=>String(n).padStart(2,'0');
+            return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+        }
+
+        function setTopStatus(texto) {
+            const el = document.getElementById('topQuickBarStatus');
+            if (el) el.textContent = texto;
+        }
+
+        function addAppLog(level, step, detail = '') {
+            const entry = {
+                t: nowIso(),
+                level: String(level || 'INFO').toUpperCase(),
+                step: String(step || ''),
+                detail: (typeof detail === 'string') ? detail : safeStringify(detail)
+            };
+            appDebugLogs.push(entry);
+            if (appDebugLogs.length > 400) appDebugLogs = appDebugLogs.slice(-400);
+
+            try { localStorage.setItem(APP_LOG_KEY, JSON.stringify(appDebugLogs)); } catch(e) {}
+            renderDebugLogs();
+
+            if (entry.level === 'ERROR') console.error('[LOG]', entry.step, entry.detail);
+            else if (entry.level === 'WARN') console.warn('[LOG]', entry.step, entry.detail);
+            else console.log('[LOG]', entry.step, entry.detail);
+        }
+
+        function loadDebugLogs() {
+            try {
+                const saved = localStorage.getItem(APP_LOG_KEY);
+                if (saved) appDebugLogs = JSON.parse(saved) || [];
+            } catch(e) {
+                appDebugLogs = [];
+            }
+            renderDebugLogs();
+        }
+
+        function renderDebugLogs() {
+            const box = document.getElementById('debugLogContent');
+            if (!box) return;
+
+            if (!appDebugLogs.length) {
+                box.innerHTML = '<span style="color:#666">Sem logs ainda.</span>';
+                return;
+            }
+
+            box.innerHTML = appDebugLogs.map(e => {
+                const cls = e.level === 'ERROR' ? 'err' : (e.level === 'WARN' ? 'warn' : 'ok');
+                const head = `<span class="${cls}">[${e.level}]</span>`;
+                const step = e.step ? ` <b>${e.step}</b>` : '';
+                const detail = e.detail ? ` — ${String(e.detail).replace(/</g,'&lt;')}` : '';
+                return `${e.t} ${head}${step}${detail}`;
+            }).join('\n');
+        }
+
+        function toggleDebugLogPanel(forceOpen = null) {
+            const panel = document.getElementById('debugLogPanel');
+            if (!panel) return;
+            const shouldOpen = (forceOpen === null) ? !panel.classList.contains('open') : !!forceOpen;
+            panel.classList.toggle('open', shouldOpen);
+            addAppLog('INFO', shouldOpen ? 'logs: abrir painel' : 'logs: fechar painel', '');
+        }
+
+        async function copyDebugLogs() {
+            const txt = (appDebugLogs || []).map(e => `${e.t} [${e.level}] ${e.step}${e.detail ? ' — ' + e.detail : ''}`).join('\n');
+            try {
+                await navigator.clipboard.writeText(txt);
+                showToast('Logs copiados!');
+            } catch(e) {
+                exibirAlerta('Não consegui copiar automaticamente. Abra o painel e selecione manualmente.');
+            }
+        }
+
+        function downloadDebugLogs() {
+            const txt = (appDebugLogs || []).map(e => `${e.t} [${e.level}] ${e.step}${e.detail ? ' — ' + e.detail : ''}`).join('\n');
+            const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `logs_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.txt`;
+            a.click();
+            addAppLog('INFO', 'logs: baixar txt', a.download);
+        }
+
+        function clearDebugLogs() {
+            appDebugLogs = [];
+            try { localStorage.removeItem(APP_LOG_KEY); } catch(e) {}
+            renderDebugLogs();
+            addAppLog('WARN', 'logs: limpar', 'Logs apagados');
+        }
+
+        window.addEventListener('error', (ev) => {
+            addAppLog('ERROR', 'window.error', ev?.message || 'Erro desconhecido');
+        });
+        window.addEventListener('unhandledrejection', (ev) => {
+            addAppLog('ERROR', 'promise.unhandledrejection', ev?.reason?.message || safeStringify(ev?.reason) || 'Rejeição sem motivo');
+        });
+
         async function sendRequestToBackend(action, data = {}) {
             try {
+                addAppLog('INFO', `backend:${action}:start`, data);
+                setTopStatus(`Status: enviando (${action})...`);
                 const url = `${WEB_APP_URL}?action=${action}`;
                 const options = {
                     method: 'POST',
@@ -1339,9 +1626,13 @@
                 if (result && result.status === 'error') {
                     throw new Error(result.message || 'Erro desconhecido do backend.');
                 }
+                addAppLog('OK', `backend:${action}:ok`, result);
+                setTopStatus('Status: pronto');
                 return result;
             } catch (error) {
                 console.error('Erro na comunicação com o backend:', error);
+                addAppLog('ERROR', `backend:${action}:error`, error.message || error);
+                setTopStatus('Status: erro (ver logs)');
                 throw error;
             }
         }
@@ -1387,7 +1678,6 @@
             document.getElementById("modalConfirmacaoGenericaMensagem").innerHTML = mensagem;
             confirmActionCallback = callback;
             
-            // Remove classes existentes e adiciona a correta
             btnConfirmar.classList.remove("btn-danger", "btn-success");
             btnConfirmar.classList.add(isDanger ? "btn-danger" : "btn-success");
             
@@ -1414,11 +1704,11 @@
             if (modalAlerta) {
                 modalAlerta.innerHTML = "";
             }
+            // Remove listeners para evitar duplicidade
             document.removeEventListener("keydown", fecharComEsc);
             document.removeEventListener("keydown", fecharComEscOuEnter);
             clienteIdParaRenovarHoje = null;
         }
-
 
         function fecharComEsc(event) {
             if (event.key === "Escape") {
@@ -1515,9 +1805,32 @@
 
         async function arquivar(index) {
             const clienteParaArquivar = clientesExibidos[index];
-            const clienteOriginalIndex = clientes.findIndex(c => c.id === clienteParaArquivar.id);
-            if (clienteOriginalIndex === -1) return;
+            if (!clienteParaArquivar) return;
 
+            const clienteOriginalIndex = clientes.findIndex(c => c.id === clienteParaArquivar.id);
+
+            // 1) Clone do POP-UP
+            if (clienteOriginalIndex === -1) {
+                const cloneIndex = (popupClientClones || []).findIndex(c => String(c.id) === String(clienteParaArquivar.id));
+                if (cloneIndex === -1) return;
+
+                const clone = popupClientClones[cloneIndex];
+                clone.arquivado = true;
+                clone.oculto = false;
+                clone.reexibirEm = null;
+                clone.desativado = false;
+                clone.clicado = false;
+
+                if (typeof pushLog === 'function') pushLog(clone, 'arquivado', 'popup-clone');
+                savePopupClientClones();
+                showToast('Arquivado (clone)');
+                atualizarUltimaAtualizacao("arquivado (clone)", clone.nome);
+
+                try { checarEExibirPopupVencendo(); } catch (e) {}
+                return;
+            }
+
+            // 2) Lista principal
             saveStateToHistory();
             const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
             clientes[clienteOriginalIndex].arquivado = true;
@@ -1624,7 +1937,6 @@
             let clientesParaProcessar;
             const hojeStr = new Date().toISOString().split('T')[0];
             const hojeFormatada = new Date().toLocaleDateString('pt-BR').split('/').map(p => p.padStart(2,'0')).join('/');
-
 
             const isVisivelHoje = (cliente) => {
                 return !cliente.reexibirEm || cliente.reexibirEm <= hojeStr;
@@ -1758,8 +2070,8 @@
                     if (acaoBotoesConfig.arquivar.visivel) botoesHtml.push(`<button title="Arquivar Cliente" onclick="arquivar(${index})">📂</button>`);
                     if (acaoBotoesConfig.desativar.visivel) botoesHtml.push(`<button title="Desativar Cliente" onclick="toggleDesativado(${index})" class="btn-secondary">🔌</button>`);
                     if (acaoBotoesConfig.copiar.visivel) botoesHtml.push(`<button title="Copiar Mensagem WhatsApp" onclick="copiarMensagemWhatsApp(${index})">📋</button>`);
-                                        if (acaoBotoesConfig.copiarNumero.visivel) botoesHtml.push(`<button title=\"Copiar Número do Cliente\" onclick=\"copiarNumeroCliente(${index})\">🔢</button>`);
-if (acaoBotoesConfig.duplicar.visivel) botoesHtml.push(`<button title="Duplicar Cliente" onclick="duplicarCliente(${index})">➕</button>`);
+                    if (acaoBotoesConfig.copiarNumero.visivel) botoesHtml.push(`<button title=\"Copiar Número do Cliente\" onclick=\"copiarNumeroCliente(${index})\">🔢</button>`);
+                    if (acaoBotoesConfig.duplicar.visivel) botoesHtml.push(`<button title="Duplicar Cliente" onclick="duplicarCliente(${index})">➕</button>`);
                     botoesAcao = botoesHtml.join('');
                 }
 
@@ -1772,10 +2084,9 @@ if (acaoBotoesConfig.duplicar.visivel) botoesHtml.push(`<button title="Duplicar 
                 }
 
                 tr.innerHTML = `
-
                     <td>
                         <input class="select-cliente" type="checkbox" data-id="${cliente.id}" aria-label="Selecionar cliente" onclick="toggleSelecaoCliente(String(cliente.id), this.checked); event.stopPropagation();">
-${datasHtml}
+                        ${datasHtml}
                         <a href="#" class="${classeDinamica}" onclick="marcarClienteClicado(this); enviarMensagemWhatsApp('${nomeExibicaoBase}', '${cliente.telefone}', ${index}); return false;">
                             ${nomeExibicaoBase} (${cliente.Produto || 'N/I'})
                         </a>
@@ -1786,7 +2097,6 @@ ${datasHtml}
             });
             atualizarContadores();
         }
-
 
         async function toggleAvisadoFromAvisados(clientId) {
             const clienteOriginalIndex = clientes.findIndex(c => c.id === clientId);
@@ -1812,12 +2122,15 @@ ${datasHtml}
                 atualizarUltimaAtualizacao("falha ao desmarcar avisado", clientes[clienteOriginalIndex].nome);
             }
         }
-        // --- Novas funções auxiliares para a lista de Avisados ---
+
         function abrirModalVerDepoisById(clientId) {
-            const index = clientes.findIndex(c => c.id === clientId);
-            if (index !== -1) {
+            const id = String(clientId);
+            let obj = (clientes || []).find(c => String(c.id) === id);
+            if (!obj) obj = (popupClientClones || []).find(c => String(c.id) === id);
+
+            if (obj) {
                 const originalClientesExibidos = clientesExibidos;
-                clientesExibidos = [clientes[index]];
+                clientesExibidos = [obj];
                 abrirModalVerDepois(0);
                 clientesExibidos = originalClientesExibidos;
             }
@@ -1834,10 +2147,13 @@ ${datasHtml}
         }
 
         function editarClienteById(clientId) {
-            const index = clientes.findIndex(c => c.id === clientId);
-            if (index !== -1) {
+            const id = String(clientId);
+            let obj = (clientes || []).find(c => String(c.id) === id);
+            if (!obj) obj = (popupClientClones || []).find(c => String(c.id) === id);
+
+            if (obj) {
                 const originalClientesExibidos = clientesExibidos;
-                clientesExibidos = [clientes[index]];
+                clientesExibidos = [obj];
                 editar(0);
                 clientesExibidos = originalClientesExibidos;
             }
@@ -1851,20 +2167,26 @@ ${datasHtml}
         }
 
         function arquivarById(clientId) {
-            const index = clientes.findIndex(c => c.id === clientId);
-            if (index !== -1) {
+            const id = String(clientId);
+            let obj = (clientes || []).find(c => String(c.id) === id);
+            if (!obj) obj = (popupClientClones || []).find(c => String(c.id) === id);
+
+            if (obj) {
                 const originalClientesExibidos = clientesExibidos;
-                clientesExibidos = [clientes[index]];
+                clientesExibidos = [obj];
                 arquivar(0);
                 clientesExibidos = originalClientesExibidos;
             }
         }
 
         function toggleDesativadoById(clientId) {
-            const index = clientes.findIndex(c => c.id === clientId);
-            if (index !== -1) {
+            const id = String(clientId);
+            let obj = (clientes || []).find(c => String(c.id) === id);
+            if (!obj) obj = (popupClientClones || []).find(c => String(c.id) === id);
+
+            if (obj) {
                 const originalClientesExibidos = clientesExibidos;
-                clientesExibidos = [clientes[index]];
+                clientesExibidos = [obj];
                 toggleDesativado(0);
                 clientesExibidos = originalClientesExibidos;
             }
@@ -1901,10 +2223,13 @@ ${datasHtml}
         }
 
         function pedirConfirmacaoRenovacaoDebitoById(clientId) {
-            const index = clientes.findIndex(c => c.id === clientId);
-            if (index !== -1) {
+            const id = String(clientId);
+            let obj = (clientes || []).find(c => String(c.id) === id);
+            if (!obj) obj = (popupClientClones || []).find(c => String(c.id) === id);
+
+            if (obj) {
                 const originalClientesExibidos = clientesExibidos;
-                clientesExibidos = [clientes[index]];
+                clientesExibidos = [obj];
                 pedirConfirmacaoRenovacaoDebito(0);
                 clientesExibidos = originalClientesExibidos;
             }
@@ -1964,13 +2289,18 @@ ${datasHtml}
 
         async function confirmarRenovarHoje() {
             if (clienteIdParaRenovarHoje === null) return;
-            saveStateToHistory();
-            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
-            const clienteOriginalIndex = clientes.findIndex(c => c.id === clienteIdParaRenovarHoje);
-            const clienteOriginalNome = clientes[clienteOriginalIndex].nome;
+
+            const alvoId = clienteIdParaRenovarHoje;
+            const clienteOriginalIndex = clientes.findIndex(c => c.id === alvoId);
+            
             if (clienteOriginalIndex !== -1) {
+                saveStateToHistory();
+                const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+                const clienteOriginalNome = clientes[clienteOriginalIndex].nome;
+
                 const hoje = new Date();
                 const hojeFormatada = hoje.getDate().toString().padStart(2, '0') + "/" + (hoje.getMonth() + 1).toString().padStart(2, '0') + "/" + hoje.getFullYear();
+
                 clientes[clienteOriginalIndex].data = hojeFormatada;
                 clientes[clienteOriginalIndex].debito = false;
                 clientes[clienteOriginalIndex].oculto = false;
@@ -1979,38 +2309,78 @@ ${datasHtml}
                 clientes[clienteOriginalIndex].desativado = false;
                 clientes[clienteOriginalIndex].dola_sent = false;
                 clientes[clienteOriginalIndex].clicado = false;
-            }
-            saveClientsToLocalStorage();
-            chamarFiltroAtual();
-            atualizarContadores();
-            pushLog(clientes[clienteOriginalIndex], 'renovado', 'hoje'); showToast('Renovado para hoje'); atualizarUltimaAtualizacao("renovado a partir da data atual", clienteOriginalNome);
-            exibirAlerta(`Cliente "${clienteOriginalNome.replace(/\s\(UniTv\)/g, '').replace(/\s\(Duplecast\)/g, '')}" renovado para hoje!`);
-            try {
-                await salvarClientes();
-            } catch (error) {
-                clientes = estadoAnteriorClientes;
+
                 saveClientsToLocalStorage();
                 chamarFiltroAtual();
                 atualizarContadores();
-                exibirAlerta(`Erro ao renovar para hoje: ${error.message}. Ação desfeita localmente. Tente novamente.`);
-                atualizarUltimaAtualizacao("falha na renovação para hoje", clienteOriginalNome);
+                pushLog(clientes[clienteOriginalIndex], 'renovado', 'hoje'); showToast('Renovado para hoje'); atualizarUltimaAtualizacao("renovado a partir da data atual", clienteOriginalNome);
+                exibirAlerta(`Cliente "${clienteOriginalNome.replace(/\s\(UniTv\)/g, '').replace(/\s\(Duplecast\)/g, '')}" renovado para hoje!`);
+
+                try {
+                    await salvarClientes();
+                } catch (error) {
+                    clientes = estadoAnteriorClientes;
+                    saveClientsToLocalStorage();
+                    chamarFiltroAtual();
+                    atualizarContadores();
+                    exibirAlerta(`Erro ao renovar para hoje: ${error.message}. Ação desfeita localmente. Tente novamente.`);
+                    atualizarUltimaAtualizacao("falha na renovação para hoje", clienteOriginalNome);
+                }
+
+                clienteIdParaRenovarHoje = null;
+                return;
             }
+
+            const cloneIndex = (popupClientClones || []).findIndex(c => String(c.id) === String(alvoId));
+            if (cloneIndex !== -1) {
+                const clone = popupClientClones[cloneIndex];
+                const nome = clone.nome;
+                const hoje = new Date();
+                const hojeFormatada = hoje.getDate().toString().padStart(2, '0') + "/" + (hoje.getMonth() + 1).toString().padStart(2, '0') + "/" + hoje.getFullYear();
+
+                clone.data = hojeFormatada;
+                clone.debito = false;
+                clone.oculto = false;
+                clone.avisado = false;
+                clone.reexibirEm = null;
+                clone.desativado = false;
+                clone.dola_sent = false;
+                clone.clicado = false;
+
+                if (typeof pushLog === 'function') pushLog(clone, 'renovado', 'hoje (popup-clone)');
+                savePopupClientClones();
+                showToast('Renovado para hoje (clone)');
+                atualizarUltimaAtualizacao("renovado a partir da data atual (clone)", nome);
+
+                try { checarEExibirPopupVencendo(); } catch (e) {}
+            }
+
             clienteIdParaRenovarHoje = null;
         }
 
         async function confirmarRenovacaoComDebito() {
             if (clienteIndexParaRenovarDebito === null) return;
-            saveStateToHistory();
-            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+
             const cliente = clientesExibidos[clienteIndexParaRenovarDebito];
-            const clienteOriginalIndex = clientes.findIndex(c => c.id === cliente.id);
-            const clienteNome = cliente.nome;
+            if (!cliente) {
+                fecharModal();
+                clienteIndexParaRenovarDebito = null;
+                return;
+            }
+
             if (!cliente.Produto || cliente.Produto === "Não informado") {
                 exibirAlerta("O produto do cliente não está informado! Por favor, edite o cliente e defina o produto antes de renovar.");
                 fecharModal();
+                clienteIndexParaRenovarDebito = null;
                 return;
             }
+
+            const clienteOriginalIndex = clientes.findIndex(c => c.id === cliente.id);
             if (clienteOriginalIndex !== -1) {
+                saveStateToHistory();
+                const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+                const clienteNome = cliente.nome;
+
                 renovarProximoMes(clientes[clienteOriginalIndex]);
                 clientes[clienteOriginalIndex].debito = true;
                 clientes[clienteOriginalIndex].oculto = false;
@@ -2019,24 +2389,57 @@ ${datasHtml}
                 clientes[clienteOriginalIndex].desativado = false;
                 clientes[clienteOriginalIndex].dola_sent = false;
                 clientes[clienteOriginalIndex].clicado = false;
-            }
-            saveClientsToLocalStorage();
-            chamarFiltroAtual();
-            atualizarContadores();
-            fecharModal();
-            clienteIndexParaRenovarDebito = null;
-            exibirAlerta("Cliente renovado e marcado como DÉBITO!");
-            pushLog(clientes[clienteOriginalIndex], 'renovado', 'débito'); showToast('Renovado (débito)'); atualizarUltimaAtualizacao("renovado com débito", clienteNome);
-            try {
-                await salvarClientes();
-            } catch (error) {
-                clientes = estadoAnteriorClientes;
+
                 saveClientsToLocalStorage();
                 chamarFiltroAtual();
                 atualizarContadores();
-                exibirAlerta(`Erro ao renovar com débito: ${error.message}. Ação desfeita localmente. Tente novamente.`);
-                atualizarUltimaAtualizacao("falha na renovação com débito", clienteNome);
+                fecharModal();
+                clienteIndexParaRenovarDebito = null;
+                exibirAlerta("Cliente renovado e marcado como DÉBITO!");
+                pushLog(clientes[clienteOriginalIndex], 'renovado', 'débito'); showToast('Renovado (débito)'); atualizarUltimaAtualizacao("renovado com débito", clienteNome);
+
+                try {
+                    await salvarClientes();
+                } catch (error) {
+                    clientes = estadoAnteriorClientes;
+                    saveClientsToLocalStorage();
+                    chamarFiltroAtual();
+                    atualizarContadores();
+                    exibirAlerta(`Erro ao renovar com débito: ${error.message}. Ação desfeita localmente. Tente novamente.`);
+                    atualizarUltimaAtualizacao("falha na renovação com débito", clienteNome);
+                }
+                return;
             }
+
+            const cloneIndex = (popupClientClones || []).findIndex(c => String(c.id) === String(cliente.id));
+            if (cloneIndex !== -1) {
+                const clone = popupClientClones[cloneIndex];
+                const clienteNome = clone.nome;
+
+                renovarProximoMes(clone);
+                clone.debito = true;
+                clone.oculto = false;
+                clone.avisado = false;
+                clone.reexibirEm = null;
+                clone.desativado = false;
+                clone.dola_sent = false;
+                clone.clicado = false;
+
+                savePopupClientClones();
+                fecharModal();
+                clienteIndexParaRenovarDebito = null;
+
+                if (typeof pushLog === 'function') pushLog(clone, 'renovado', 'débito (popup-clone)');
+                showToast('Renovado (débito)');
+                atualizarUltimaAtualizacao("renovado com débito (clone)", clienteNome);
+                exibirAlerta("Cliente (clone) renovado e marcado como DÉBITO!");
+
+                try { checarEExibirPopupVencendo(); } catch (e) {}
+                return;
+            }
+
+            fecharModal();
+            clienteIndexParaRenovarDebito = null;
         }
 
         function renovarProximoMes(clienteObj) {
@@ -2141,23 +2544,22 @@ ${datasHtml}
                 exibirAlerta("Mensagem copiada para a área de transferência!");
             } catch (err) {
                 exibirAlerta("Erro ao copiar a mensagem. Por favor, tente novamente.");
-                console.error("Erro ao copiar mensagem: ", err);
             }
         }
 
         async function copiarMensagemWhatsAppById(clientId) {
-            const index = clientes.findIndex(c => c.id === clientId);
-            if (index !== -1) {
+            const id = String(clientId);
+            let obj = (clientes || []).find(c => String(c.id) === id);
+            if (!obj) obj = (popupClientClones || []).find(c => String(c.id) === id);
+
+            if (obj) {
                 const originalClientesExibidos = clientesExibidos;
-                clientesExibidos = [clientes[index]];
+                clientesExibidos = [obj];
                 await copiarMensagemWhatsApp(0);
                 clientesExibidos = originalClientesExibidos;
             }
         }
 
-
-
-        // === NOVO: Copiar número do cliente (telefone) ===
         async function copiarNumeroCliente(index) {
             const cliente = clientesExibidos[index];
             const numero = (cliente && cliente.telefone) ? String(cliente.telefone).replace(/\D/g, '') : '';
@@ -2167,15 +2569,17 @@ ${datasHtml}
                 showToast("Número copiado!");
             } catch (err) {
                 exibirAlerta("Não consegui copiar automaticamente. Número: " + numero);
-                console.error("Erro ao copiar número: ", err);
             }
         }
 
         async function copiarNumeroClienteById(clientId) {
-            const index = clientes.findIndex(c => c.id === clientId);
-            if (index !== -1) {
+            const id = String(clientId);
+            let obj = (clientes || []).find(c => String(c.id) === id);
+            if (!obj) obj = (popupClientClones || []).find(c => String(c.id) === id);
+
+            if (obj) {
                 const originalClientesExibidos = clientesExibidos;
-                clientesExibidos = [clientes[index]];
+                clientesExibidos = [obj];
                 await copiarNumeroCliente(0);
                 clientesExibidos = originalClientesExibidos;
             }
@@ -2296,8 +2700,7 @@ ${datasHtml}
                 clicado: c.clicado || false,
                 dataCobranca: c.dataCobranca || null,
                 observacao: c.observacao || null,
-                            logs: c.logs || [],
-                            logs: c.logs || []
+                logs: c.logs || []
             }));
             const clientesJson = JSON.stringify(clientesParaExportar, null, 4);
             const blob = new Blob([clientesJson], {
@@ -2326,7 +2729,6 @@ ${datasHtml}
             reader.onload = async () => {
                 try {
                     saveStateToHistory();
-                    const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
                     const clientesImportadosRaw = JSON.parse(reader.result);
                     const clientesProcessados = clientesImportadosRaw.map(c => {
                         const telefoneLimpo = c.telefone ? String(c.telefone).replace(/[^\d]/g, '') : '';
@@ -2349,7 +2751,6 @@ ${datasHtml}
                             clicado: c.clicado || false,
                             dataCobranca: c.dataCobranca || null,
                             observacao: c.observacao || null,
-                            logs: c.logs || [],
                             logs: c.logs || []
                         };
                     });
@@ -2571,30 +2972,65 @@ ${datasHtml}
 
         async function salvarEdicao(clientId) {
             const originalClienteIndex = clientes.findIndex(c => c.id === clientId);
-            if (originalClienteIndex === -1) return;
-            saveStateToHistory();
-            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+            const cloneIndex = (popupClientClones || []).findIndex(c => String(c.id) === String(clientId));
+
+            if (originalClienteIndex === -1 && cloneIndex === -1) return;
+
             let novoNome = document.getElementById("novoNome").value.trim();
             let novoTelefone = document.getElementById("novoTelefone").value.trim();
             let novaData = document.getElementById("novaData").value.trim();
             let novaDataCobranca = document.getElementById("novaDataCobranca").value.trim();
             let novaObservacao = document.getElementById("novaObservacao").value.trim();
             let novoProduto = document.querySelector('input[name="editarProduto"]:checked').value;
+
             if (!novoNome || !novaData) {
                 exibirAlerta("Nome e data de vencimento são obrigatórios!");
                 return;
             }
+
             const telefoneLimpoEditado = novoTelefone.replace(/[^\d]/g, '');
             if (telefoneLimpoEditado.length < 5) {
                 exibirAlerta("O telefone deve ter pelo menos 5 dígitos.");
                 return;
             }
+
+            let nomeComNovoProduto = `${novoNome.replace(/\s\(UniTv\)|\(Duplecast\)/g, '').trim()} (${novoProduto})`;
+
+            if (cloneIndex !== -1 && originalClienteIndex === -1) {
+                const cloneIdFixo = popupClientClones[cloneIndex].id;
+
+                popupClientClones[cloneIndex] = {
+                    ...popupClientClones[cloneIndex],
+                    id: cloneIdFixo,
+                    nome: nomeComNovoProduto,
+                    telefone: telefoneLimpoEditado,
+                    data: novaData.split("-").reverse().join("/"),
+                    Produto: novoProduto,
+                    dola_sent: false,
+                    clicado: false,
+                    dataCobranca: novaDataCobranca ? novaDataCobranca.split("-").reverse().join("/") : null,
+                    observacao: novaObservacao || null
+                };
+
+                if (typeof pushLog === 'function') pushLog(popupClientClones[cloneIndex], 'editado', 'popup-clone');
+                savePopupClientClones();
+                fecharModal();
+                showToast('Cliente (clone) editado');
+                atualizarUltimaAtualizacao("editado (clone)", nomeComNovoProduto);
+
+                try { checarEExibirPopupVencendo(); } catch (e) {}
+                return;
+            }
+
+            saveStateToHistory();
+            const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
+
             const novoId = telefoneLimpoEditado.slice(-5);
             if (novoId !== clientId && clientes.some(c => c.id === novoId)) {
                 exibirAlerta(`O novo telefone final (${novoId}) já está em uso.`);
                 return;
             }
-            let nomeComNovoProduto = `${novoNome.replace(/\s\(UniTv\)|\(Duplecast\)/g, '').trim()} (${novoProduto})`;
+
             clientes[originalClienteIndex] = {
                 ...clientes[originalClienteIndex],
                 id: novoId,
@@ -2607,12 +3043,14 @@ ${datasHtml}
                 dataCobranca: novaDataCobranca ? novaDataCobranca.split("-").reverse().join("/") : null,
                 observacao: novaObservacao || null
             };
+
             saveClientsToLocalStorage();
             chamarFiltroAtual();
             atualizarContadores();
             fecharModal();
             pushLog(clientes[originalClienteIndex], 'editado', ''); showToast('Cliente editado'); atualizarUltimaAtualizacao("editado", nomeComNovoProduto);
             prepararClientesVencidosParaMensagem();
+
             try {
                 await salvarClientes();
             } catch (error) {
@@ -2671,27 +3109,44 @@ ${datasHtml}
             amanha.setDate(amanha.getDate() + 1);
             document.getElementById('dataReexibicaoInput').value = amanha.toISOString().split('T')[0];
             document.getElementById('modalVerDepois').style.display = 'flex';
-            console.log('[VerDepois] modal aberto, clienteIdParaVerDepois=', clienteIdParaVerDepois);
-
-
-            // 🔥 foco automático (Enter funciona melhor)
             setTimeout(() => {
                 document.getElementById('dataReexibicaoInput').focus();
             }, 0);
-document.addEventListener("keydown", fecharComEsc);
+            document.addEventListener("keydown", fecharComEsc);
         }
 
         async function confirmarVerDepois() {
-            console.log('[VerDepois] confirmarVerDepois() chamado. clienteIdParaVerDepois=', clienteIdParaVerDepois);
-
             if (!clienteIdParaVerDepois) return;
             const dataReexibicao = document.getElementById('dataReexibicaoInput').value;
             if (!dataReexibicao) {
                 exibirAlerta("Por favor, selecione uma data.");
                 return;
             }
+
             const clienteOriginalIndex = clientes.findIndex(c => c.id === clienteIdParaVerDepois);
-            if (clienteOriginalIndex === -1) return;
+
+            if (clienteOriginalIndex === -1) {
+                const cloneIndex = (popupClientClones || []).findIndex(c => String(c.id) === String(clienteIdParaVerDepois));
+                if (cloneIndex === -1) return;
+
+                const nomeCliente = popupClientClones[cloneIndex].nome;
+                popupClientClones[cloneIndex].reexibirEm = dataReexibicao;
+                popupClientClones[cloneIndex].oculto = false;
+                popupClientClones[cloneIndex].arquivado = false;
+                popupClientClones[cloneIndex].desativado = false;
+                popupClientClones[cloneIndex].clicado = false;
+
+                fecharModal();
+                if (typeof pushLog === 'function') pushLog(popupClientClones[cloneIndex], 'ver depois', dataReexibicao.split('-').reverse().join('/'));
+                showToast('Agendado');
+                atualizarUltimaAtualizacao(`agendado para ${dataReexibicao.split('-').reverse().join('/')}`, nomeCliente);
+
+                savePopupClientClones();
+                try { checarEExibirPopupVencendo(); } catch (e) {}
+
+                clienteIdParaVerDepois = null;
+                return;
+            }
 
             saveStateToHistory();
             const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
@@ -2716,6 +3171,8 @@ document.addEventListener("keydown", fecharComEsc);
                 atualizarContadores();
                 exibirAlerta(`Erro ao agendar cliente: ${error.message}. Ação desfeita localmente.`);
             }
+
+            clienteIdParaVerDepois = null;
         }
 
         async function desmarcarVerDepois(index) {
@@ -2744,8 +3201,35 @@ document.addEventListener("keydown", fecharComEsc);
 
         async function toggleDesativado(index) {
             const cliente = clientesExibidos[index];
+            if (!cliente) return;
+
             const clienteOriginalIndex = clientes.findIndex(c => c.id === cliente.id);
-            if (clienteOriginalIndex === -1) return;
+
+            if (clienteOriginalIndex === -1) {
+                const cloneIndex = (popupClientClones || []).findIndex(c => String(c.id) === String(cliente.id));
+                if (cloneIndex === -1) return;
+
+                const clone = popupClientClones[cloneIndex];
+                clone.desativado = !clone.desativado;
+
+                if (clone.desativado) {
+                    clone.avisado = false;
+                    clone.debito = false;
+                    clone.oculto = false;
+                    clone.reexibirEm = null;
+                    clone.arquivado = false;
+                    clone.clicado = false;
+                }
+
+                if (typeof pushLog === 'function') pushLog(clone, clone.desativado ? 'desativado' : 'reativado', 'popup-clone');
+                savePopupClientClones();
+                showToast(clone.desativado ? 'Desativado' : 'Reativado');
+                atualizarUltimaAtualizacao(`status desativado (clone): ${clone.desativado ? 'sim' : 'não'}`, clone.nome);
+
+                try { checarEExibirPopupVencendo(); } catch (e) {}
+                return;
+            }
+
             saveStateToHistory();
             const estadoAnteriorClientes = JSON.parse(JSON.stringify(clientes));
             clientes[clienteOriginalIndex].desativado = !clientes[clienteOriginalIndex].desativado;
@@ -2825,6 +3309,8 @@ document.addEventListener("keydown", fecharComEsc);
         }
 
         async function loadClientes() {
+            addAppLog('INFO', 'loadClientes:start', 'Carregando clientes...');
+            setTopStatus('Status: carregando clientes...');
             mostrarCarregando();
             try {
                 const response = await sendRequestToBackend('get_all_clients');
@@ -2856,7 +3342,6 @@ document.addEventListener("keydown", fecharComEsc);
                             clicado: c.clicado || false,
                             dataCobranca: c.dataCobranca || null,
                             observacao: c.observacao || null,
-                            logs: c.logs || [],
                             logs: c.logs || []
                         };
                     }).filter(c => c.id !== null);
@@ -2864,6 +3349,8 @@ document.addEventListener("keydown", fecharComEsc);
                 } else {
                     throw new Error("Formato de dados inválido.");
                 }
+                addAppLog('OK', 'loadClientes:done', `Total: ${(clientes||[]).length}`);
+                setTopStatus('Status: pronto');
             } catch (e) {
                 console.error("Erro ao carregar do Sheets:", e);
                 const cache = localStorage.getItem('clientesCache');
@@ -2879,6 +3366,7 @@ document.addEventListener("keydown", fecharComEsc);
                     clientes = [];
                     exibirAlerta("Erro ao carregar e sem cache local.");
                 }
+                setTopStatus('Status: erro de carregamento');
             } finally {
                 esconderCarregando();
                 loadConfiguracaoBotoes();
@@ -2888,7 +3376,9 @@ document.addEventListener("keydown", fecharComEsc);
                 loadSettings();
                 restoreAddSectionState();
                 limparSelecao();
+                setTimeout(checarEExibirPopupVencendo, 150);
             }
+
             document.getElementById('ultimaAtualizacaoInfo').textContent = localStorage.getItem('ultimaAtualizacaoCliente') || 'Última Alteração: Nunca';
         }
 
@@ -2915,7 +3405,6 @@ document.addEventListener("keydown", fecharComEsc);
             debitoColor: '#fff3e0',
             vencendoHojeColor: '#fff9c4',
             vencidoColor: '#ffcdd2'
-            // Removed tableWidth, tableAlign, paddingLeft, paddingRight defaults
         };
 
         function toggleSettingsArea() {
@@ -2945,12 +3434,6 @@ document.addEventListener("keydown", fecharComEsc);
                 wrapper.style.flexBasis = `calc(${value}% - 10px)`;
             });
         }
-        
-        // Remove functions related to missing elements
-        // function updateTableWidth(value) { /* removida */ }
-        // function updateTableAlignment(value) { /* removida */ }
-        // function updateTablePaddingLeft(value) { /* removida */ }
-        // function updateTablePaddingRight(value) { /* removida */ }
 
         function saveSettings() {
             const settings = {
@@ -2963,7 +3446,6 @@ document.addEventListener("keydown", fecharComEsc);
                 debitoColor: document.getElementById('debitoColorPicker').value,
                 vencendoHojeColor: document.getElementById('vencendoHojeColorPicker').value,
                 vencidoColor: document.getElementById('vencidoColorPicker').value
-                // Removed lines trying to read tableWidth, tableAlign, paddingLeft, paddingRight
             };
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
             exibirAlerta("Ajustes salvos!");
@@ -2981,24 +3463,19 @@ document.addEventListener("keydown", fecharComEsc);
                 }
             }
             
-            // Aplicar Input Width
             document.getElementById('inputWidth').value = settings.width;
             updateInputWidth(settings.width);
 
-            // Aplicar Estilos de Botão
             document.getElementById('roundButtonsCheckbox').checked = settings.roundButtons;
             document.getElementById('transparentButtonsCheckbox').checked = settings.transparentButtons;
             applyButtonStyles();
             
-            // Aplicar Espaçamento de Botão
             document.getElementById('buttonSpacingSlider').value = settings.buttonSpacing;
             updateButtonSpacing(settings.buttonSpacing);
 
-            // Aplicar Cor do Nome do Cliente
             document.getElementById('clientNameColorPicker').value = settings.clientNameColor;
             updateCssVariable('--client-name-color', settings.clientNameColor);
 
-            // Aplicar Cores de Status
             document.getElementById('avisadoColorPicker').value = settings.avisadoColor;
             updateCssVariable('--avisado-color', settings.avisadoColor);
 
@@ -3010,8 +3487,6 @@ document.addEventListener("keydown", fecharComEsc);
             
             document.getElementById('vencidoColorPicker').value = settings.vencidoColor;
             updateCssVariable('--vencido-color', settings.vencidoColor);
-            
-            // Removed code applying tableWidth, tableAlign, paddingLeft, paddingRight
         }
 
         function resetSettings() {
@@ -3102,7 +3577,6 @@ document.addEventListener("keydown", fecharComEsc);
             updateBadge('badgeArquivados', clientes.filter(c => c.arquivado).length);
             updateBadge('badgeDesativados', clientes.filter(c => c.desativado).length);
             updateBadge('badgeVerDepois', clientes.filter(c => c.reexibirEm && c.reexibirEm > hojeStr).length);
-            updateBadge('badgeOcultos', clientes.filter(c => c.oculto && !c.arquivado && !c.reexibirEm && !c.desativado).length);
             updateBadge('badgeCentralMessage', clientesVencidosParaMensagem.length);
         }
 
@@ -3150,7 +3624,611 @@ document.addEventListener("keydown", fecharComEsc);
             clientesExibidos = originalClientesExibidos;
         }
 
+        const POPUP_WATCHLIST_KEY = 'popupWatchlistClientIds';
+
+        function getPopupWatchlistIds() {
+            try {
+                const raw = localStorage.getItem(POPUP_WATCHLIST_KEY);
+                const arr = raw ? JSON.parse(raw) : [];
+                return Array.isArray(arr) ? arr : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function setPopupWatchlistIds(ids) {
+            const uniq = Array.from(new Set((ids || []).filter(Boolean).map(String)));
+            localStorage.setItem(POPUP_WATCHLIST_KEY, JSON.stringify(uniq));
+        }
+
+        const POPUP_CLONES_KEY = 'popupClientClones_v1';
+        const POPUP_CLONE_MARK = 'A';
+
+        function loadPopupClientClones() {
+            try {
+                const raw = localStorage.getItem(POPUP_CLONES_KEY);
+                const arr = raw ? JSON.parse(raw) : [];
+                if (!Array.isArray(arr)) return [];
+                return arr
+                    .filter(c => c && typeof c === 'object')
+                    .map(c => {
+                        const cc = { ...c };
+                        cc.id = String(cc.id ?? '');
+                        if (cc.popupCloneOf !== undefined && cc.popupCloneOf !== null) cc.popupCloneOf = String(cc.popupCloneOf);
+                        cc.popupClone = true;
+                        return cc;
+                    });
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function savePopupClientClones() {
+            try {
+                localStorage.setItem(POPUP_CLONES_KEY, JSON.stringify(popupClientClones || []));
+            } catch (e) {}
+        }
+
+        function getPopupCloneById(cloneId) {
+            const id = String(cloneId ?? '');
+            return (popupClientClones || []).find(c => String(c.id) === id) || null;
+        }
+
+        function getPopupCloneBySourceId(sourceId) {
+            const sid = String(sourceId ?? '');
+            return (popupClientClones || []).find(c => String(c.popupCloneOf || '') === sid) || null;
+        }
+
+        function generateUniquePopupCloneId(sourceId) {
+            const base = String(sourceId ?? '').trim();
+            const used = new Set((popupClientClones || []).map(c => String(c.id)));
+            let candidate = `${base}${POPUP_CLONE_MARK}`;
+            let i = 2;
+
+            if (!candidate || candidate === POPUP_CLONE_MARK) candidate = `${POPUP_CLONE_MARK}0000`;
+
+            while (used.has(candidate)) {
+                candidate = `${base}${POPUP_CLONE_MARK}${i}`;
+                i++;
+                if (i > 9999) {
+                    candidate = `${base}${POPUP_CLONE_MARK}${Date.now().toString().slice(-4)}`;
+                    break;
+                }
+            }
+            return candidate;
+        }
+
+        function cloneClienteParaPopup(clienteOriginal) {
+            if (!clienteOriginal) return null;
+            const sourceId = String(clienteOriginal.id);
+            const cloneId = generateUniquePopupCloneId(sourceId);
+
+            let clone;
+            try {
+                clone = JSON.parse(JSON.stringify(clienteOriginal));
+            } catch (e) {
+                clone = { ...clienteOriginal };
+            }
+
+            clone.id = cloneId;
+            clone.popupCloneOf = sourceId;
+            clone.popupClone = true;
+
+            return clone;
+        }
+
+        function ensurePopupCloneForSourceId(sourceId) {
+            const sid = String(sourceId ?? '').trim();
+            if (!sid) return null;
+
+            let existing = getPopupCloneBySourceId(sid);
+            if (existing) return existing;
+
+            existing = getPopupCloneById(`${sid}${POPUP_CLONE_MARK}`);
+            if (existing) {
+                existing.popupCloneOf = sid;
+                existing.popupClone = true;
+                savePopupClientClones();
+                return existing;
+            }
+
+            const original = (clientes || []).find(c => String(c.id) === sid);
+            if (!original) return null;
+
+            const novoClone = cloneClienteParaPopup(original);
+            if (!novoClone) return null;
+
+            popupClientClones.push(novoClone);
+            savePopupClientClones();
+            return novoClone;
+        }
+
+        function syncPopupClonesWithWatchlist(sourceIds) {
+            const uniq = Array.from(new Set((sourceIds || []).filter(Boolean).map(String)));
+
+            uniq.forEach(sid => {
+                try { ensurePopupCloneForSourceId(sid); } catch (e) {}
+            });
+
+            popupClientClones = (popupClientClones || []).filter(cl => {
+                const sid = cl && cl.popupCloneOf ? String(cl.popupCloneOf) : '';
+                if (sid && uniq.includes(sid)) return true;
+
+                const inferred = String((cl && cl.id) ? cl.id : '').replace(/A\d*$/i, '');
+                return inferred && uniq.includes(inferred);
+            });
+
+            popupClientClones.forEach(cl => {
+                if (cl && !cl.popupCloneOf) {
+                    const inferred = String(cl.id || '').replace(/A\d*$/i, '');
+                    if (inferred) cl.popupCloneOf = inferred;
+                }
+                if (cl) cl.popupClone = true;
+            });
+
+            savePopupClientClones();
+        }
+
+        let popupClientClones = loadPopupClientClones();
+
+        function parseDataBRToDate(dataBR) {
+            if (!dataBR || typeof dataBR !== 'string') return null;
+            const parts = dataBR.split('/');
+            if (parts.length !== 3) return null;
+            const [dd, mm, yyyy] = parts.map(n => parseInt(n, 10));
+            if (!dd || !mm || !yyyy) return null;
+            return new Date(yyyy, mm - 1, dd);
+        }
+
+        function diasAteVencimento(cliente) {
+            const dt = parseDataBRToDate(cliente && cliente.data);
+            if (!dt) return null;
+            const hoje = new Date();
+            const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+            const vencSemHora = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
+            const ms = vencSemHora - hojeSemHora;
+            return Math.floor(ms / (1000 * 60 * 60 * 24));
+        }
+
+        function clienteEstaElegivelParaPopup(cliente) {
+            if (!cliente) return false;
+            if (cliente.desativado || cliente.arquivado || cliente.oculto) return false;
+
+            if (cliente.reexibirEm) {
+                try {
+                    const hoje = new Date();
+                    const hojeIso = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate()).toISOString().split('T')[0];
+                    if (String(cliente.reexibirEm) > String(hojeIso)) return false;
+                } catch (e) {}
+            }
+
+            const dias = diasAteVencimento(cliente);
+            return (dias !== null && dias >= 0 && dias <= 3);
+        }
+
+        function getClientesParaPopupVencendo() {
+            const sourceIds = getPopupWatchlistIds();
+            const lista = [];
+
+            // 1) Clientes baseados na lista principal (watchIds)
+            sourceIds.forEach(sourceId => {
+                const clone = ensurePopupCloneForSourceId(sourceId);
+                if (clone && clienteEstaElegivelParaPopup(clone)) lista.push(clone);
+            });
+
+            // 2) Clientes Manuais do Pop-up (ID começa com "MAN" ou não tem popupCloneOf linkado)
+            popupClientClones.forEach(clone => {
+                if(clone.id && clone.id.startsWith("MAN")) {
+                    if (clienteEstaElegivelParaPopup(clone)) {
+                        // Evita duplicata se já foi adicionado
+                        if(!lista.find(c=>c.id===clone.id)) lista.push(clone);
+                    }
+                }
+            });
+
+            lista.sort((a, b) => {
+                const da = diasAteVencimento(a);
+                const db = diasAteVencimento(b);
+                return (da ?? 9999) - (db ?? 9999);
+            });
+            return lista;
+        }
+
+        function formatDiasLabel(dias) {
+            if (dias === 0) return "vence HOJE";
+            if (dias === 1) return "vence em 1 dia";
+            return `vence em ${dias} dias`;
+        }
+
+        async function marcarAvisadoById(clientId) {
+            const id = String(clientId);
+
+            const idx = clientes.findIndex(c => String(c.id) === id);
+            if (idx !== -1) {
+                saveStateToHistory();
+                const backup = JSON.parse(JSON.stringify(clientes));
+                try {
+                    clientes[idx].avisado = true;
+                    clientes[idx].oculto = false;
+                    clientes[idx].clicado = true;
+                    if (typeof pushLog === 'function') pushLog(clientes[idx], "marcado avisado (popup)", "");
+                    saveClientsToLocalStorage();
+                    chamarFiltroAtual();
+                    atualizarContadores();
+                    prepararClientesVencidosParaMensagem();
+                    await salvarClientes();
+                    showToast("Marcado como avisado!");
+                } catch (e) {
+                    clientes = backup;
+                    saveClientsToLocalStorage();
+                    chamarFiltroAtual();
+                    atualizarContadores();
+                    exibirAlerta("Erro ao marcar avisado: " + e.message);
+                }
+                return;
+            }
+
+            const cidx = (popupClientClones || []).findIndex(c => String(c.id) === id);
+            if (cidx === -1) return;
+
+            const c = popupClientClones[cidx];
+            c.avisado = true;
+            c.oculto = false;
+            c.clicado = true;
+            if (typeof pushLog === 'function') pushLog(c, "marcado avisado (popup)", "clone");
+            savePopupClientClones();
+            showToast("Marcado como avisado!");
+
+            try { checarEExibirPopupVencendo(); } catch (e) {}
+        }
+
+        function abrirPopupVencendo(listaClientes) {
+            // Garante que não há outro modal aberto (evita sobreposição)
+            fecharModal();
+            const modal = document.getElementById('modalPopupVencendo');
+            const box = document.getElementById('popupVencendoLista');
+            if (!modal || !box) return;
+
+            if (!listaClientes || !listaClientes.length) {
+                modal.style.display = 'none';
+                return;
+            }
+
+            box.innerHTML = '';
+            listaClientes.forEach(c => {
+                const dias = diasAteVencimento(c);
+                const nomeLimpo = (c.nome || "").replace(/\s\(UniTv\)|\s\(Duplecast\)/g, "").trim();
+                const card = document.createElement('div');
+                card.className = 'popup-card';
+                card.innerHTML = `
+                    <div class="top">
+                        <div><b>${nomeLimpo}</b> <span style="color:#777">(${c.Produto || "N/I"})</span></div>
+                        <div style="font-weight:800; color: var(--danger-color);">${formatDiasLabel(dias)}</div>
+                    </div>
+                    <div class="meta">
+                        <div>📞 ${c.telefone || "-"}</div>
+                        <div>📅 Venc: <b>${c.data || "-"}</b></div>
+                        ${c.dataCobranca ? `<div style="color:var(--success-color); font-weight:800;">💲 Cobrança: ${c.dataCobranca}</div>` : ""}
+                    </div>
+                    ${c.observacao ? `<div style="margin-top:2px; padding:8px; background:#f7f7f7; border-radius:8px;"><b>Obs:</b> ${c.observacao}</div>` : ""}
+                    <div class="actions">
+                        <button class="btn-success" onclick="enviarMensagemWhatsAppById('${c.id}')">📲 Whats</button>
+                        <button class="btn-info" onclick="marcarAvisadoById('${c.id}')">✅ Avisado</button>
+                        <button class="btn-secondary" onclick="abrirModalVerDepoisById('${c.id}')">⏳ Ver depois</button>
+                        <button class="btn-warning" onclick="pedirConfirmacaoRenovarHojeById('${c.id}')">⚡ Renovar hoje</button>
+                        <button class="btn-danger" onclick="pedirConfirmacaoRenovacaoDebitoById('${c.id}')">💳 Débito</button>
+                        <button onclick="editarClienteById('${c.id}')">✏️ Editar</button>
+                        <button onclick="copiarMensagemWhatsAppById('${c.id}')">📋 Copiar msg</button>
+                        <button onclick="copiarNumeroClienteById('${c.id}')">🔢 Copiar número</button>
+                        <button onclick="arquivarById('${c.id}')">📂 Arquivar</button>
+                        <button onclick="toggleDesativadoById('${c.id}')">🚫 Desativar</button>
+                    </div>
+                `;
+                box.appendChild(card);
+            });
+
+            modal.style.display = 'flex';
+            document.addEventListener("keydown", fecharComEsc);
+        }
+
+        function fecharPopupVencendo() {
+            const modal = document.getElementById('modalPopupVencendo');
+            if (modal) modal.style.display = 'none';
+
+            try {
+                const anyOpen = Array.from(document.querySelectorAll('.modal'))
+                    .some(m => (m && m.style && m.style.display === 'flex'));
+                if (!anyOpen) document.removeEventListener("keydown", fecharComEsc);
+            } catch (e) {
+                document.removeEventListener("keydown", fecharComEsc);
+            }
+        }
+
+        function checarEExibirPopupVencendo() {
+            const lista = getClientesParaPopupVencendo();
+            if (lista.length) abrirPopupVencendo(lista);
+        }
+
+        let popupConfigTempIds = [];
+        let popupConfigView = 'select'; 
+
+        function popupConfigRenderAtual() {
+            if (popupConfigView === 'manage') {
+                if (typeof renderPopupClonesLista === 'function') renderPopupClonesLista();
+            } else {
+                if (typeof renderPopupConfigLista === 'function') renderPopupConfigLista();
+            }
+        }
+
+        function abrirModalPopupConfig() {
+            // Garante que não há outro modal aberto (evita sobreposição)
+            fecharModal();
+            popupConfigView = 'select';
+            addAppLog('INFO', 'popupConfig:abrirModal', 'Abrindo configuração do pop-up');
+            popupConfigTempIds = getPopupWatchlistIds();
+            const modal = document.getElementById('modalPopupConfig');
+            if (modal) modal.style.display = 'flex';
+            const busca = document.getElementById('popupConfigBusca');
+            if (busca) busca.value = '';
+            renderPopupConfigLista();
+            document.addEventListener("keydown", fecharComEsc);
+        }
+
+        function fecharModalPopupConfig() {
+            const modal = document.getElementById('modalPopupConfig');
+            if (modal) modal.style.display = 'none';
+            try {
+                const anyOpen = Array.from(document.querySelectorAll('.modal'))
+                    .some(m => m && m.style && m.style.display === 'flex');
+                if (!anyOpen) document.removeEventListener("keydown", fecharComEsc);
+            } catch (e) {
+                try { document.removeEventListener("keydown", fecharComEsc); } catch(_) {}
+            }
+        }
+
+        function gerenciarClientesCadastrados() {
+            // Atalho para abrir o modal de gerenciamento (agora separado)
+            abrirModalGerenciarPopup();
+        }
+
+        function togglePopupConfigId(id, checked) {
+            id = String(id);
+            if (checked) {
+                if (!popupConfigTempIds.includes(id)) popupConfigTempIds.push(id);
+            } else {
+                popupConfigTempIds = popupConfigTempIds.filter(x => String(x) !== id);
+            }
+        }
+
+        function renderPopupConfigLista() {
+            const listaEl = document.getElementById('popupConfigLista');
+            if (!listaEl) return;
+
+            const termo = (document.getElementById('popupConfigBusca')?.value || '').toLowerCase().trim();
+
+            const ordenados = (clientes || []).slice().sort((a,b)=>{
+                const na=(a.nome||'').toLowerCase(); const nb=(b.nome||'').toLowerCase();
+                return na.localeCompare(nb);
+            });
+
+            const filtrados = ordenados.filter(c => {
+                if (!c || !c.id) return false;
+                if (c.isPopupClone) return false;
+                const nome = (c.nome || '').toLowerCase();
+                const tel = String(c.telefone || '').toLowerCase();
+                if (!termo) return true;
+                return nome.includes(termo) || tel.includes(termo) || String(c.id).includes(termo);
+            });
+
+            listaEl.innerHTML = '';
+            if (!filtrados.length) {
+                listaEl.innerHTML = '<div class="popup-muted">Nenhum cliente encontrado.</div>';
+                return;
+            }
+
+            filtrados.forEach(c => {
+                const id = String(c.id);
+                const checked = popupConfigTempIds.includes(id);
+                const cloneExistente = (popupClientClones || []).find(cl => String(cl.popupCloneOf || '') === id);
+                const cloneIdLabel = cloneExistente ? String(cloneExistente.id) : '';
+                const dias = diasAteVencimento(c);
+                const status = (dias === null) ? '' : ` • ${formatDiasLabel(dias)}`;
+                const nomeLimpo = (c.nome || "").replace(/\s\(UniTv\)|\s\(Duplecast\)/g, "").trim();
+
+                const row = document.createElement('div');
+                row.className = 'popup-config-row';
+                row.innerHTML = `
+                    <input type="checkbox" ${checked ? 'checked' : ''} onchange="togglePopupConfigId('${id}', this.checked)">
+                    <div class="info">
+                        <div><b>${nomeLimpo}</b> <span style="color:#777">(${c.Produto || "N/I"})</span></div>
+                        <div class="popup-muted">ID: ${id}${cloneIdLabel ? ` • Clone: ${cloneIdLabel}` : ``} • 📞 ${c.telefone || '-'} • 📅 ${c.data || '-'}${status}</div>
+                    </div>
+                `;
+                listaEl.appendChild(row);
+            });
+        }
+
+        function removerPopupClone(cloneId) {
+            const id = String(cloneId ?? '');
+            popupClientClones = (popupClientClones || []).filter(c => String(c.id) !== id);
+            
+            // Remove do watchlist se for referência
+            const clone = getPopupCloneById(id);
+            if(clone && clone.popupCloneOf) {
+                let wIds = getPopupWatchlistIds();
+                wIds = wIds.filter(wid => wid !== String(clone.popupCloneOf));
+                setPopupWatchlistIds(wIds);
+            }
+
+            if (typeof savePopupClientClones === 'function') savePopupClientClones();
+            
+            // Re-renderiza a lista do gerenciador
+            renderListaGerenciarPopup();
+        }
+
+        // =========================
+        // NOVO: Funções do Modal Gerenciar Popup
+        // =========================
+        function abrirModalGerenciarPopup() {
+            // Garante que não há outro modal aberto (evita sobreposição)
+            fecharModal();
+            const modal = document.getElementById('modalGerenciarPopup');
+            if (modal) modal.style.display = 'flex';
+            renderListaGerenciarPopup();
+            
+            // Preenche data com hoje por padrão
+            const today = new Date().toISOString().split('T')[0];
+            const dateEl = document.getElementById('popData');
+            if(dateEl && !dateEl.value) dateEl.value = today;
+
+            document.addEventListener("keydown", fecharComEsc);
+        }
+
+        function fecharModalGerenciarPopup() {
+            const modal = document.getElementById('modalGerenciarPopup');
+            if (modal) modal.style.display = 'none';
+            try {
+                const anyOpen = Array.from(document.querySelectorAll('.modal'))
+                    .some(m => m && m.style && m.style.display === 'flex');
+                if (!anyOpen) document.removeEventListener("keydown", fecharComEsc);
+            } catch (e) {
+                try { document.removeEventListener("keydown", fecharComEsc); } catch(_) {}
+            }
+        }
+
+        function renderListaGerenciarPopup() {
+            const listaEl = document.getElementById('listaGerenciarPop');
+            if (!listaEl) return;
+
+            const termo = (document.getElementById('buscaGerenciarPop')?.value || '').toLowerCase().trim();
+            const clones = (popupClientClones || []).slice().filter(c => c && c.id);
+
+            const filtrados = clones.filter(c => {
+                const nome = (c.nome || '').toLowerCase();
+                const tel = String(c.telefone || '').toLowerCase();
+                const id = String(c.id || '').toLowerCase();
+                if (!termo) return true;
+                return nome.includes(termo) || tel.includes(termo) || id.includes(termo);
+            }).sort((a,b)=>{
+                const na=(a.nome||'').toLowerCase(); const nb=(b.nome||'').toLowerCase();
+                return na.localeCompare(nb);
+            });
+
+            if (!filtrados.length) {
+                listaEl.innerHTML = `
+                    <div style="padding:14px; text-align:center; opacity:.8;">
+                        <b>Nenhum cliente no Pop-up.</b><br>
+                        Cadastre manualmente acima ou importe da lista principal.
+                    </div>
+                `;
+                return;
+            }
+
+            const html = filtrados.map(c => {
+                const id = String(c.id || '');
+                const origem = String(c.popupCloneOf || '');
+                const nome = c.nome || '(Sem nome)';
+                const tel = c.telefone ? String(c.telefone) : '';
+                const venc = c.data ? String(c.data) : ''; // Corrigido para .data
+                const isManual = id.startsWith('MAN');
+                const tipoLabel = isManual ? '<span style="background:#e0f2f1; color:#00695c; padding:2px 6px; border-radius:4px; font-size:0.8em;">Manual</span>' : '<span style="background:#e3f2fd; color:#0d47a1; padding:2px 6px; border-radius:4px; font-size:0.8em;">Importado</span>';
+
+                return `
+                    <div style="display:flex; justify-content:space-between; gap:12px; align-items:center; padding:10px 12px; margin:8px 0; border:1px solid #e5e5e5; border-radius:12px; background:#fff;">
+                        <div style="min-width:0;">
+                            <div style="font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:flex; align-items:center; gap:8px;">
+                                ${nome} ${tipoLabel}
+                            </div>
+                            <div style="font-size:.9em; opacity:.85; margin-top:2px; display:flex; gap:10px; flex-wrap:wrap;">
+                                <span><b>Venc:</b> ${venc}</span>
+                                ${tel ? `<span><b>Tel:</b> ${tel}</span>` : ``}
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+                            <button class="btn-info" type="button" onclick="marcarAvisadoById(${JSON.stringify(id)})">✅ Avisado</button>
+                            <button class="btn-secondary" type="button" onclick="abrirModalVerDepoisById(${JSON.stringify(id)})">⏳ Ver depois</button>
+                            <button class="btn-warning" type="button" onclick="pedirConfirmacaoRenovarHojeById(${JSON.stringify(id)})">⚡ Renovar hoje</button>
+                            <button class="btn-danger" type="button" onclick="pedirConfirmacaoRenovacaoDebitoById(${JSON.stringify(id)})">💳 Débito</button>
+                            <button type="button" onclick="editarClienteById(${JSON.stringify(id)})">✏️ Editar</button>
+                            <button type="button" onclick="copiarMensagemWhatsAppById(${JSON.stringify(id)})">📋 Copiar msg</button>
+                            <button type="button" onclick="copiarNumeroClienteById(${JSON.stringify(id)})">🔢 Copiar número</button>
+                            <button type="button" onclick="arquivarById(${JSON.stringify(id)})">📂 Arquivar</button>
+                            <button type="button" onclick="toggleDesativadoById(${JSON.stringify(id)})">🚫 Desativar</button>
+                            <button class="btn-danger icon-btn" style="width:34px; height:34px; font-size:1em;" title="Remover do Pop-up" type="button" onclick="removerPopupClone(${JSON.stringify(id)})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            listaEl.innerHTML = html;
+        }
+
+        function adicionarClienteManualPopup() {
+            const nome = document.getElementById('popNome').value.trim();
+            const tel = document.getElementById('popTel').value.trim();
+            const data = document.getElementById('popData').value;
+            const prod = document.querySelector('input[name="popProd"]:checked').value;
+
+            if (!nome || !data) {
+                exibirAlerta("Nome e Data de Vencimento são obrigatórios.");
+                return;
+            }
+
+            const telLimpo = tel.replace(/[^\d]/g, '');
+            // Gera ID manual único
+            const id = 'MAN' + Date.now().toString().slice(-6);
+            
+            const novoClone = {
+                id: id,
+                nome: `${nome} (${prod})`,
+                telefone: telLimpo,
+                data: data.split("-").reverse().join("/"), // yyyy-mm-dd -> dd/mm/yyyy
+                Produto: prod,
+                popupClone: true,
+                popupCloneOf: null, // Sem pai na lista principal
+                avisado: false,
+                debito: false,
+                arquivado: false,
+                oculto: false,
+                desativado: false,
+                clicado: false,
+                reexibirEm: null
+            };
+
+            popupClientClones.push(novoClone);
+            savePopupClientClones();
+            
+            // Limpa campos
+            document.getElementById('popNome').value = '';
+            document.getElementById('popTel').value = '';
+            
+            showToast("Cliente adicionado ao Pop-up!");
+            renderListaGerenciarPopup();
+            
+            // Tenta atualizar pop-up de vencendo se estiver aberto/elegível
+            try { checarEExibirPopupVencendo(); } catch(e){}
+        }
+
+        function salvarPopupConfig() {
+            setPopupWatchlistIds(popupConfigTempIds);
+            try { syncPopupClonesWithWatchlist(popupConfigTempIds); } catch (e) {}
+            showToast("Pop-up configurado!");
+            fecharModalPopupConfig();
+            
+            // Se o modal de gerenciar estiver aberto, atualiza a lista dele
+            const modalGerenciar = document.getElementById('modalGerenciarPopup');
+            if(modalGerenciar && modalGerenciar.style.display === 'flex') {
+                renderListaGerenciarPopup();
+            }
+            
+            checarEExibirPopupVencendo();
+        }
+
+
         document.addEventListener('DOMContentLoaded', () => {
+            loadDebugLogs();
+            addAppLog('OK', 'app:start', 'Página carregou');
+            setTopStatus('Status: pronto');
             const today = new Date();
             document.getElementById('dataInput').value = today.toISOString().split('T')[0];
             document.getElementById('dataAtual').innerText = today.toLocaleDateString('pt-BR', {
@@ -3177,36 +4255,45 @@ document.addEventListener("keydown", fecharComEsc);
                 }
             });
 
-
-            // ✅ ENTER no modal "Agendar Reexibição" (submit do form)
             const formVerDepois = document.getElementById('formVerDepois');
             if (formVerDepois) {
                 formVerDepois.addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    console.log('[VerDepois] submit disparou (Enter ou clique no Confirmar)');
                     await confirmarVerDepois();
                 });
             }
 
-
-            // ✅ Fallback: alguns navegadores NÃO disparam submit ao apertar Enter em input type="date"
             document.addEventListener('keydown', async (e) => {
                 const modal = document.getElementById('modalVerDepois');
                 if (!modal) return;
                 const aberto = (modal.style.display === 'flex');
                 if (!aberto) return;
 
-                // Evita conflito com outros inputs/áreas (se quiser pode ajustar)
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    console.log('[VerDepois] keydown Enter capturado com modal aberto. target=', e.target && e.target.id);
                     await confirmarVerDepois();
                 }
             }, true);
 
-            loadClientes();
+            loadClientes()
+                .then(() => { try { checarEExibirPopupVencendo(); } catch(e){} })
+                .catch((e) => console.error('Erro ao carregar clientes:', e));
         });
     </script>
+
+    <!-- Painel de Logs (debug) -->
+    <div id="debugLogPanel">
+        <div class="log-head">
+            <b>Logs da Página</b>
+            <div class="log-actions">
+                <button class="btn-secondary" onclick="copyDebugLogs()">📋 Copiar</button>
+                <button class="btn-secondary" onclick="downloadDebugLogs()">⬇️ Baixar .txt</button>
+                <button class="btn-warning" onclick="clearDebugLogs()">🧹 Limpar</button>
+                <button class="btn-danger" onclick="toggleDebugLogPanel()">✖ Fechar</button>
+            </div>
+        </div>
+        <div id="debugLogContent" class="log-body"></div>
+    </div>
+
 </body>
 </html>
-
