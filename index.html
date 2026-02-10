@@ -1,4 +1,6 @@
 
+
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -1388,7 +1390,7 @@
             showToast('Exportado!'); atualizarUltimaAtualizacao("clientes selecionados exportados");
         }
 
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwoeQZB6yl-RBXQ8gn7PUOz-QsyYJfeWW8UgDgNf8WUYPCH7DczuoXLb_5PkipxD6OY/exec';
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyHKKeGamiImtqK0G-DJpJI3E_y83ZlVQq6A3kjW0LmRE9iRvNuG3VCOQmpt_s2XwLIrg/exec';
         const PIX_KEY = "11947406124";
         const PIX_NOME = "Waldemar Jose Luiz";
         const TOAST_MS = 2200;
@@ -1523,9 +1525,11 @@
             try { localStorage.setItem(APP_LOG_KEY, JSON.stringify(appDebugLogs)); } catch(e) {}
             renderDebugLogs();
 
-            if (entry.level === 'ERROR') console.error('[LOG]', entry.step, entry.detail);
-            else if (entry.level === 'WARN') console.warn('[LOG]', entry.step, entry.detail);
-            else console.log('[LOG]', entry.step, entry.detail);
+            if (entry.level === 'ERROR') {
+              console.error(entry.step, entry.detail);
+        }
+
+            
         }
 
         function loadDebugLogs() {
